@@ -1,0 +1,201 @@
+import { useState } from "react";
+import { QUESTION_TYPES } from "../data/questionTypes";
+import { extractNumericValue } from "../utils/format";
+import CommitInput from "./CommitInput";
+import DeltaDisplay from "./DeltaDisplay";
+
+export default function QuestionCard({ question, index, onScore }) {
+  const [phase, setPhase] = useState("commit"); // commit, hint, reveal, scored
+  const [selfScore, setSelfScore] = useState(null);
+  const [textAnswer, setTextAnswer] = useState("");
+  const [numericAnswer, setNumericAnswer] = useState(null);
+  const [committedText, setCommittedText] = useState("");
+  const [committedNumeric, setCommittedNumeric] = useState(null);
+
+  const typeInfo = QUESTION_TYPES[question.type];
+  const isQuantitative = typeInfo.inputMode === "quantitative";
+
+  const hasValidInput = isQuantitative
+    ? numericAnswer !== null && !isNaN(numericAnswer)
+    : textAnswer.trim().length >= CommitInput.MIN_QUALITATIVE_CHARS;
+
+  const handleReveal = () => {
+    setCommittedText(textAnswer);
+    setCommittedNumeric(numericAnswer);
+    setPhase("reveal");
+  };
+
+  const modelExtracted = isQuantitative ? extractNumericValue(question.answer) : null;
+
+  return (
+    <div className="border border-gray-200 rounded-lg overflow-hidden mb-4">
+      <div className="bg-gray-50 px-4 py-3 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="text-lg">{typeInfo.icon}</span>
+          <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${typeInfo.color}`}>{typeInfo.label}</span>
+          <span className="text-sm font-medium text-gray-700">Question {index + 1}</span>
+        </div>
+        {selfScore !== null && (
+          <div className={`text-sm font-semibold px-2 py-0.5 rounded ${selfScore >= 4 ? "bg-green-100 text-green-800" : selfScore >= 2 ? "bg-amber-100 text-amber-800" : "bg-red-100 text-red-800"}`}>
+            {selfScore}/5
+          </div>
+        )}
+      </div>
+      <div className="p-4">
+        <p className="text-gray-900 font-medium mb-3">{question.q}</p>
+
+        {/* COMMIT phase */}
+        {phase === "commit" && (
+          <div>
+            <CommitInput
+              mode={typeInfo.inputMode}
+              disabled={false}
+              value={textAnswer}
+              onChange={setTextAnswer}
+              numericValue={numericAnswer}
+              onNumericChange={setNumericAnswer}
+            />
+            <div className="flex gap-2 mt-3">
+              <button
+                onClick={() => setPhase("hint")}
+                className="px-3 py-1.5 text-sm bg-amber-50 text-amber-700 border border-amber-200 rounded-lg hover:bg-amber-100 transition-colors"
+              >
+                Show Hint
+              </button>
+              <button
+                onClick={handleReveal}
+                disabled={!hasValidInput}
+                className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${hasValidInput ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-200 text-gray-400 cursor-not-allowed"}`}
+              >
+                Reveal Answer
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* HINT phase */}
+        {phase === "hint" && (
+          <div>
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-3 text-sm text-amber-800">
+              <span className="font-semibold">Hint:</span> {question.hint}
+            </div>
+            <CommitInput
+              mode={typeInfo.inputMode}
+              disabled={false}
+              value={textAnswer}
+              onChange={setTextAnswer}
+              numericValue={numericAnswer}
+              onNumericChange={setNumericAnswer}
+            />
+            <div className="flex gap-2 mt-3">
+              <button
+                onClick={handleReveal}
+                disabled={!hasValidInput}
+                className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${hasValidInput ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-200 text-gray-400 cursor-not-allowed"}`}
+              >
+                Reveal Answer
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* REVEAL phase */}
+        {phase === "reveal" && (
+          <div>
+            {isQuantitative && <DeltaDisplay committedNumeric={committedNumeric} modelExtracted={modelExtracted} />}
+
+            {/* Keyword feedback for qualitative */}
+            {!isQuantitative && question.keywords && committedText && (
+              <KeywordFeedback text={committedText} keywords={question.keywords} />
+            )}
+
+            <div className={`grid ${isQuantitative ? "grid-cols-1" : "grid-cols-2"} gap-3 mb-4`}>
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm">
+                <span className="font-semibold text-gray-500 text-xs uppercase">Your Answer</span>
+                {isQuantitative && committedNumeric !== null && (
+                  <p className="mt-1 font-mono font-semibold text-gray-900">{committedNumeric}</p>
+                )}
+                {committedText && <p className="mt-1 text-gray-700">{committedText}</p>}
+              </div>
+              <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-sm text-green-900">
+                <span className="font-semibold text-green-700 text-xs uppercase">Model Answer</span>
+                <p className="mt-1">{question.answer}</p>
+              </div>
+            </div>
+
+            <div>
+              <p className="text-sm font-medium text-gray-700 mb-2">How close was your analysis? Rate yourself:</p>
+              <div className="flex gap-2">
+                {[1,2,3,4,5].map(n => (
+                  <button
+                    key={n}
+                    onClick={() => {
+                      setSelfScore(n);
+                      setPhase("scored");
+                      onScore(question.type, n, {
+                        delta: isQuantitative && committedNumeric !== null && modelExtracted
+                          ? committedNumeric - modelExtracted.value : null,
+                        unit: modelExtracted?.unit || null,
+                      });
+                    }}
+                    className="w-10 h-10 rounded-lg border-2 border-gray-300 hover:border-blue-500 hover:bg-blue-50 font-semibold text-gray-700 transition-all"
+                  >
+                    {n}
+                  </button>
+                ))}
+              </div>
+              <p className="text-xs text-gray-500 mt-1">1 = completely off &nbsp; 3 = right direction &nbsp; 5 = nailed it</p>
+            </div>
+          </div>
+        )}
+
+        {/* SCORED phase */}
+        {phase === "scored" && (
+          <div>
+            {isQuantitative && <DeltaDisplay committedNumeric={committedNumeric} modelExtracted={modelExtracted} />}
+
+            {!isQuantitative && question.keywords && committedText && (
+              <KeywordFeedback text={committedText} keywords={question.keywords} />
+            )}
+
+            <div className={`grid ${isQuantitative ? "grid-cols-1" : "grid-cols-2"} gap-3`}>
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm">
+                <span className="font-semibold text-gray-500 text-xs uppercase">Your Answer</span>
+                {isQuantitative && committedNumeric !== null && (
+                  <p className="mt-1 font-mono font-semibold text-gray-900">{committedNumeric}</p>
+                )}
+                {committedText && <p className="mt-1 text-gray-700">{committedText}</p>}
+              </div>
+              <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-sm text-green-900">
+                <span className="font-semibold text-green-700 text-xs uppercase">Model Answer</span>
+                <p className="mt-1">{question.answer}</p>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function KeywordFeedback({ text, keywords }) {
+  const lower = text.toLowerCase();
+  const found = keywords.filter(k => lower.includes(k.toLowerCase()));
+  const missed = keywords.filter(k => !lower.includes(k.toLowerCase()));
+
+  return (
+    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3 text-sm">
+      <p className="font-semibold text-blue-800 mb-1">Key Factors: {found.length}/{keywords.length} identified</p>
+      <div className="flex flex-wrap gap-1.5 mt-1">
+        {keywords.map(k => (
+          <span
+            key={k}
+            className={`text-xs px-2 py-0.5 rounded-full ${found.includes(k) ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}
+          >
+            {found.includes(k) ? "\u2713" : "\u2717"} {k}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
