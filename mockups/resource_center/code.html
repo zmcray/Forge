@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Resources | Architectural Ledger</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-error": "#ffffff",
+              "surface-bright": "#f7f9fb",
+              "surface": "#f7f9fb",
+              "primary-container": "#131b2e",
+              "secondary": "#505f76",
+              "on-primary-container": "#7c839b",
+              "secondary-fixed": "#d3e4fe",
+              "surface-container-low": "#f2f4f6",
+              "on-tertiary-fixed-variant": "#005236",
+              "on-primary": "#ffffff",
+              "surface-tint": "#565e74",
+              "inverse-surface": "#2d3133",
+              "on-error-container": "#93000a",
+              "on-secondary": "#ffffff",
+              "on-surface": "#191c1e",
+              "on-primary-fixed-variant": "#3f465c",
+              "surface-dim": "#d8dadc",
+              "on-tertiary-fixed": "#002113",
+              "background": "#f7f9fb",
+              "surface-container-highest": "#e0e3e5",
+              "on-primary-fixed": "#131b2e",
+              "inverse-on-surface": "#eff1f3",
+              "primary": "#000000",
+              "surface-variant": "#e0e3e5",
+              "error-container": "#ffdad6",
+              "error": "#ba1a1a",
+              "tertiary-fixed": "#6ffbbe",
+              "tertiary-container": "#002113",
+              "on-tertiary": "#ffffff",
+              "on-secondary-fixed-variant": "#38485d",
+              "on-surface-variant": "#45464d",
+              "surface-container-high": "#e6e8ea",
+              "tertiary-fixed-dim": "#4edea3",
+              "on-background": "#191c1e",
+              "secondary-fixed-dim": "#b7c8e1",
+              "secondary-container": "#d0e1fb",
+              "on-secondary-fixed": "#0b1c30",
+              "surface-container-lowest": "#ffffff",
+              "primary-fixed": "#dae2fd",
+              "on-secondary-container": "#54647a",
+              "on-tertiary-container": "#009668",
+              "outline": "#76777d",
+              "primary-fixed-dim": "#bec6e0",
+              "inverse-primary": "#bec6e0",
+              "surface-container": "#eceef0",
+              "tertiary": "#000000",
+              "outline-variant": "#c6c6cd"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3 { font-family: 'Manrope', sans-serif; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-full flex flex-col p-4 gap-2 z-50 bg-[#f7f9fb] dark:bg-[#131b2e] w-64 border-r-0">
+<div class="mb-8 px-2">
+<h1 class="text-lg font-extrabold tracking-tight text-[#0f172a] dark:text-white uppercase">Architectural Ledger</h1>
+<p class="text-xs text-slate-500 font-medium">Private Equity Intelligence</p>
+</div>
+<nav class="flex-1 flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 dark:text-slate-400 font-medium hover:bg-[#f2f4f6] dark:hover:bg-[#1e293b] transition-all duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-['Manrope'] text-sm">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 dark:text-slate-400 font-medium hover:bg-[#f2f4f6] dark:hover:bg-[#1e293b] transition-all duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-['Manrope'] text-sm">Analysis</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 dark:text-slate-400 font-medium hover:bg-[#f2f4f6] dark:hover:bg-[#1e293b] transition-all duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="school">school</span>
+<span class="font-['Manrope'] text-sm">Fundamentals</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 dark:text-slate-400 font-medium hover:bg-[#f2f4f6] dark:hover:bg-[#1e293b] transition-all duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="pie_chart">pie_chart</span>
+<span class="font-['Manrope'] text-sm">Portfolio</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 dark:text-slate-400 font-medium hover:bg-[#f2f4f6] dark:hover:bg-[#1e293b] transition-all duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="compare_arrows">compare_arrows</span>
+<span class="font-['Manrope'] text-sm">Comparison</span>
+</a>
+<!-- Active Tab: Resources -->
+<a class="flex items-center gap-3 px-3 py-2 bg-white dark:bg-[#1e293b] text-[#0f172a] dark:text-white font-bold rounded-lg shadow-sm" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+<span class="font-['Manrope'] text-sm">Resources</span>
+</a>
+</nav>
+<div class="mt-auto border-t border-surface-container-low pt-4 flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 dark:text-slate-400 font-medium hover:bg-[#f2f4f6] transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+<span class="font-['Manrope'] text-sm">Support</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 dark:text-slate-400 font-medium hover:bg-[#f2f4f6] transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-['Manrope'] text-sm">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<header class="sticky top-0 z-40 bg-[#f7f9fb] dark:bg-[#131b2e] flex justify-between items-center w-full px-8 py-4 border-b border-surface-container-low">
+<div class="flex items-center gap-6 w-1/2">
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">search</span>
+<input class="w-full bg-surface-container-lowest border-none ring-1 ring-outline-variant/20 focus:ring-primary rounded-lg py-2 pl-10 pr-4 text-sm font-body" placeholder="Search templates, reports, or models..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-500 hover:bg-slate-100 transition-colors rounded-full">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 text-slate-500 hover:bg-slate-100 transition-colors rounded-full">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<div class="h-8 w-8 rounded-full bg-primary-container overflow-hidden ml-2">
+<img alt="Analyst Profile" data-alt="Professional profile headshot of a financial analyst" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDB3ioB_i5Zrbl2pvQidqX9KYNGFKOfnCgblIK2J0fcGRWR-jWRZU64Jo1Tp_WEM7uC3BULXofzJlBgSCsNUVlWESFw2OBMQUfeJ9m5Grizm1S35HCt2nvU-8wdkjBVE1NClNPhOu9-vkP4UjMVswPNseZ9YzY1Tniz5xw9oJK7gH_uL2ICBzgeQba02Sf80w_HnDfXZIFZvyBBfvHg6fz0X8gCbqf_0vEi6J6bAAkoIMnRop3dGBjvXGpq__969XHLcqekSL4-Hg"/>
+</div>
+</div>
+</header>
+<!-- Content Canvas -->
+<div class="p-8 space-y-8 max-w-7xl mx-auto w-full">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<h2 class="text-3xl font-extrabold tracking-tight text-primary leading-none">Analyst Resource Center</h2>
+<p class="text-on-surface-variant mt-2 font-body">Access institutional-grade templates and proprietary research.</p>
+</div>
+<div class="flex gap-2">
+<button class="px-4 py-2 bg-primary-container text-white text-sm font-semibold rounded-lg flex items-center gap-2 transition-opacity active:opacity-80">
+<span class="material-symbols-outlined text-sm" data-icon="upload">upload</span>
+                        Submit Resource
+                    </button>
+</div>
+</div>
+<!-- Categories / Filter Pills -->
+<div class="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-hide">
+<button class="px-5 py-2 bg-primary text-on-primary rounded-full text-sm font-medium whitespace-nowrap">All Assets</button>
+<button class="px-5 py-2 bg-surface-container-high text-on-surface rounded-full text-sm font-medium hover:bg-surface-container-highest transition-colors whitespace-nowrap">Models</button>
+<button class="px-5 py-2 bg-surface-container-high text-on-surface rounded-full text-sm font-medium hover:bg-surface-container-highest transition-colors whitespace-nowrap">Reports</button>
+<button class="px-5 py-2 bg-surface-container-high text-on-surface rounded-full text-sm font-medium hover:bg-surface-container-highest transition-colors whitespace-nowrap">Checklists</button>
+<button class="px-5 py-2 bg-surface-container-high text-on-surface rounded-full text-sm font-medium hover:bg-surface-container-highest transition-colors whitespace-nowrap">Legal Docs</button>
+</div>
+<!-- Bento Grid Library -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Card: Model -->
+<div class="group bg-surface-container-lowest rounded-xl p-6 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/5 border-b-2 border-transparent hover:border-primary">
+<div class="flex justify-between items-start mb-6">
+<div class="h-12 w-12 bg-secondary-container rounded-lg flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-2xl" data-icon="table_chart">table_chart</span>
+</div>
+<span class="px-2 py-1 bg-tertiary-fixed-dim text-on-tertiary-fixed text-[10px] font-bold uppercase tracking-widest rounded">Models</span>
+</div>
+<h3 class="text-lg font-bold text-primary mb-2">Standard LBO Valuation Template</h3>
+<p class="text-sm text-on-surface-variant line-clamp-2 mb-6 font-body">Dynamic 3-statement model with automated debt schedule and sensitivity analysis for platform acquisitions.</p>
+<div class="flex items-center justify-between pt-6 border-t border-surface-container-low">
+<div class="space-y-1">
+<p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Updated</p>
+<p class="text-xs font-medium text-on-surface">Oct 12, 2023</p>
+</div>
+<div class="text-right space-y-1">
+<p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Size</p>
+<p class="text-xs font-medium text-on-surface">4.2 MB</p>
+</div>
+<button class="p-2 hover:bg-surface-container-low rounded-lg transition-colors">
+<span class="material-symbols-outlined text-primary" data-icon="download">download</span>
+</button>
+</div>
+</div>
+<!-- Card: Report -->
+<div class="group bg-surface-container-lowest rounded-xl p-6 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/5 border-b-2 border-transparent hover:border-primary">
+<div class="flex justify-between items-start mb-6">
+<div class="h-12 w-12 bg-primary-container rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-2xl" data-icon="description">description</span>
+</div>
+<span class="px-2 py-1 bg-surface-container-high text-on-surface-variant text-[10px] font-bold uppercase tracking-widest rounded">Reports</span>
+</div>
+<h3 class="text-lg font-bold text-primary mb-2">SaaS Benchmarking Q3 2023</h3>
+<p class="text-sm text-on-surface-variant line-clamp-2 mb-6 font-body">Comprehensive sector analysis including Rule of 40 metrics and median exit multiples.</p>
+<div class="flex items-center justify-between pt-6 border-t border-surface-container-low">
+<div class="space-y-1">
+<p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Updated</p>
+<p class="text-xs font-medium text-on-surface">Sep 28, 2023</p>
+</div>
+<div class="text-right space-y-1">
+<p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Size</p>
+<p class="text-xs font-medium text-on-surface">12.8 MB</p>
+</div>
+<button class="p-2 hover:bg-surface-container-low rounded-lg transition-colors">
+<span class="material-symbols-outlined text-primary" data-icon="download">download</span>
+</button>
+</div>
+</div>
+<!-- Card: Checklist -->
+<div class="group bg-surface-container-lowest rounded-xl p-6 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/5 border-b-2 border-transparent hover:border-primary">
+<div class="flex justify-between items-start mb-6">
+<div class="h-12 w-12 bg-secondary-container rounded-lg flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-2xl" data-icon="fact_check">fact_check</span>
+</div>
+<span class="px-2 py-1 bg-outline-variant/30 text-on-surface-variant text-[10px] font-bold uppercase tracking-widest rounded">Checklists</span>
+</div>
+<h3 class="text-lg font-bold text-primary mb-2">Technical Due Diligence V4</h3>
+<p class="text-sm text-on-surface-variant line-clamp-2 mb-6 font-body">Phase 1 infrastructure assessment and security compliance verification checklist.</p>
+<div class="flex items-center justify-between pt-6 border-t border-surface-container-low">
+<div class="space-y-1">
+<p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Updated</p>
+<p class="text-xs font-medium text-on-surface">Nov 02, 2023</p>
+</div>
+<div class="text-right space-y-1">
+<p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Size</p>
+<p class="text-xs font-medium text-on-surface">0.8 MB</p>
+</div>
+<button class="p-2 hover:bg-surface-container-low rounded-lg transition-colors">
+<span class="material-symbols-outlined text-primary" data-icon="download">download</span>
+</button>
+</div>
+</div>
+<!-- Card: Model (Expanded View) -->
+<div class="group bg-surface-container-lowest rounded-xl p-6 md:col-span-2 transition-all duration-300 hover:shadow-2xl border-b-2 border-transparent hover:border-primary">
+<div class="flex flex-col md:flex-row gap-8">
+<div class="flex-1">
+<div class="flex justify-between items-start mb-4">
+<span class="px-2 py-1 bg-tertiary-fixed-dim text-on-tertiary-fixed text-[10px] font-bold uppercase tracking-widest rounded">Featured Model</span>
+<span class="material-symbols-outlined text-on-tertiary-container" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<h3 class="text-xl font-extrabold text-primary mb-3">Waterfall Distribution &amp; Carry Engine</h3>
+<p class="text-sm text-on-surface-variant mb-6 font-body leading-relaxed">The industry standard for modeling complex waterfall structures, including GP catch-up, hurdle rates, and American vs. European style distributions. Includes pre-built visualization for investor reporting.</p>
+<div class="flex gap-4">
+<div class="bg-surface-container-low px-4 py-2 rounded-lg">
+<p class="text-[10px] text-slate-400 font-bold uppercase">Last Audit</p>
+<p class="text-sm font-semibold">Dec 2023</p>
+</div>
+<div class="bg-surface-container-low px-4 py-2 rounded-lg">
+<p class="text-[10px] text-slate-400 font-bold uppercase">Format</p>
+<p class="text-sm font-semibold">.XLSB / .XLSX</p>
+</div>
+</div>
+</div>
+<div class="w-full md:w-1/3 bg-surface-container-low rounded-lg overflow-hidden relative min-h-[160px]">
+<img alt="Spreadsheet Interface" class="absolute inset-0 w-full h-full object-cover opacity-60 grayscale hover:grayscale-0 transition-all duration-500" data-alt="Screenshot of a complex financial spreadsheet model" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDqD1cToP2pS-JO5upoJyodglgw6_NZq4AWR-s9CZMl-oOJ9IpIEBAQhzbx3q5MnUoACtVNw4mCEheCWeWfb8AmJdiHlRcwWOFrriAv2Q13CD-LUyd4dxF21oeMuFXwQ1r5h7cjygfqy-CzzoAXB6rw42mZmm99tuN0FsoTfDo8EZeYjByEDMzjV1sE1TTMvYJEbKG4QZwnN-3m8ioP_hjZd82otjLdqp-i8ls23oq15irk6MjNRBnAGlenV2thKTNqThQ7CYVvMA"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-low/80 to-transparent flex items-end p-4">
+<button class="w-full bg-primary text-on-primary py-2 rounded font-semibold text-sm flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="visibility">visibility</span>
+                                    Preview Model
+                                </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Card: Checklist -->
+<div class="group bg-surface-container-lowest rounded-xl p-6 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/5 border-b-2 border-transparent hover:border-primary">
+<div class="flex justify-between items-start mb-6">
+<div class="h-12 w-12 bg-secondary-container rounded-lg flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-2xl" data-icon="verified_user">verified_user</span>
+</div>
+<span class="px-2 py-1 bg-outline-variant/30 text-on-surface-variant text-[10px] font-bold uppercase tracking-widest rounded">Checklists</span>
+</div>
+<h3 class="text-lg font-bold text-primary mb-2">ESG Integration Framework</h3>
+<p class="text-sm text-on-surface-variant line-clamp-2 mb-6 font-body">Alignment checklist for SFDR Article 8/9 requirements and UNPRI reporting standards.</p>
+<div class="flex items-center justify-between pt-6 border-t border-surface-container-low">
+<div class="space-y-1">
+<p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Updated</p>
+<p class="text-xs font-medium text-on-surface">Aug 15, 2023</p>
+</div>
+<div class="text-right space-y-1">
+<p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Size</p>
+<p class="text-xs font-medium text-on-surface">1.4 MB</p>
+</div>
+<button class="p-2 hover:bg-surface-container-low rounded-lg transition-colors">
+<span class="material-symbols-outlined text-primary" data-icon="download">download</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Recent Activity / News (Editorial Style) -->
+<section class="mt-12 bg-primary-container text-white rounded-2xl p-8 overflow-hidden relative">
+<div class="relative z-10 max-w-2xl">
+<h3 class="text-2xl font-extrabold mb-4">New Industry Benchmark: TMT Sector Q4</h3>
+<p class="text-on-primary-container text-lg mb-6 leading-relaxed">The latest dataset for Technology, Media, and Telecommunications is now available. This update includes EBITDA multiples for over 450 tracked middle-market transactions.</p>
+<div class="flex items-center gap-4">
+<button class="px-6 py-3 bg-white text-primary font-bold rounded-lg hover:scale-105 transition-transform active:scale-95">Download Latest Pack</button>
+<span class="text-sm font-medium text-on-primary-container">Updated 4 hours ago</span>
+</div>
+</div>
+<!-- Abstract Design Elements -->
+<div class="absolute right-0 top-0 bottom-0 w-1/3 bg-gradient-to-l from-white/10 to-transparent pointer-events-none"></div>
+<div class="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-secondary/10 blur-3xl"></div>
+</section>
+</div>
+<!-- Sticky Footer Info -->
+<footer class="mt-auto py-6 px-8 border-t border-surface-container-low flex flex-col md:flex-row justify-between items-center text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">
+<div class="flex gap-6">
+<span>© 2024 Architectural Ledger</span>
+<span>Confidential Information</span>
+</div>
+<div class="flex gap-6 mt-4 md:mt-0">
+<a class="hover:text-primary" href="#">Usage Policy</a>
+<a class="hover:text-primary" href="#">Update Logs</a>
+<a class="hover:text-primary" href="#">Contact Admin</a>
+</div>
+</footer>
+</main>
+</body></html>

@@ -1,37 +1,71 @@
 import { formatCurrency } from "../utils/format";
-import { QUESTION_TYPES } from "../data/questionTypes";
 
 export default function CompanyCard({ company, completed, onSelect }) {
+  const metrics = [
+    { label: "Revenue", value: formatCurrency(company.revenue), positive: true },
+    { label: "EBITDA", value: formatCurrency(company.keyMetrics.adjustedEbitda), positive: true },
+    { label: "Margin", value: `${company.keyMetrics.adjustedEbitdaMargin.toFixed(1)}%`, positive: company.keyMetrics.adjustedEbitdaMargin > 0 },
+    { label: "Growth", value: `${company.keyMetrics.revenueGrowth > 0 ? "+" : ""}${company.keyMetrics.revenueGrowth.toFixed(1)}%`, positive: company.keyMetrics.revenueGrowth >= 0 },
+  ];
+
+  const traits = [company.industry];
+  if (company.keyMetrics.recurringRevenuePct) {
+    traits.push(`${company.keyMetrics.recurringRevenuePct}% recurring`);
+  }
+  if (company.keyMetrics.customerConcentration) {
+    traits.push(`Top customer ${company.keyMetrics.customerConcentration}%`);
+  }
+
   return (
     <div
-      className={`bg-white border rounded-xl p-5 hover:shadow-md transition-all cursor-pointer ${completed ? "border-green-300 bg-green-50/30" : "border-gray-200"}`}
+      className="bg-surface-container-lowest rounded-xl ghost-border overflow-hidden hover:shadow-md transition-all duration-200 cursor-pointer group"
       onClick={() => onSelect(company)}
     >
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <div className="flex items-center gap-2 mb-1">
-            <h3 className="font-semibold text-gray-900 text-lg">{company.name}</h3>
-            {completed && <span className="text-xs font-semibold text-green-700 bg-green-100 px-2 py-0.5 rounded-full">Completed</span>}
-          </div>
-          <p className="text-sm text-blue-600 font-medium mb-2">{company.industry}</p>
-          <p className="text-sm text-gray-600 mb-3">{company.description}</p>
-          <div className="flex gap-4 text-xs text-gray-500">
-            <span>Revenue: <span className="font-semibold text-gray-700">{formatCurrency(company.revenue)}</span></span>
-            <span>EBITDA: <span className="font-semibold text-gray-700">{formatCurrency(company.keyMetrics.adjustedEbitda)}</span></span>
-            <span>Margin: <span className="font-semibold text-gray-700">{company.keyMetrics.adjustedEbitdaMargin.toFixed(1)}%</span></span>
-            <span>Growth: <span className={`font-semibold ${company.keyMetrics.revenueGrowth >= 0 ? "text-green-700" : "text-red-700"}`}>{company.keyMetrics.revenueGrowth > 0 ? "+" : ""}{company.keyMetrics.revenueGrowth.toFixed(1)}%</span></span>
-          </div>
-        </div>
-        <div className="flex flex-col items-center gap-1 ml-4">
-          <span className="text-2xl">{company.questions.length}</span>
-          <span className="text-xs text-gray-500">Questions</span>
+      {/* Header area */}
+      <div className="bg-surface-container-low px-5 py-3 flex items-center justify-between">
+        <span className="text-[10px] uppercase tracking-widest text-on-surface-variant font-medium">{company.industry}</span>
+        <div className="flex items-center gap-1.5">
+          {completed && (
+            <span className="text-[10px] uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-tertiary-fixed-dim/20 text-on-tertiary-container font-medium">
+              Completed
+            </span>
+          )}
+          <span className="text-[10px] uppercase tracking-widest text-on-surface-variant">
+            {company.questions.length} questions
+          </span>
         </div>
       </div>
-      <div className="mt-3 flex flex-wrap gap-1.5">
-        {company.questions.map((q, i) => {
-          const t = QUESTION_TYPES[q.type];
-          return <span key={i} className={`text-xs px-2 py-0.5 rounded-full ${t.color}`}>{t.icon} {t.label}</span>;
-        })}
+
+      {/* Body */}
+      <div className="p-5">
+        <h3 className="text-xl font-bold font-headline text-on-surface mb-0.5">{company.name}</h3>
+        <p className="text-[10px] uppercase tracking-widest text-on-surface-variant mb-4">{company.description.split('.')[0]}</p>
+
+        {/* 2x2 metrics grid */}
+        <div className="grid grid-cols-2 gap-x-6 gap-y-3 mb-4">
+          {metrics.map(m => (
+            <div key={m.label}>
+              <span className="text-[10px] uppercase tracking-widest text-on-surface-variant">{m.label}</span>
+              <p className={`text-lg font-bold font-headline ${m.label === "Growth" ? (m.positive ? "text-on-tertiary-container" : "text-error") : "text-on-surface"}`}>
+                {m.value}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        {/* Trait chips */}
+        <div className="flex flex-wrap gap-2 mb-4">
+          {traits.map((trait, i) => (
+            <span key={i} className="text-[10px] px-3 py-1 rounded-full bg-secondary-container text-on-secondary-container font-medium">
+              {trait}
+            </span>
+          ))}
+        </div>
+
+        {/* CTA button */}
+        <button className="w-full py-2.5 rounded-lg text-[11px] uppercase tracking-widest font-semibold bg-surface-container-low text-on-surface-variant group-hover:bg-primary group-hover:text-on-primary transition-all duration-200">
+          Open Case Study
+        </button>
       </div>
     </div>
   );

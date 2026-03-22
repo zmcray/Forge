@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Fundamentals | Architectural Ledger</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-bright": "#f7f9fb",
+              "surface-tint": "#565e74",
+              "error-container": "#ffdad6",
+              "secondary-fixed": "#d3e4fe",
+              "on-error-container": "#93000a",
+              "on-tertiary-container": "#009668",
+              "tertiary-container": "#002113",
+              "surface": "#f7f9fb",
+              "on-tertiary": "#ffffff",
+              "surface-variant": "#e0e3e5",
+              "primary-container": "#131b2e",
+              "tertiary-fixed": "#6ffbbe",
+              "inverse-on-surface": "#eff1f3",
+              "on-surface-variant": "#45464d",
+              "secondary-fixed-dim": "#b7c8e1",
+              "secondary": "#505f76",
+              "on-background": "#191c1e",
+              "on-primary-fixed": "#131b2e",
+              "surface-container-low": "#f2f4f6",
+              "surface-dim": "#d8dadc",
+              "secondary-container": "#d0e1fb",
+              "surface-container": "#eceef0",
+              "on-primary": "#ffffff",
+              "on-primary-container": "#7c839b",
+              "surface-container-highest": "#e0e3e5",
+              "on-tertiary-fixed": "#002113",
+              "on-secondary": "#ffffff",
+              "surface-container-lowest": "#ffffff",
+              "primary-fixed": "#dae2fd",
+              "outline-variant": "#c6c6cd",
+              "outline": "#76777d",
+              "primary": "#000000",
+              "primary-fixed-dim": "#bec6e0",
+              "on-secondary-fixed": "#0b1c30",
+              "on-secondary-container": "#54647a",
+              "inverse-surface": "#2d3133",
+              "background": "#f7f9fb",
+              "on-primary-fixed-variant": "#3f465c",
+              "on-tertiary-fixed-variant": "#005236",
+              "inverse-primary": "#bec6e0",
+              "on-secondary-fixed-variant": "#38485d",
+              "error": "#ba1a1a",
+              "surface-container-high": "#e6e8ea",
+              "on-surface": "#191c1e",
+              "tertiary": "#000000",
+              "tertiary-fixed-dim": "#4edea3",
+              "on-error": "#ffffff"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.5rem", "lg": "0.75rem", "xl": "1rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface flex min-h-screen">
+<!-- SideNavBar (Authority Source: JSON) -->
+<aside class="hidden md:flex flex-col h-screen p-4 space-y-8 bg-[#f7f9fb] dark:bg-[#131b2e] w-64 fixed left-0 top-0 overflow-y-auto">
+<div class="flex items-center space-x-3 px-2">
+<div class="w-8 h-8 bg-primary-container rounded flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-sm" data-icon="analytics">analytics</span>
+</div>
+<div>
+<h1 class="font-manrope font-black text-lg text-[#131b2e] dark:text-white leading-none">Capital Intel</h1>
+<p class="font-inter text-[10px] font-semibold uppercase tracking-widest text-slate-500 mt-1">Senior Analyst</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<div class="px-2 py-3 text-slate-500 dark:text-slate-400 font-inter text-xs font-semibold uppercase tracking-widest transition-transform duration-200 hover:translate-x-1 cursor-pointer flex items-center gap-3">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                Today
+            </div>
+<!-- Active State: Fundamentals -->
+<div class="px-3 py-3 bg-white dark:bg-[#0f172a] text-[#0f172a] dark:text-[#4edea3] shadow-sm rounded-lg font-inter text-xs font-semibold uppercase tracking-widest flex items-center gap-3">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+                Fundamentals
+            </div>
+<div class="px-2 py-3 text-slate-500 dark:text-slate-400 font-inter text-xs font-semibold uppercase tracking-widest transition-transform duration-200 hover:translate-x-1 cursor-pointer flex items-center gap-3">
+<span class="material-symbols-outlined" data-icon="school">school</span>
+                Practice
+            </div>
+<div class="px-2 py-3 text-slate-500 dark:text-slate-400 font-inter text-xs font-semibold uppercase tracking-widest transition-transform duration-200 hover:translate-x-1 cursor-pointer flex items-center gap-3">
+<span class="material-symbols-outlined" data-icon="menu_book">menu_book</span>
+                Resources
+            </div>
+</nav>
+<div class="pt-4 space-y-2 border-t border-[#f2f4f6] dark:border-[#1e293b]">
+<div class="px-2 py-2 text-slate-500 dark:text-slate-400 font-inter text-xs font-semibold uppercase tracking-widest flex items-center gap-3">
+<span class="material-symbols-outlined text-[#009668]" data-icon="bolt" style="font-variation-settings: 'FILL' 1;">bolt</span>
+                Streak: 12 Days
+            </div>
+<div class="px-2 py-2 text-slate-500 dark:text-slate-400 font-inter text-xs font-semibold uppercase tracking-widest flex items-center gap-3 cursor-pointer hover:translate-x-1 transition-transform">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+                Help
+            </div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-64 min-h-screen flex flex-col">
+<!-- TopNavBar (Authority Source: JSON) -->
+<header class="flex justify-between items-center w-full px-8 py-4 max-w-full bg-[#f7f9fb] dark:bg-[#131b2e] sticky top-0 z-50">
+<div class="flex items-center gap-6">
+<div class="relative group">
+<span class="absolute inset-y-0 left-0 flex items-center pl-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-lg" data-icon="search">search</span>
+</span>
+<input class="bg-surface-container-low border-none rounded-lg pl-10 pr-4 py-2 text-sm focus:ring-1 focus:ring-primary-container w-64 transition-all" placeholder="Search architecture..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-5">
+<button class="text-slate-500 dark:text-slate-400 hover:bg-[#f2f4f6] dark:hover:bg-[#1e293b] p-2 rounded-full transition-colors active:opacity-80 active:scale-95">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="text-slate-500 dark:text-slate-400 hover:bg-[#f2f4f6] dark:hover:bg-[#1e293b] p-2 rounded-full transition-colors active:opacity-80 active:scale-95">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<div class="h-8 w-8 rounded-full overflow-hidden border border-outline-variant">
+<img alt="User Profile Avatar" class="w-full h-full object-cover" data-alt="Close up portrait of a professional analyst" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCRyG95Ps8iB5F_-qWTWro9bWE0NbrQbilgbiSXHGdx8zbyztZ32jmtYqXVk2pvDm7sIvSjiSnk2k561SMN3bwEwAmvHvgU92vP9AvrYPeQxBLFAgKWGBMlw89xJvHXBR3VGfmAlpAAKWiXjBycfINDMIKHXCycRiCd-HLyZ2dtAy0E4xasoPxub0rsfJJI5GTPOxYv0gzDSakoYbvYKMSuK-YEfUQbcXRbdzfm4gFwh0Kp7JcpHKw9DgSD31z-XKPzJ6zROxPD-A"/>
+</div>
+</div>
+</header>
+<!-- Page Canvas -->
+<div class="px-8 py-10 max-w-7xl mx-auto w-full">
+<!-- Header Section -->
+<div class="mb-12">
+<div class="inline-flex items-center gap-2 mb-4">
+<span class="text-[0.6875rem] font-label font-bold tracking-widest text-on-tertiary-container bg-tertiary-fixed-dim px-2.5 py-1 rounded-full uppercase">Module 01</span>
+<div class="h-[1px] w-8 bg-outline-variant"></div>
+<span class="text-[0.6875rem] font-label font-bold tracking-widest text-on-surface-variant uppercase">Financial Mastery</span>
+</div>
+<h1 class="font-headline text-5xl font-extrabold tracking-tighter text-primary-container mb-2">Learn the Fundamentals</h1>
+<p class="font-body text-lg text-on-surface-variant max-w-2xl">PE financial statement analysis, step by step.</p>
+</div>
+<!-- Two-Column Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+<!-- Left Column: Lesson Progress -->
+<div class="lg:col-span-4 space-y-6">
+<div class="bg-surface-container-low rounded-xl p-6">
+<h3 class="font-label text-[0.6875rem] font-bold tracking-widest text-on-surface-variant uppercase mb-6">Analyzing Financial Statements</h3>
+<div class="space-y-4">
+<!-- Completed Step -->
+<div class="flex items-start gap-4 p-3 bg-surface rounded-lg">
+<span class="material-symbols-outlined text-on-tertiary-container" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div>
+<p class="font-body text-sm font-semibold text-primary-container">1A. Gross Margin</p>
+<p class="text-[11px] text-on-surface-variant">Core profitability analysis</p>
+</div>
+</div>
+<!-- Completed Step -->
+<div class="flex items-start gap-4 p-3 bg-surface rounded-lg">
+<span class="material-symbols-outlined text-on-tertiary-container" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div>
+<p class="font-body text-sm font-semibold text-primary-container">1B. Net Margin</p>
+<p class="text-[11px] text-on-surface-variant">The bottom line efficiency</p>
+</div>
+</div>
+<!-- Completed Step -->
+<div class="flex items-start gap-4 p-3 bg-surface rounded-lg">
+<span class="material-symbols-outlined text-on-tertiary-container" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div>
+<p class="font-body text-sm font-semibold text-primary-container">1C. EBITDA</p>
+<p class="text-[11px] text-on-surface-variant">Proxy for cash flow</p>
+</div>
+</div>
+<!-- Active Step -->
+<div class="flex items-start gap-4 p-3 bg-primary-container text-white rounded-lg shadow-lg">
+<span class="material-symbols-outlined" data-icon="play_circle">play_circle</span>
+<div>
+<p class="font-body text-sm font-bold">1D. Adjusted EBITDA</p>
+<p class="text-[11px] text-on-primary-container">Normalization for LMM</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Progress Stats -->
+<div class="bg-surface-container-lowest rounded-xl p-6 border-b-2 border-primary-container/10">
+<div class="flex justify-between items-end mb-2">
+<span class="font-label text-3xl font-bold text-primary-container">75%</span>
+<span class="font-label text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Section Completion</span>
+</div>
+<div class="w-full bg-surface-container-high h-1.5 rounded-full">
+<div class="bg-primary-container h-1.5 rounded-full" style="width: 75%"></div>
+</div>
+</div>
+</div>
+<!-- Right Column: Detailed Content -->
+<div class="lg:col-span-8 space-y-8">
+<div class="bg-surface-container-lowest rounded-xl p-8 shadow-sm">
+<div class="flex items-center gap-3 mb-6">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-secondary-container" data-icon="calculate">calculate</span>
+</div>
+<h2 class="font-headline text-2xl font-bold text-primary-container tracking-tight">1D. Adjusted EBITDA</h2>
+</div>
+<div class="prose prose-slate max-w-none">
+<p class="font-body text-on-surface-variant leading-relaxed mb-6">
+                                In the Lower Middle Market (LMM), "Adjusted EBITDA" is the true gold standard. While standard EBITDA gives a rough proxy for cash flow, it often includes non-recurring, unusual, or personal expenses that wouldn't persist under a Private Equity owner.
+                            </p>
+<div class="bg-surface-container-low p-6 rounded-lg mb-6">
+<h4 class="font-headline text-sm font-extrabold uppercase tracking-widest text-primary-container mb-3">Why it's used in LMM:</h4>
+<ul class="space-y-3">
+<li class="flex items-start gap-3 text-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-on-tertiary-container text-lg" data-icon="arrow_forward">arrow_forward</span>
+<span><strong>Owner Personal Expenses:</strong> Normalizing "lifestyle" costs like personal car leases or non-business travel.</span>
+</li>
+<li class="flex items-start gap-3 text-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-on-tertiary-container text-lg" data-icon="arrow_forward">arrow_forward</span>
+<span><strong>One-time Legal Fees:</strong> Stripping out extraordinary costs that won't happen again next year.</span>
+</li>
+<li class="flex items-start gap-3 text-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-on-tertiary-container text-lg" data-icon="arrow_forward">arrow_forward</span>
+<span><strong>Market Salary:</strong> Adjusting the owner's salary to what a professional CEO would cost.</span>
+</li>
+</ul>
+</div>
+</div>
+<!-- Exercise Section: Interactive Formula Builder -->
+<div class="mt-12 pt-10 border-t border-outline-variant/20">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+<div>
+<h3 class="font-headline text-xl font-bold text-primary-container">Interactive Exercise</h3>
+<p class="text-sm text-on-surface-variant">Construct the Adjusted EBITDA formula to reach the target value.</p>
+</div>
+<div class="bg-on-tertiary-container/10 px-4 py-2 rounded-lg">
+<p class="text-[10px] font-bold text-on-tertiary-container uppercase tracking-widest text-center">Target Value</p>
+<p class="text-2xl font-manrope font-extrabold text-on-tertiary-container">$5.5M</p>
+</div>
+</div>
+<!-- Additional Items -->
+<div class="mb-10">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-4">Available Items (Drag to formula)</p>
+<div class="flex flex-wrap gap-3">
+<div class="bg-white px-4 py-2.5 rounded-full border border-outline-variant flex items-center gap-2 cursor-move hover:shadow-md transition-shadow">
+<span class="material-symbols-outlined text-slate-400 text-sm" data-icon="drag_indicator">drag_indicator</span>
+<span class="text-xs font-semibold text-primary-container">EBITDA ($4.2M)</span>
+</div>
+<div class="bg-white px-4 py-2.5 rounded-full border border-outline-variant flex items-center gap-2 cursor-move hover:shadow-md transition-shadow">
+<span class="material-symbols-outlined text-slate-400 text-sm" data-icon="drag_indicator">drag_indicator</span>
+<span class="text-xs font-semibold text-primary-container">Owner Perks ($0.8M)</span>
+</div>
+<div class="bg-white px-4 py-2.5 rounded-full border border-outline-variant flex items-center gap-2 cursor-move hover:shadow-md transition-shadow">
+<span class="material-symbols-outlined text-slate-400 text-sm" data-icon="drag_indicator">drag_indicator</span>
+<span class="text-xs font-semibold text-primary-container">Lawsuit Settlement ($0.5M)</span>
+</div>
+<div class="bg-white px-4 py-2.5 rounded-full border border-outline-variant opacity-40 flex items-center gap-2 cursor-not-allowed">
+<span class="text-xs font-semibold text-primary-container">Tax Refund ($0.2M)</span>
+</div>
+</div>
+</div>
+<!-- Formula Builder UI -->
+<div class="bg-primary-container p-8 rounded-xl relative overflow-hidden">
+<!-- Abstract decorative background -->
+<div class="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16"></div>
+<div class="relative z-10 flex flex-col md:flex-row items-center justify-center gap-4 text-white">
+<div class="bg-white/10 backdrop-blur-md border border-white/20 px-6 py-4 rounded-lg flex flex-col items-center">
+<span class="text-[10px] text-white/60 uppercase font-bold mb-1">Base</span>
+<span class="font-manrope font-bold">EBITDA ($4.2M)</span>
+</div>
+<span class="text-2xl font-bold text-white/40">+</span>
+<div class="bg-white/10 backdrop-blur-md border border-white/20 px-6 py-4 rounded-lg flex flex-col items-center">
+<span class="text-[10px] text-white/60 uppercase font-bold mb-1">Add-back</span>
+<span class="font-manrope font-bold">Owner Perks ($0.8M)</span>
+</div>
+<span class="text-2xl font-bold text-white/40">+</span>
+<div class="bg-white/20 border-2 border-dashed border-white/30 px-6 py-4 rounded-lg flex flex-col items-center min-w-[140px]">
+<span class="text-[10px] text-white/60 uppercase font-bold mb-1">Drop Here</span>
+<span class="material-symbols-outlined text-white/40" data-icon="add">add</span>
+</div>
+<span class="text-2xl font-bold text-white/40">=</span>
+<div class="bg-tertiary-fixed-dim px-8 py-4 rounded-lg flex flex-col items-center">
+<span class="text-[10px] text-on-tertiary-fixed uppercase font-bold mb-1">Adjusted EBITDA</span>
+<span class="font-manrope font-black text-on-tertiary-fixed text-lg">$5.5M</span>
+</div>
+</div>
+</div>
+<div class="mt-8 flex justify-end">
+<button class="bg-gradient-to-r from-primary to-primary-container text-white px-8 py-3 rounded-lg font-bold text-sm hover:shadow-xl transition-all active:scale-95 duration-150">
+                                    Complete Lesson &amp; Continue
+                                </button>
+</div>
+</div>
+</div>
+<!-- Footnote / Tip Card -->
+<div class="bg-secondary-container/30 border-l-4 border-secondary p-6 rounded-r-xl">
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-secondary" data-icon="lightbulb">lightbulb</span>
+<p class="text-sm text-on-secondary-container leading-relaxed">
+<strong class="block mb-1">Pro Tip:</strong>
+                                Always ask for the General Ledger (GL) to verify these add-backs. Sellers often try to include "One-time" costs that are actually recurring maintenance.
+                            </p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

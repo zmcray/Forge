@@ -1,5 +1,6 @@
 import CompanyDataPanel from "./CompanyDataPanel";
 import LearnExercise from "./LearnExercise";
+import CalculationExercise from "./CalculationExercise";
 
 function LineItemTable({ rows, headers }) {
   return (
@@ -71,6 +72,16 @@ export default function LearnSection({ subsection, isComplete, onExerciseComplet
         if (block.type === "exercise") {
           return (
             <LearnExercise
+              key={block.id}
+              exercise={block}
+              isComplete={isComplete(block.id)}
+              onComplete={onExerciseComplete}
+            />
+          );
+        }
+        if (block.type === "calculationExercise") {
+          return (
+            <CalculationExercise
               key={block.id}
               exercise={block}
               isComplete={isComplete(block.id)}

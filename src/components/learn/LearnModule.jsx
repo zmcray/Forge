@@ -7,7 +7,7 @@ import LearnSection from "./LearnSection";
 export default function LearnModule({ onBack }) {
   const [currentSection, setCurrentSection] = useState(0);
   const [currentSubsection, setCurrentSubsection] = useState(0);
-  const { markComplete, isComplete, markVisited, getSubsectionProgress } = useLearnProgress();
+  const { markComplete, isComplete, markVisited, getSubsectionProgress, resetSubsection } = useLearnProgress();
 
   const sections = LEARN_CONTENT;
   const activeSub = sections[currentSection]?.subsections[currentSubsection];
@@ -74,6 +74,7 @@ export default function LearnModule({ onBack }) {
                 currentSubsection={currentSubsection}
                 onNavigate={handleNavigate}
                 getSubsectionProgress={getSubsectionProgress}
+                onResetSubsection={resetSubsection}
               />
             </div>
           </div>

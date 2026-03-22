@@ -1,0 +1,99 @@
+import { useState, useEffect } from "react";
+import SimplePnL from "./SimplePnL";
+import CalculationBuilder from "./CalculationBuilder";
+
+function autoFillZones(zones) {
+  const filled = {};
+  const used = new Set();
+  for (const zone of zones) {
+    const match = zone.correctIds.find(id => !used.has(id));
+    if (match) {
+      filled[zone.id] = match;
+      used.add(match);
+    }
+  }
+  return filled;
+}
+
+export default function CalculationExercise({ exercise, isComplete, onComplete }) {
+  const [filledZones, setFilledZones] = useState(() =>
+    isComplete ? autoFillZones(exercise.zones) : {}
+  );
+  const [incorrectFlash, setIncorrectFlash] = useState(null);
+  const [isRevealed, setIsRevealed] = useState(isComplete);
+  const [expanded, setExpanded] = useState(!isComplete);
+
+  const placedItemIds = new Set(Object.values(filledZones));
+  const allFilled = Object.keys(filledZones).length === exercise.zones.length;
+
+  useEffect(() => {
+    if (allFilled && !isRevealed) {
+      setIsRevealed(true);
+      onComplete(exercise.id);
+    }
+  }, [allFilled, isRevealed, onComplete, exercise.id]);
+
+  const handleDrop = (zoneId, itemId) => {
+    const zone = exercise.zones.find(z => z.id === zoneId);
+    if (!zone || filledZones[zoneId] || placedItemIds.has(itemId)) return;
+
+    if (!zone.correctIds.includes(itemId)) {
+      setIncorrectFlash(zoneId);
+      setTimeout(() => setIncorrectFlash(null), 600);
+      return;
+    }
+
+    setFilledZones(prev => ({ ...prev, [zoneId]: itemId }));
+  };
+
+  // Collapsed completed state
+  if (!expanded && isComplete) {
+    return (
+      <div
+        className="border border-green-200 bg-green-50 rounded-lg p-3 my-3 flex items-center justify-between cursor-pointer hover:bg-green-100 transition-colors"
+        onClick={() => setExpanded(true)}
+      >
+        <div className="flex items-center gap-2">
+          <span className="text-green-600 text-lg">&#10003;</span>
+          <span className="text-sm font-medium text-green-800">{exercise.instruction}</span>
+        </div>
+        <span className="text-xs text-green-600">Click to review</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="border border-gray-200 rounded-lg overflow-hidden my-3">
+      <div className="bg-blue-50 px-4 py-2 flex items-center gap-2">
+        <span className="text-sm font-semibold text-blue-800">Exercise</span>
+        {isRevealed && <span className="text-green-600">&#10003;</span>}
+      </div>
+      <div className="p-4">
+        <div className="flex gap-6">
+          <div className="w-2/5 flex-shrink-0">
+            <SimplePnL
+              draggables={exercise.draggables}
+              supplementalItems={exercise.supplementalItems || []}
+              placedItemIds={placedItemIds}
+            />
+          </div>
+          <div className="w-3/5">
+            <CalculationBuilder
+              layout={exercise.layout}
+              zones={exercise.zones}
+              filledZones={filledZones}
+              draggables={exercise.draggables}
+              incorrectFlash={incorrectFlash}
+              isRevealed={isRevealed}
+              resultLabel={exercise.resultLabel}
+              resultValue={exercise.resultValue}
+              instruction={exercise.instruction}
+              explanation={exercise.explanation}
+              onDrop={handleDrop}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

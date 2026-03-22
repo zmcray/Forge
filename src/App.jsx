@@ -9,10 +9,13 @@ import ProgressDashboard from "./components/ProgressDashboard";
 import CompanyCard from "./components/CompanyCard";
 import LearnModule from "./components/learn/LearnModule";
 import TimerBar from "./components/TimerBar";
-import StreakBadge from "./components/StreakBadge";
 import WeakSpotCard from "./components/WeakSpotCard";
 import SessionSummary from "./components/SessionSummary";
 import QuickFireScreen from "./components/QuickFireScreen";
+import AppShell from "./components/AppShell";
+import StatCard from "./components/StatCard";
+import MasteryCard from "./components/MasteryCard";
+import ModuleCard from "./components/ModuleCard";
 import useScoring from "./hooks/useScoring";
 import useTimer from "./hooks/useTimer";
 import useKeyboardShortcuts from "./hooks/useKeyboardShortcuts";
@@ -53,6 +56,14 @@ export default function App() {
     }
     return map;
   }, []);
+
+  const masteryLevel = useMemo(() => {
+    if (totalQuestions >= 200) return "Senior Analyst";
+    if (totalQuestions >= 100) return "Analyst";
+    if (totalQuestions >= 50) return "Associate";
+    if (totalQuestions >= 20) return "Junior";
+    return "Beginner";
+  }, [totalQuestions]);
 
   const handleScore = useCallback((type, score, meta) => {
     if (!selectedCompany) return;
@@ -105,241 +116,261 @@ export default function App() {
     setSelectedCompany(null);
   }, []);
 
-  // Home screen
-  if (view === "home") {
-    const weakSpots = scoring.getWeakSpots();
-    const quantitativeAccuracy = scoring.getQuantitativeAccuracy();
-
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="max-w-4xl mx-auto px-4 py-8">
-          <div className="mb-8">
-            <div className="flex items-center justify-between mb-2">
-              <h1 className="text-2xl font-bold text-gray-900">PE Financial Analyst</h1>
-              <button
-                onClick={() => setView("progress")}
-                className="px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2"
-              >
-                <span>{"\u{1F4C8}"}</span> Progress
-              </button>
-            </div>
-            <p className="text-gray-600">Practice analyzing lower-middle-market companies through a PE lens. Pick a company, review the financials, and work through the analysis questions.</p>
-          </div>
-
-          {/* Stats row */}
-          <div className="grid grid-cols-2 gap-4 mb-6">
-            <StreakBadge streak={scoring.streak} totalQuestions={totalQuestions} />
-            <WeakSpotCard weakSpots={weakSpots} quantitativeAccuracy={quantitativeAccuracy} />
-          </div>
-
-          {/* Quick actions */}
-          <div className="grid grid-cols-2 gap-4 mb-6">
-            <button
-              onClick={() => setView("learn")}
-              className="bg-indigo-50 border border-indigo-200 rounded-xl p-4 text-left hover:bg-indigo-100 transition-colors group"
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-semibold text-indigo-900">Learn the Fundamentals</p>
-                  <p className="text-sm text-indigo-700 mt-0.5">Financial statements, screening metrics, and due diligence</p>
-                </div>
-                <span className="text-indigo-400 group-hover:text-indigo-600 text-lg">{"\u2192"}</span>
-              </div>
-            </button>
-            <button
-              onClick={() => setView("quickfire")}
-              className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-left hover:bg-amber-100 transition-colors group"
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-semibold text-amber-900">Quick Screen</p>
-                  <p className="text-sm text-amber-700 mt-0.5">60-second go/no-go decisions on shuffled companies</p>
-                </div>
-                <span className="text-amber-400 group-hover:text-amber-600 text-lg">{"\u2192"}</span>
-              </div>
-            </button>
-          </div>
-
-          {/* Company cards */}
-          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Deep Dive Practice</h2>
-          <div className="grid gap-4">
-            {COMPANIES.map(company => (
-              <div key={company.id}>
-                <CompanyCard
-                  company={company}
-                  completed={completedCompanies.has(company.id)}
-                  onSelect={() => startPractice(company)}
-                />
-                {scenariosByCompany[company.id] && (
-                  <div className="ml-6 mt-2 flex gap-2 flex-wrap">
-                    {scenariosByCompany[company.id].map(scenario => (
-                      <button
-                        key={scenario.id}
-                        onClick={() => startPractice(company, scenario.id)}
-                        className="text-xs px-2.5 py-1 bg-purple-50 text-purple-700 border border-purple-200 rounded-full hover:bg-purple-100 transition-colors"
-                      >
-                        Scenario: {scenario.name}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-8 bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm text-blue-900">
-            <p className="font-semibold mb-1">How to use this tool:</p>
-            <p>Select a company, review the financial statements (income statement, balance sheet, cash flow), then work through each analysis question. Write your answer first, then reveal the model answer and score yourself honestly. Track your progress across question types to see where you're strongest and where to focus.</p>
-          </div>
-
-          <p className="text-xs text-gray-400 mt-4 text-center">Keyboard shortcuts: 1-5 to score, Enter to reveal, Esc to go back</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Quick Fire screen
-  if (view === "quickfire") {
-    return <QuickFireScreen onBack={() => setView("home")} />;
-  }
-
-  // Progress screen
-  if (view === "progress") {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="max-w-4xl mx-auto px-4 py-8">
-          <div className="flex items-center justify-between mb-6">
-            <h1 className="text-2xl font-bold text-gray-900">Your Progress</h1>
-            <button onClick={() => setView("home")} className="px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-              {"\u2190"} Back
-            </button>
-          </div>
-          <ProgressDashboard
-            scores={scoring.getScoresByType()}
-            streak={scoring.streak}
-            quantitativeAccuracy={scoring.getQuantitativeAccuracy()}
-          />
-        </div>
-      </div>
-    );
-  }
-
-  // Learn screen
+  // Learn and QuickFire render full-screen (no AppShell)
   if (view === "learn") {
     return <LearnModule onBack={() => setView("home")} />;
   }
 
-  // Practice screen
-  if (view === "practice" && selectedCompany) {
-    const co = selectedCompany;
+  if (view === "quickfire") {
+    return <QuickFireScreen onBack={() => setView("home")} />;
+  }
 
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="max-w-5xl mx-auto px-4 py-6">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-2">
-            <div>
-              <div className="flex items-center gap-3">
-                <h1 className="text-xl font-bold text-gray-900">{co.name}</h1>
-                <span className="text-sm text-blue-600 font-medium bg-blue-50 px-2 py-0.5 rounded">{co.industry}</span>
-                {co._scenarioName && (
-                  <span className="text-sm text-purple-600 font-medium bg-purple-50 px-2 py-0.5 rounded">
-                    Scenario: {co._scenarioName}
-                  </span>
-                )}
-              </div>
-              <p className="text-sm text-gray-600 mt-1">{co.context}</p>
-              {co._scenarioDescription && (
-                <p className="text-sm text-purple-700 mt-1 bg-purple-50 rounded px-2 py-1">{co._scenarioDescription}</p>
-              )}
-            </div>
-            <button onClick={finishCompany} className="px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-              Finish
-            </button>
-          </div>
+  // All other views use AppShell
+  return (
+    <AppShell activeView={view} onNavigate={setView} streak={scoring.streak}>
+      {view === "home" && (
+        <HomeScreen
+          scoring={scoring}
+          totalQuestions={totalQuestions}
+          masteryLevel={masteryLevel}
+          completedCompanies={completedCompanies}
+          scenariosByCompany={scenariosByCompany}
+          startPractice={startPractice}
+          setView={setView}
+        />
+      )}
 
-          <TimerBar
-            formattedTime={timer.formattedTime}
-            progress={timer.progress}
-            isExpired={timer.isExpired}
-            currentMilestone={timer.currentMilestone}
-          />
+      {view === "progress" && (
+        <ProgressDashboard
+          scores={scoring.getScoresByType()}
+          streak={scoring.streak}
+          quantitativeAccuracy={scoring.getQuantitativeAccuracy()}
+        />
+      )}
 
-          <div className="grid grid-cols-5 gap-6">
-            {/* Left: Financials */}
-            <div className="col-span-3">
-              <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-                <div className="flex border-b border-gray-200">
-                  {[
-                    ["income", "Income Statement"],
-                    ["balance", "Balance Sheet"],
-                    ["cashflow", "Cash Flow"],
-                    ["metrics", "Key Metrics"]
-                  ].map(([key, label]) => (
+      {view === "practice" && selectedCompany && (
+        <PracticeScreen
+          company={selectedCompany}
+          statementView={statementView}
+          setStatementView={setStatementView}
+          shuffledQuestions={shuffledQuestions}
+          handleScore={handleScore}
+          finishCompany={finishCompany}
+          timer={timer}
+          showSummary={showSummary}
+          sessionQuestions={sessionQuestions}
+          closeSummary={closeSummary}
+        />
+      )}
+    </AppShell>
+  );
+}
+
+function HomeScreen({ scoring, totalQuestions, masteryLevel, completedCompanies, scenariosByCompany, startPractice, setView }) {
+  const weakSpots = scoring.getWeakSpots();
+  const quantitativeAccuracy = scoring.getQuantitativeAccuracy();
+
+  return (
+    <>
+      {/* Page header */}
+      <section className="mb-8">
+        <h2 className="text-4xl font-extrabold font-headline text-on-surface tracking-tight">PE Financial Analyst</h2>
+        <p className="text-sm text-on-surface-variant mt-2 max-w-xl">
+          Practice analyzing lower-middle-market companies through a PE lens. Review financials, commit your analysis, and track progress.
+        </p>
+        <button
+          onClick={() => setView("progress")}
+          className="mt-4 px-5 py-2.5 rounded-lg text-sm font-semibold text-on-primary bg-gradient-to-r from-primary to-primary-container hover:opacity-90 transition-opacity"
+        >
+          Check Progress
+        </button>
+      </section>
+
+      {/* Stats bento grid */}
+      <section className="grid grid-cols-4 gap-4 mb-8">
+        <StatCard
+          label="Active Streak"
+          value={scoring.streak.current}
+          icon="local_fire_department"
+        />
+        <StatCard
+          label="Questions Answered"
+          value={totalQuestions}
+          suffix="/ 500"
+          icon="quiz"
+          progress={(totalQuestions / 500) * 100}
+        />
+        <MasteryCard
+          level={masteryLevel}
+          description="Complete more practice sessions to advance your analyst ranking."
+          onViewRanking={() => setView("progress")}
+        />
+      </section>
+
+      {/* Learning modules */}
+      <section className="grid grid-cols-2 gap-4 mb-8">
+        <ModuleCard
+          icon="menu_book"
+          title="Learn the Fundamentals"
+          description="Financial statements, screening metrics, and due diligence frameworks for PE analysis."
+          badges={["6 Modules", "Interactive"]}
+          ctaLabel="Start Learning"
+          onClick={() => setView("learn")}
+        />
+        <ModuleCard
+          icon="bolt"
+          title="Quick Screen"
+          description="60-second go/no-go decisions on shuffled companies. Build pattern recognition fast."
+          badges={["Timed", "5 Companies"]}
+          ctaLabel="Start Screening"
+          onClick={() => setView("quickfire")}
+        />
+      </section>
+
+      {/* Weak spots (if any) */}
+      {(weakSpots || quantitativeAccuracy) && (
+        <section className="mb-8">
+          <WeakSpotCard weakSpots={weakSpots} quantitativeAccuracy={quantitativeAccuracy} />
+        </section>
+      )}
+
+      {/* Deep dive case studies */}
+      <section>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-[10px] uppercase tracking-widest text-on-surface-variant font-semibold">Deep Dive Case Studies</h3>
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          {COMPANIES.map(company => (
+            <div key={company.id}>
+              <CompanyCard
+                company={company}
+                completed={completedCompanies.has(company.id)}
+                onSelect={() => startPractice(company)}
+              />
+              {scenariosByCompany[company.id] && (
+                <div className="mt-2 flex gap-2 flex-wrap px-2">
+                  {scenariosByCompany[company.id].map(scenario => (
                     <button
-                      key={key}
-                      onClick={() => setStatementView(key)}
-                      className={`flex-1 py-2.5 text-sm font-medium transition-colors ${statementView === key ? "bg-blue-50 text-blue-700 border-b-2 border-blue-600" : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"}`}
+                      key={scenario.id}
+                      onClick={() => startPractice(company, scenario.id)}
+                      className="text-[10px] uppercase tracking-widest px-3 py-1 bg-secondary-container/50 text-on-secondary-container rounded-full hover:bg-secondary-container transition-colors"
                     >
-                      {label}
+                      Scenario: {scenario.name}
                     </button>
                   ))}
                 </div>
-                <div className="p-4">
-                  <FinancialTable company={co} view={statementView} />
-                </div>
-              </div>
-
-              {/* Red/Green Flags */}
-              <div className="grid grid-cols-2 gap-4 mt-4">
-                <div className="bg-white border border-red-200 rounded-xl p-4">
-                  <h3 className="text-sm font-semibold text-red-800 mb-2">Red Flags to Investigate</h3>
-                  <ul className="space-y-1.5">
-                    {co.redFlags.map((f, i) => (
-                      <li key={i} className="text-xs text-red-700 flex gap-1.5">
-                        <span className="shrink-0 mt-0.5">{"\u26A0"}</span>
-                        <span>{f}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div className="bg-white border border-green-200 rounded-xl p-4">
-                  <h3 className="text-sm font-semibold text-green-800 mb-2">Positive Signals</h3>
-                  <ul className="space-y-1.5">
-                    {co.greenFlags.map((f, i) => (
-                      <li key={i} className="text-xs text-green-700 flex gap-1.5">
-                        <span className="shrink-0 mt-0.5">{"\u2713"}</span>
-                        <span>{f}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
+              )}
             </div>
+          ))}
+        </div>
+      </section>
+    </>
+  );
+}
 
-            {/* Right: Questions */}
-            <div className="col-span-2">
-              <h2 className="text-lg font-semibold text-gray-900 mb-3">Analysis Questions</h2>
-              <div className="space-y-4">
-                {shuffledQuestions.map((q, i) => (
-                  <QuestionCard key={`${q.type}-${i}`} question={q} index={i} onScore={handleScore} />
+function PracticeScreen({ company: co, statementView, setStatementView, shuffledQuestions, handleScore, finishCompany, timer, showSummary, sessionQuestions, closeSummary }) {
+  return (
+    <div>
+      {/* Header */}
+      <div className="flex items-center justify-between mb-2">
+        <div>
+          <div className="flex items-center gap-3">
+            <h1 className="text-xl font-bold font-headline text-on-surface">{co.name}</h1>
+            <span className="text-[10px] uppercase tracking-widest px-3 py-1 rounded-full bg-secondary-container text-on-secondary-container">{co.industry}</span>
+            {co._scenarioName && (
+              <span className="text-[10px] uppercase tracking-widest px-3 py-1 rounded-full bg-secondary-container/50 text-on-secondary-container">
+                Scenario: {co._scenarioName}
+              </span>
+            )}
+          </div>
+          <p className="text-sm text-on-surface-variant mt-1">{co.context}</p>
+          {co._scenarioDescription && (
+            <p className="text-sm text-on-secondary-container mt-1 bg-secondary-container/30 rounded-lg px-3 py-1.5">{co._scenarioDescription}</p>
+          )}
+        </div>
+        <button onClick={finishCompany} className="px-4 py-2 text-[11px] uppercase tracking-widest font-semibold bg-surface-container-low text-on-surface-variant rounded-lg hover:bg-surface-container-high transition-colors">
+          Finish
+        </button>
+      </div>
+
+      <TimerBar
+        formattedTime={timer.formattedTime}
+        progress={timer.progress}
+        isExpired={timer.isExpired}
+        currentMilestone={timer.currentMilestone}
+      />
+
+      <div className="grid grid-cols-5 gap-6">
+        {/* Left: Financials */}
+        <div className="col-span-3">
+          <div className="bg-surface-container-lowest rounded-xl overflow-hidden ghost-border">
+            <div className="flex">
+              {[
+                ["income", "Income Statement"],
+                ["balance", "Balance Sheet"],
+                ["cashflow", "Cash Flow"],
+                ["metrics", "Key Metrics"]
+              ].map(([key, label]) => (
+                <button
+                  key={key}
+                  onClick={() => setStatementView(key)}
+                  className={`flex-1 py-2.5 text-[11px] uppercase tracking-widest font-medium transition-colors ${statementView === key ? "bg-surface-container-lowest text-on-surface border-b-2 border-primary" : "text-on-surface-variant bg-surface-container-low hover:text-on-surface"}`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+            <div className="p-4">
+              <FinancialTable company={co} view={statementView} />
+            </div>
+          </div>
+
+          {/* Red/Green Flags */}
+          <div className="grid grid-cols-2 gap-4 mt-4">
+            <div className="bg-surface-container-lowest ghost-border rounded-xl p-4">
+              <h3 className="text-[10px] uppercase tracking-widest text-error font-semibold mb-3">Red Flags</h3>
+              <ul className="space-y-2">
+                {co.redFlags.map((f, i) => (
+                  <li key={i} className="text-xs text-on-surface-variant flex gap-2">
+                    <span className="material-symbols-outlined text-[14px] text-error shrink-0 mt-0.5">warning</span>
+                    <span>{f}</span>
+                  </li>
                 ))}
-              </div>
+              </ul>
+            </div>
+            <div className="bg-surface-container-lowest ghost-border rounded-xl p-4">
+              <h3 className="text-[10px] uppercase tracking-widest text-on-tertiary-container font-semibold mb-3">Positive Signals</h3>
+              <ul className="space-y-2">
+                {co.greenFlags.map((f, i) => (
+                  <li key={i} className="text-xs text-on-surface-variant flex gap-2">
+                    <span className="material-symbols-outlined text-[14px] text-on-tertiary-container shrink-0 mt-0.5">check_circle</span>
+                    <span>{f}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         </div>
 
-        {showSummary && (
-          <SessionSummary
-            company={co}
-            questions={sessionQuestions}
-            elapsedMinutes={timer.elapsedMinutes}
-            onClose={closeSummary}
-          />
-        )}
+        {/* Right: Questions */}
+        <div className="col-span-2">
+          <h2 className="text-[10px] uppercase tracking-widest text-on-surface-variant font-semibold mb-3">Analysis Questions</h2>
+          <div className="space-y-4">
+            {shuffledQuestions.map((q, i) => (
+              <QuestionCard key={`${q.type}-${i}`} question={q} index={i} onScore={handleScore} />
+            ))}
+          </div>
+        </div>
       </div>
-    );
-  }
 
-  return null;
+      {showSummary && (
+        <SessionSummary
+          company={co}
+          questions={sessionQuestions}
+          elapsedMinutes={timer.elapsedMinutes}
+          onClose={closeSummary}
+        />
+      )}
+    </div>
+  );
 }

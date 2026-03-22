@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-bright": "#f7f9fb",
+              "surface-tint": "#565e74",
+              "error-container": "#ffdad6",
+              "secondary-fixed": "#d3e4fe",
+              "on-error-container": "#93000a",
+              "on-tertiary-container": "#009668",
+              "tertiary-container": "#002113",
+              "surface": "#f7f9fb",
+              "on-tertiary": "#ffffff",
+              "surface-variant": "#e0e3e5",
+              "primary-container": "#131b2e",
+              "tertiary-fixed": "#6ffbbe",
+              "inverse-on-surface": "#eff1f3",
+              "on-surface-variant": "#45464d",
+              "secondary-fixed-dim": "#b7c8e1",
+              "secondary": "#505f76",
+              "on-background": "#191c1e",
+              "on-primary-fixed": "#131b2e",
+              "surface-container-low": "#f2f4f6",
+              "surface-dim": "#d8dadc",
+              "secondary-container": "#d0e1fb",
+              "surface-container": "#eceef0",
+              "on-primary": "#ffffff",
+              "on-primary-container": "#7c839b",
+              "surface-container-highest": "#e0e3e5",
+              "on-tertiary-fixed": "#002113",
+              "on-secondary": "#ffffff",
+              "surface-container-lowest": "#ffffff",
+              "primary-fixed": "#dae2fd",
+              "outline-variant": "#c6c6cd",
+              "outline": "#76777d",
+              "primary": "#000000",
+              "primary-fixed-dim": "#bec6e0",
+              "on-secondary-fixed": "#0b1c30",
+              "on-secondary-container": "#54647a",
+              "inverse-surface": "#2d3133",
+              "background": "#f7f9fb",
+              "on-primary-fixed-variant": "#3f465c",
+              "on-tertiary-fixed-variant": "#005236",
+              "inverse-primary": "#bec6e0",
+              "on-secondary-fixed-variant": "#38485d",
+              "error": "#ba1a1a",
+              "surface-container-high": "#e6e8ea",
+              "on-surface": "#191c1e",
+              "tertiary": "#000000",
+              "tertiary-fixed-dim": "#4edea3",
+              "on-error": "#ffffff"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.5rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, .font-headline { font-family: 'Manrope', sans-serif; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface flex min-h-screen">
+<!-- Sidebar Navigation (JSON: SideNavBar) -->
+<aside class="hidden md:flex flex-col h-screen w-64 bg-[#f7f9fb] p-4 space-y-8 sticky top-0 border-r-0">
+<div class="flex flex-col space-y-1 px-2">
+<span class="font-manrope font-black text-lg text-[#131b2e]">Capital Intel</span>
+<span class="font-inter text-[10px] font-semibold uppercase tracking-widest text-slate-500">Senior Analyst</span>
+</div>
+<nav class="flex-1 space-y-2">
+<a class="flex items-center gap-3 px-4 py-2.5 text-slate-500 hover:text-[#0f172a] hover:translate-x-1 transition-transform duration-200 font-inter text-xs font-semibold uppercase tracking-widest" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                Today
+            </a>
+<a class="flex items-center gap-3 px-4 py-2.5 text-slate-500 hover:text-[#0f172a] hover:translate-x-1 transition-transform duration-200 font-inter text-xs font-semibold uppercase tracking-widest" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+                Fundamentals
+            </a>
+<a class="flex items-center gap-3 px-4 py-2.5 bg-white text-[#0f172a] shadow-sm rounded-lg hover:translate-x-1 transition-transform duration-200 font-inter text-xs font-semibold uppercase tracking-widest" href="#">
+<span class="material-symbols-outlined" data-icon="school">school</span>
+                Practice
+            </a>
+<a class="flex items-center gap-3 px-4 py-2.5 text-slate-500 hover:text-[#0f172a] hover:translate-x-1 transition-transform duration-200 font-inter text-xs font-semibold uppercase tracking-widest" href="#">
+<span class="material-symbols-outlined" data-icon="menu_book">menu_book</span>
+                Resources
+            </a>
+</nav>
+<div class="space-y-2 pt-4 border-t border-surface-container-high">
+<div class="flex items-center gap-3 px-4 py-2 text-slate-500 font-inter text-[10px] font-semibold uppercase tracking-widest">
+<span class="material-symbols-outlined text-amber-500" data-icon="bolt" style="font-variation-settings: 'FILL' 1;">bolt</span>
+                Streak: 12 Days
+            </div>
+<a class="flex items-center gap-3 px-4 py-2 text-slate-500 hover:text-[#0f172a] font-inter text-[10px] font-semibold uppercase tracking-widest" href="#">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+                Help
+            </a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col min-w-0 bg-surface">
+<!-- Header (TopAppBar Context) -->
+<header class="flex justify-between items-center w-full px-8 py-6 bg-[#f7f9fb]">
+<div class="flex flex-col">
+<h1 class="text-2xl font-extrabold tracking-tighter text-[#131b2e] leading-none">Summit Mechanical Services</h1>
+<p class="text-on-surface-variant text-sm font-medium mt-1">HVAC / Mechanical Services • Deep Dive Analysis</p>
+</div>
+<div class="flex items-center gap-4">
+<button class="bg-surface-container-lowest text-on-surface-variant px-4 py-2 rounded-lg font-semibold text-sm hover:bg-surface-container-low transition-colors">
+                    Save Draft
+                </button>
+<button class="bg-gradient-to-r from-primary to-primary-container text-white px-6 py-2 rounded-lg font-bold text-sm shadow-md hover:opacity-90 transition-opacity">
+                    Finish
+                </button>
+</div>
+</header>
+<div class="px-8 pb-12 flex flex-col lg:flex-row gap-8">
+<!-- Analysis Canvas (Left Column) -->
+<div class="flex-1 space-y-8">
+<!-- Financial Data Section -->
+<section class="bg-surface-container-lowest rounded-xl p-6 shadow-sm">
+<div class="flex items-center justify-between mb-8">
+<div class="flex gap-6">
+<button class="text-[#0f172a] font-bold border-b-2 border-[#0f172a] pb-1 text-sm tracking-tight font-headline">Income Statement</button>
+<button class="text-slate-500 font-medium pb-1 text-sm tracking-tight font-headline hover:text-on-surface transition-colors">Balance Sheet</button>
+<button class="text-slate-500 font-medium pb-1 text-sm tracking-tight font-headline hover:text-on-surface transition-colors">Cash Flow</button>
+<button class="text-slate-500 font-medium pb-1 text-sm tracking-tight font-headline hover:text-on-surface transition-colors">Key Metrics</button>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm" data-icon="info">info</span>
+<span class="text-[10px] uppercase tracking-widest font-bold">Values in USD (Millions)</span>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-separate border-spacing-y-4">
+<thead>
+<tr class="text-[10px] uppercase tracking-widest font-bold text-slate-500">
+<th class="pb-2 pl-4">Line Item</th>
+<th class="pb-2 text-right">FY 2024</th>
+<th class="pb-2 text-right">FY 2025 (Proj)</th>
+<th class="pb-2 text-right pr-4">Delta %</th>
+</tr>
+</thead>
+<tbody class="text-sm">
+<tr class="bg-surface-container-low group hover:bg-surface-container-high transition-colors">
+<td class="py-4 pl-4 font-bold text-[#131b2e] rounded-l-lg">Revenue</td>
+<td class="py-4 text-right font-medium">$42.4M</td>
+<td class="py-4 text-right font-medium">$48.9M</td>
+<td class="py-4 text-right pr-4 rounded-r-lg font-bold text-on-tertiary-container">+15.3%</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-4 pl-4 text-on-surface-variant">Cost of Goods Sold</td>
+<td class="py-4 text-right">($28.1M)</td>
+<td class="py-4 text-right">($31.8M)</td>
+<td class="py-4 text-right pr-4 text-error">+13.1%</td>
+</tr>
+<tr class="bg-surface-container-low group hover:bg-surface-container-high transition-colors">
+<td class="py-4 pl-4 font-bold text-[#131b2e] rounded-l-lg">Gross Profit</td>
+<td class="py-4 text-right font-medium">$14.3M</td>
+<td class="py-4 text-right font-medium">$17.1M</td>
+<td class="py-4 text-right pr-4 rounded-r-lg font-bold text-on-tertiary-container">+19.6%</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-4 pl-4 text-on-surface-variant">Operating Expenses</td>
+<td class="py-4 text-right">($8.4M)</td>
+<td class="py-4 text-right">($9.1M)</td>
+<td class="py-4 text-right pr-4">+8.3%</td>
+</tr>
+<tr class="bg-primary-container text-white rounded-lg shadow-md">
+<td class="py-5 pl-4 font-bold rounded-l-lg">Net Income</td>
+<td class="py-5 text-right font-bold">$4.2M</td>
+<td class="py-5 text-right font-bold">$6.4M</td>
+<td class="py-5 text-right pr-4 rounded-r-lg font-black text-tertiary-fixed-dim">+52.4%</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- Flags Section (Bento Style) -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Negative Flags -->
+<div class="bg-surface-container-low rounded-xl p-6 border-l-4 border-error">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-error" data-icon="warning" style="font-variation-settings: 'FILL' 1;">warning</span>
+<h3 class="font-headline font-extrabold text-[#131b2e] text-sm uppercase tracking-tight">Red Flags to Investigate</h3>
+</div>
+<ul class="space-y-4">
+<li class="flex gap-3">
+<span class="bg-error-container text-on-error-container w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">1</span>
+<p class="text-sm text-on-surface-variant leading-relaxed">Account Receivables turnover has slowed by 14 days in Q4, suggesting collection friction.</p>
+</li>
+<li class="flex gap-3">
+<span class="bg-error-container text-on-error-container w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">2</span>
+<p class="text-sm text-on-surface-variant leading-relaxed">Concentration risk: Single largest client represents 32% of projected 2025 revenue.</p>
+</li>
+</ul>
+</div>
+<!-- Positive Signals -->
+<div class="bg-surface-container-low rounded-xl p-6 border-l-4 border-tertiary-fixed-dim">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-on-tertiary-container" data-icon="trending_up">trending_up</span>
+<h3 class="font-headline font-extrabold text-[#131b2e] text-sm uppercase tracking-tight">Positive Signals</h3>
+</div>
+<ul class="space-y-4">
+<li class="flex gap-3">
+<span class="bg-tertiary-fixed text-on-tertiary-fixed w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">1</span>
+<p class="text-sm text-on-surface-variant leading-relaxed">Operating leverage improving; OpEx growth (8.3%) significantly trails Gross Profit growth (19.6%).</p>
+</li>
+<li class="flex gap-3">
+<span class="bg-tertiary-fixed text-on-tertiary-fixed w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">2</span>
+<p class="text-sm text-on-surface-variant leading-relaxed">Service contract renewal rate stands at a record 94% for the upcoming fiscal year.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<!-- Analysis Sidebar (JSON: Right Task Panel) -->
+<aside class="w-full lg:w-96 space-y-6">
+<div class="sticky top-8">
+<div class="bg-primary-container text-white rounded-xl p-6 shadow-xl mb-6">
+<div class="flex items-center gap-3 mb-4">
+<span class="material-symbols-outlined text-tertiary-fixed-dim" data-icon="psychology">psychology</span>
+<h2 class="font-headline font-bold text-lg">Analysis Workbench</h2>
+</div>
+<p class="text-on-primary-container text-xs leading-relaxed">Complete the deep dive by addressing the critical inquiry points below. Accuracy affects your analyst score.</p>
+</div>
+<!-- Question 1 -->
+<div class="bg-surface-container-lowest rounded-xl p-6 shadow-sm mb-6">
+<label class="block text-[10px] uppercase tracking-widest font-black text-slate-500 mb-3">Question 01</label>
+<h4 class="font-headline font-bold text-on-surface mb-4 leading-tight">Evaluate the potential risk of the rising COGS relative to the projected revenue growth. Is the margin compression sustainable?</h4>
+<textarea class="w-full bg-surface-container-low border-0 border-b-2 border-outline-variant focus:ring-0 focus:border-primary text-sm p-4 rounded-t-lg h-32 resize-none placeholder-slate-400" placeholder="Type your qualitative analysis here..."></textarea>
+</div>
+<!-- Question 2 -->
+<div class="bg-surface-container-lowest rounded-xl p-6 shadow-sm">
+<label class="block text-[10px] uppercase tracking-widest font-black text-slate-500 mb-3">Question 02</label>
+<h4 class="font-headline font-bold text-on-surface mb-4 leading-tight">Calculate the Adjusted EBITDA Margin for FY 2025.</h4>
+<div class="space-y-4">
+<div>
+<label class="block text-xs font-semibold text-on-surface-variant mb-1.5">Calculation Input (%)</label>
+<input class="w-full bg-surface-container-low border-0 border-b-2 border-outline-variant focus:ring-0 focus:border-primary text-lg font-bold p-3 rounded-t-lg" placeholder="00.0" type="text"/>
+</div>
+<div class="p-3 bg-surface-container-low rounded-lg">
+<p class="text-[10px] text-on-surface-variant font-medium leading-normal italic">
+<span class="material-symbols-outlined text-[12px]" data-icon="calculate">calculate</span>
+                                    Formula: (Net Income + Interest + Taxes + D&amp;A) / Total Revenue
+                                </p>
+</div>
+<button class="w-full bg-surface-variant text-on-surface font-bold py-3 rounded-lg text-sm hover:bg-surface-container-highest transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="check_circle">check_circle</span>
+                                Submit Calculation
+                            </button>
+</div>
+</div>
+<!-- Progress Bar -->
+<div class="mt-8 px-2">
+<div class="flex justify-between text-[10px] font-bold uppercase tracking-widest mb-2 text-slate-500">
+<span>Analysis Progress</span>
+<span>65%</span>
+</div>
+<div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-on-tertiary-container w-[65%]"></div>
+</div>
+</div>
+</div>
+</aside>
+</div>
+</main>
+<!-- Mobile Nav Anchor -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-[#f7f9fb] flex justify-around items-center py-3 border-t-0 shadow-[0_-4px_12px_rgba(0,0,0,0.05)] z-50">
+<div class="flex flex-col items-center text-slate-500">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="text-[8px] font-bold uppercase mt-1">Today</span>
+</div>
+<div class="flex flex-col items-center text-slate-500">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="text-[8px] font-bold uppercase mt-1">Fundamentals</span>
+</div>
+<div class="flex flex-col items-center text-[#0f172a]">
+<span class="material-symbols-outlined" data-icon="school" style="font-variation-settings: 'FILL' 1;">school</span>
+<span class="text-[8px] font-bold uppercase mt-1">Practice</span>
+</div>
+<div class="flex flex-col items-center text-slate-500">
+<span class="material-symbols-outlined" data-icon="menu_book">menu_book</span>
+<span class="text-[8px] font-bold uppercase mt-1">Resources</span>
+</div>
+</nav>
+</body></html>

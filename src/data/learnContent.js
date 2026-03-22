@@ -1,141 +1,161 @@
 export const LEARN_CONTENT = [
-  // ===== SECTION 1: THE THREE FINANCIAL STATEMENTS =====
+  // ===== SECTION 1: ANALYZING FINANCIAL STATEMENTS =====
   {
     id: "s1",
-    title: "1. The Three Financial Statements",
+    title: "1. Analyzing Financial Statements",
     subsections: [
       {
         id: "s1a",
-        title: "1A. Income Statement",
+        title: "1A. Gross Margin",
         blocks: [
           {
             type: "text",
-            content: "The income statement shows how much a company earned and spent over a period (usually a year). In PE, you read it top to bottom: Revenue minus costs equals profit. The key question is always: how much of each dollar of revenue actually becomes profit the owner can keep?"
+            content: "Gross margin is the first number PE analysts check on any income statement. It tells you how much money the business keeps after paying direct costs (COGS) to deliver its product or service. A high gross margin means pricing power and room for overhead; a low or declining one signals a commodity business or cost pressure."
           },
           {
             type: "text",
-            content: "Here are the major line items you will see on every LMM income statement, and what each one tells you."
+            content: "The formula is simple: Gross Profit divided by Revenue. Drag the correct items from Summit's P&L below to build the equation."
           },
           {
-            type: "lineItemTable",
-            headers: ["Line Item", "What It Is", "What to Watch For"],
-            rows: [
-              ["Revenue", "Total sales for the period", "Growth rate, concentration in a few customers, recurring vs. one-time"],
-              ["COGS", "Direct costs to deliver the product or service", "Trend vs. revenue. If COGS grows faster than revenue, margins are compressing"],
-              ["Gross Profit", "Revenue minus COGS. The money left after direct costs", "Gross margin % (Gross Profit / Revenue). Indicates pricing power and cost control"],
-              ["SG&A", "Sales, general, and administrative expenses. Overhead.", "Should grow slower than revenue as the business scales (operating leverage)"],
-              ["Owner Compensation", "Salary, benefits, perks paid to the owner", "In LMM deals, owners often overpay themselves. This is the biggest add-back area"],
-              ["Depreciation & Amortization", "Non-cash charge for asset wear and IP/goodwill writedown", "Compare to CapEx. If D&A is much less than CapEx, the business is capital-hungry"],
-              ["Interest Expense", "Cost of debt", "Signals current leverage. Will change under new capital structure"],
-              ["Net Income", "Bottom line after all expenses", "Often misleading in LMM. Add-backs can double or triple this number"]
-            ]
-          },
-          {
-            type: "text",
-            content: "Let's look at a real income statement. Below is Summit Mechanical Services, an HVAC company doing $32.5M in revenue. As you review it, pay attention to the gross margin and how owner compensation affects the bottom line."
-          },
-          {
-            type: "companyData",
-            companyId: "summit-hvac",
-            view: "income"
-          },
-          {
-            type: "exercise",
-            id: "ex-1a-1",
-            q: "Looking at Summit's income statement, what is the gross margin for each year? Did it improve or decline?",
-            inputMode: "quantitative",
-            answer: "2024 gross margin: $9.8M / $28.1M = 34.9%. 2025 gross margin: $11.7M / $32.5M = 36.0%. Gross margin improved by ~1.1pp, which is a positive sign. It means Summit is either getting better pricing or managing direct costs more effectively as it grows."
-          },
-          {
-            type: "exercise",
-            id: "ex-1a-2",
-            q: "Summit's owner takes $2.0M in compensation plus $400K in perks ($2.4M total). If you hired a general manager at $250K to replace them, how much would that add back to EBITDA?",
-            inputMode: "quantitative",
-            answer: "Owner total cost: $2.4M ($2.0M comp + $0.4M perks). Replacement cost: $250K. The add-back is $2.15M. This is the single largest adjustment in the deal. It takes adjusted EBITDA from $5.5M to potentially $6.35M when combined with other add-backs, changing the valuation significantly."
+            type: "calculationExercise",
+            id: "ex-1a-calc",
+            layout: "division",
+            instruction: "Build the gross margin formula by dragging the correct items from the P&L into the equation.",
+            resultLabel: "Gross Margin",
+            resultValue: "36.0%",
+            explanation: "Summit's 36% gross margin is solid for HVAC services. It means for every dollar of revenue, $0.36 remains after paying technicians, parts, and direct job costs. In LMM screening, you compare gross margin within the industry. HVAC services typically run 30-40%, so Summit is at the higher end, suggesting good pricing discipline or an efficient service model.",
+            zones: [
+              { id: "numerator", correctIds: ["gross-profit"], hint: "What profit goes on top?" },
+              { id: "denominator", correctIds: ["revenue"], hint: "Divide by what?" }
+            ],
+            draggables: [
+              { id: "revenue", label: "Revenue", value: "$32.5M" },
+              { id: "cogs", label: "COGS", value: "$20.8M" },
+              { id: "gross-profit", label: "Gross Profit", value: "$11.7M" },
+              { id: "net-income", label: "Net Income", value: "$2.3M" },
+              { id: "sga", label: "SG&A", value: "$6.1M" }
+            ],
+            supplementalItems: []
           }
         ]
       },
       {
         id: "s1b",
-        title: "1B. Balance Sheet",
+        title: "1B. Net Margin",
         blocks: [
           {
             type: "text",
-            content: "The balance sheet is a snapshot of what the company owns (assets), what it owes (liabilities), and the residual value (equity) at a single point in time. In PE, the balance sheet tells you two critical things: how much working capital the business needs to operate, and how much debt it carries."
-          },
-          {
-            type: "lineItemTable",
-            headers: ["Category", "Key Items", "PE Relevance"],
-            rows: [
-              ["Current Assets", "Cash, Accounts Receivable (AR), Inventory", "AR and Inventory are the working capital drivers. High AR means slow-paying customers. High inventory means tied-up cash."],
-              ["Long-Term Assets", "PP&E, Goodwill, Intangibles", "PP&E signals capital intensity. Goodwill from prior acquisitions may signal overpayment."],
-              ["Current Liabilities", "Accounts Payable (AP), Accrued Expenses, Current Debt", "AP is free financing from suppliers. Current debt matures within a year."],
-              ["Long-Term Liabilities", "Long-Term Debt, Other Obligations", "Total debt relative to EBITDA determines leverage and risk."],
-              ["Equity", "Retained earnings, owner capital", "Small equity base with high debt = leveraged. Net equity = what the owner actually 'owns.'"]
-            ]
+            content: "Net margin shows how much of each revenue dollar survives all the way to the bottom line after every expense: COGS, overhead, owner compensation, depreciation, interest, and taxes. In public company analysis, net margin is a core metric. In LMM PE, it is often misleading because owner compensation, one-time costs, and tax structures distort it."
           },
           {
             type: "text",
-            content: "Here is Coastal Fresh Foods' balance sheet. Coastal is a food distributor with $48.2M in revenue. Notice the AR balance relative to revenue, and the debt levels relative to EBITDA ($3.9M adjusted)."
+            content: "That said, building the formula is essential. It sets up the next step: understanding why PE uses EBITDA instead."
           },
           {
-            type: "companyData",
-            companyId: "coastal-foods",
-            view: "balance"
-          },
-          {
-            type: "exercise",
-            id: "ex-1b-1",
-            q: "What is Coastal's net working capital (Current Assets minus Current Liabilities)? Is this a capital-light or capital-intensive business?",
-            inputMode: "quantitative",
-            answer: "Current Assets: $0.4M + $6.8M + $3.2M + $0.2M = $10.6M. Current Liabilities: $5.1M + $1.2M + $0.8M = $7.1M. Net Working Capital: $3.5M. For a $48.2M revenue business, NWC of $3.5M (7.3% of revenue) is moderate. Distribution businesses typically need meaningful working capital because they carry inventory and extend credit to customers. This is capital that a buyer needs to fund at close."
-          },
-          {
-            type: "exercise",
-            id: "ex-1b-2",
-            q: "What is Coastal's leverage ratio (Total Debt / Adjusted EBITDA)? Would a bank be comfortable lending more to this business?",
-            inputMode: "quantitative",
-            answer: "Total Debt: $1.2M (current) + $4.8M (LT) = $6.0M. Adjusted EBITDA: $3.9M. Leverage: $6.0M / $3.9M = 1.5x. This is moderate leverage. Banks typically lend up to 3-4x for stable businesses. So there is room for additional debt capacity of ~$9-12M more. However, the declining net income ($0.9M to $0.2M) and flat gross margins would make lenders cautious about the trajectory."
+            type: "calculationExercise",
+            id: "ex-1b-calc",
+            layout: "division",
+            instruction: "Build the net margin formula. What goes in the numerator and denominator?",
+            resultLabel: "Net Margin",
+            resultValue: "7.1%",
+            explanation: "Summit's 7.1% net margin looks thin, but in LMM this number is almost always misleading. The owner takes $2.0M in compensation plus $400K in perks. Interest expense reflects the current owner's debt choices, not what a buyer would structure. Depreciation is a non-cash charge. That is why PE strips all of this out and works with EBITDA and Adjusted EBITDA instead. The next two exercises show exactly how.",
+            zones: [
+              { id: "numerator", correctIds: ["net-income"], hint: "What is the bottom line?" },
+              { id: "denominator", correctIds: ["revenue"], hint: "Divide by what?" }
+            ],
+            draggables: [
+              { id: "revenue", label: "Revenue", value: "$32.5M" },
+              { id: "gross-profit", label: "Gross Profit", value: "$11.7M" },
+              { id: "net-income", label: "Net Income", value: "$2.3M" },
+              { id: "cogs", label: "COGS", value: "$20.8M" },
+              { id: "owner-comp", label: "Owner Comp", value: "$2.0M" }
+            ],
+            supplementalItems: []
           }
         ]
       },
       {
         id: "s1c",
-        title: "1C. Cash Flow Statement",
+        title: "1C. EBITDA",
         blocks: [
           {
             type: "text",
-            content: "The cash flow statement answers the most important question in PE: how much actual cash does this business generate? EBITDA is an approximation, but cash flow is reality. Profitable companies can still run out of cash if working capital is eating it, CapEx is heavy, or debt service is high."
+            content: "EBITDA strips out capital structure (Interest), tax strategy (Taxes), and non-cash accounting charges (Depreciation, Amortization) to reveal the operating earnings of the business. It is the starting point for valuation in virtually every PE deal."
           },
           {
             type: "text",
-            content: "The cash flow statement has three sections, but in LMM PE, the first two matter most."
+            content: "The formula starts with Net Income and adds back four items. Note: Taxes are not shown as a separate line on Summit's P&L, but they are implied by the gap between pre-tax income and net income. Check the 'Additional Items' section below the P&L."
           },
           {
-            type: "lineItemTable",
-            headers: ["Section", "Key Components", "What It Tells You"],
-            rows: [
-              ["Operating Cash Flow", "Net Income + D&A +/- Working Capital Changes", "Cash generated from running the business. Working capital changes can be a massive swing."],
-              ["Investing Cash Flow", "Capital Expenditures (CapEx), Acquisitions", "Maintenance CapEx is the cost of keeping the business running. Growth CapEx expands capacity."],
-              ["Free Cash Flow", "Operating Cash Flow minus CapEx", "The real money available to service debt, pay distributions, or reinvest. This is what PE cares about."],
-              ["Financing Cash Flow", "Debt Payments, Distributions/Dividends", "Shows how cash is being used after operations and investment."]
+            type: "calculationExercise",
+            id: "ex-1c-calc",
+            layout: "addition",
+            instruction: "Build the EBITDA formula. Start with Net Income, then add back the four items that EBITDA removes.",
+            resultLabel: "EBITDA",
+            resultValue: "$4.6M",
+            explanation: "EBITDA of $4.6M on $32.5M revenue gives a 14.2% EBITDA margin. This is the operating earnings before any adjustments. But this is not the number PE uses to value the business. The owner's excess compensation, perks, and one-time costs still need to be added back. That is the next step: Adjusted EBITDA.",
+            zones: [
+              { id: "base", correctIds: ["net-income"], hint: "Start with the bottom line" },
+              { id: "add1", correctIds: ["interest", "taxes", "depreciation", "amortization"], hint: "Add back..." },
+              { id: "add2", correctIds: ["interest", "taxes", "depreciation", "amortization"], hint: "Add back..." },
+              { id: "add3", correctIds: ["interest", "taxes", "depreciation", "amortization"], hint: "Add back..." },
+              { id: "add4", correctIds: ["interest", "taxes", "depreciation", "amortization"], hint: "Add back..." }
+            ],
+            draggables: [
+              { id: "net-income", label: "Net Income", value: "$2.3M" },
+              { id: "interest", label: "Interest", value: "$0.3M" },
+              { id: "taxes", label: "Taxes", value: "$0.8M" },
+              { id: "depreciation", label: "Depreciation", value: "$1.1M" },
+              { id: "amortization", label: "Amortization", value: "$0.1M" },
+              { id: "revenue", label: "Revenue", value: "$32.5M" },
+              { id: "gross-profit", label: "Gross Profit", value: "$11.7M" }
+            ],
+            supplementalItems: [
+              { id: "taxes", label: "Taxes (derived)", value: "$0.8M", note: "Taxes are not a separate line on this P&L. Pre-tax income is $3.1M and Net Income is $2.3M, so taxes = $0.8M." }
             ]
+          }
+        ]
+      },
+      {
+        id: "s1d",
+        title: "1D. Adjusted EBITDA",
+        blocks: [
+          {
+            type: "text",
+            content: "Adjusted EBITDA is the number PE uses to value a business. It takes EBITDA and adds back costs that will not continue under new ownership: owner perks, one-time expenses, and above-market rent the owner charges. These add-backs are where the art of LMM analysis lives. Legitimate add-backs can double the effective profitability; aggressive ones are a red flag."
           },
           {
             type: "text",
-            content: "Let's examine Apex Last-Mile Logistics. Apex has $4.55M adjusted EBITDA, but does that translate into cash? Look at the cash flow statement below and pay special attention to CapEx and working capital."
+            content: "Summit has three add-backs. Drag them from the 'Additional Items' section into the equation to see how they transform the valuation basis."
           },
           {
-            type: "companyData",
-            companyId: "apex-logistics",
-            view: "cashflow"
-          },
-          {
-            type: "exercise",
-            id: "ex-1c-1",
-            q: "Apex has $4.55M adjusted EBITDA but only $0.9M in free cash flow. What is the EBITDA-to-FCF conversion rate, and what is eating the cash?",
-            inputMode: "quantitative",
-            answer: "FCF = $0.6M (NI) + $2.0M (D&A) + $0.8M (WC improvement) - $2.5M (CapEx) = $0.9M. Conversion rate: $0.9M / $4.55M = 19.8%. That is terrible. The biggest cash drain is CapEx at $2.5M (trucks wear out). D&A of $2.0M is less than CapEx, meaning the fleet requires more investment than the accounting charge suggests. This is a capital-intensive business disguised by its EBITDA. Buyers who pay a multiple of EBITDA need to understand that most of it gets reinvested just to maintain the fleet."
+            type: "calculationExercise",
+            id: "ex-1d-calc",
+            layout: "addition",
+            instruction: "Build the Adjusted EBITDA formula. Start with EBITDA, then add the three legitimate add-backs.",
+            resultLabel: "Adjusted EBITDA",
+            resultValue: "$5.5M",
+            explanation: "The $0.9M in add-backs takes EBITDA from $4.6M to $5.5M, a 20% increase. At a typical 5-6x multiple, that $0.9M in add-backs is worth $4.5-5.4M in enterprise value. This is why add-back analysis is so critical in PE. Note: this does not yet include the biggest potential add-back, owner excess compensation ($2.0M salary vs. a $250K replacement GM), which would push Adjusted EBITDA even higher. That larger adjustment is typically negotiated separately.",
+            zones: [
+              { id: "base", correctIds: ["ebitda"], hint: "Start with EBITDA" },
+              { id: "add1", correctIds: ["owner-perks", "one-time", "above-market-rent"], hint: "Add-back" },
+              { id: "add2", correctIds: ["owner-perks", "one-time", "above-market-rent"], hint: "Add-back" },
+              { id: "add3", correctIds: ["owner-perks", "one-time", "above-market-rent"], hint: "Add-back" }
+            ],
+            draggables: [
+              { id: "ebitda", label: "EBITDA", value: "$4.6M" },
+              { id: "owner-perks", label: "Owner Perks", value: "$0.4M" },
+              { id: "one-time", label: "One-Time Expenses", value: "$0.3M" },
+              { id: "above-market-rent", label: "Above-Market Rent", value: "$0.2M" },
+              { id: "owner-comp", label: "Owner Comp", value: "$2.0M" },
+              { id: "sga", label: "SG&A", value: "$6.1M" }
+            ],
+            supplementalItems: [
+              { id: "ebitda", label: "EBITDA", value: "$4.6M" },
+              { id: "owner-perks", label: "Owner Perks", value: "$0.4M" },
+              { id: "one-time", label: "One-Time Expenses", value: "$0.3M" },
+              { id: "above-market-rent", label: "Above-Market Rent", value: "$0.2M" }
+            ]
           }
         ]
       }

@@ -11,7 +11,9 @@ function loadProgress() {
 }
 
 function saveProgress(progress) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+  } catch {}
 }
 
 export default function useLearnProgress() {
@@ -50,11 +52,26 @@ export default function useLearnProgress() {
   }, [progress.visitedSubsections]);
 
   const getSubsectionProgress = useCallback((subsection) => {
-    const exercises = (subsection.blocks || []).filter(b => b.type === "exercise");
+    const exercises = (subsection.blocks || []).filter(b => b.type === "exercise" || b.type === "calculationExercise");
     if (exercises.length === 0) return null;
     const completed = exercises.filter(e => progress.completedExercises.includes(e.id)).length;
     return { completed, total: exercises.length };
   }, [progress.completedExercises]);
 
-  return { markComplete, isComplete, markVisited, isVisited, getSubsectionProgress };
+  const resetSubsection = useCallback((subsection) => {
+    const exerciseIds = (subsection.blocks || [])
+      .filter(b => b.type === "exercise" || b.type === "calculationExercise")
+      .map(b => b.id);
+    if (exerciseIds.length === 0) return;
+    setProgress(prev => {
+      const next = {
+        ...prev,
+        completedExercises: prev.completedExercises.filter(id => !exerciseIds.includes(id)),
+      };
+      saveProgress(next);
+      return next;
+    });
+  }, []);
+
+  return { markComplete, isComplete, markVisited, isVisited, getSubsectionProgress, resetSubsection };
 }
