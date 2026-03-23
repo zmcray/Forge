@@ -1,25 +1,59 @@
 # Forge TODOs
 
-## React Router / Multi-page Navigation
-Add React Router for proper URL-based routing (home, practice/:companyId, progress, learn, quickfire).
-Currently all views are managed via useState. Router would enable browser back/forward, bookmarkable URLs, and deep linking to specific companies or scenarios.
-**Priority:** P2 | **Effort:** M (human) / S (CC)
+## Completed
 
-## Additional Company Scenarios
-Build out more scenario overlays beyond the 3 starters (coastal-top-customer-leaves, summit-flat-growth, precision-owner-exits). Good candidates:
-- BrightSmile: what if the founder leaves (non-clinical operator risk)
-- Apex: what if the IC contractor model gets reclassified
-- Cross-company: macro scenarios (recession, interest rate spike)
-**Priority:** P2 | **Effort:** M (human) / S (CC)
+### React Router / Multi-page Navigation
+Added react-router-dom with routes: `/`, `/practice/:companyId`, `/progress`, `/learn`, `/quickfire`. Browser back/forward and bookmarkable URLs work. Practice sessions use URL params with optional `?scenario=` query string.
 
-## More Companies
-Add 3-5 more company profiles to increase practice variety. Target industries: SaaS, professional services, construction/trades, e-commerce/DTC, healthcare IT.
-**Priority:** P3 | **Effort:** L (human) / M (CC)
+### Additional Company Scenarios
+Added 2 new scenario overlays (total now 5):
+- BrightSmile: Founder Departure (key-person risk, succession gap)
+- Apex: IC Reclassification (labor cost shock, margin compression)
 
-## Full Component Test Suite
-Current tests cover utilities and scoring helpers (60 tests). Missing: React component rendering tests (QuestionCard, FinancialTable, DeltaDisplay, TimerBar, etc.) and hook integration tests (useTimer, useKeyboardShortcuts). Requires @testing-library/react + jsdom setup.
-**Priority:** P2 | **Effort:** M (human) / S (CC)
+### More Companies
+Added 4 new company profiles (total now 9):
+- TrueNorth Analytics (B2B SaaS, cybersecurity compliance, $14.2M)
+- Ironclad Builders (commercial construction/GC, $52.8M)
+- Vitality Pet Wellness (veterinary roll-up, $8.4M)
+- Meridian Fulfillment Co. (e-commerce 3PL, $29.5M)
 
-## Deployment
+### Full Component Test Suite
+Installed @testing-library/react + jsdom. 104 total tests across 9 test files:
+- TimerBar (7 tests): rendering, progress, expired state, milestones
+- DeltaDisplay (5 tests): rendering, null guards, unit formatting
+- CommitInput (9 tests): quantitative/qualitative modes, char counting, callbacks
+- FinancialTable (5 tests): all 4 statement views render correctly
+- useTimer (4 tests): formatting, progress calculation, milestones, expiration
+- useKeyboardShortcuts (3 tests): input ignore, score key detection
+- useLearnProgress (12 tests): load/save, roundtrip, dedup, reset
+- useScoring (7 tests): load/save, streak logic
+- format utilities (52 tests): existing coverage
+
+### Dark Mode Toggle
+Added dark mode with full color token overrides, localStorage persistence, and system preference detection. Toggle in sidebar.
+
+### Mobile Responsive Sidebar
+Sidebar works on mobile with hamburger menu, overlay backdrop, and touch-friendly interactions.
+
+### Search Functionality
+Cmd+K / Ctrl+K opens search modal. Searches across companies (9), learn topics (10 subsections), and PE metrics (8 terms). Keyboard navigation (arrows + Enter).
+
+---
+
+## Remaining
+
+### Deployment
 Set up deployment pipeline. Options: Vercel (simplest for Vite + React), Netlify, or GitHub Pages. No backend required since everything is client-side with localStorage.
-**Priority:** P2 | **Effort:** S (human) / S (CC)
+**Priority:** P2 | **Effort:** S
+
+### State Management
+Consider React Context or Zustand if prop drilling becomes unwieldy. Currently manageable with hooks + prop passing.
+**Priority:** P3 | **Effort:** M
+
+### LLM-Generated Dynamic Scenarios
+Use Claude API to generate novel company profiles and scenario variations on demand. Requires API key setup.
+**Priority:** P3 | **Effort:** L
+
+### CI/CD Pipeline
+GitHub Actions for automated testing and deployment on push/PR.
+**Priority:** P3 | **Effort:** S
