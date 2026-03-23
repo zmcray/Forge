@@ -4,7 +4,7 @@ import useLearnProgress from "../../hooks/useLearnProgress";
 import LearnNav from "./LearnNav";
 import LearnSection from "./LearnSection";
 
-export default function LearnModule({ onBack }) {
+export default function LearnModule() {
   const [currentSection, setCurrentSection] = useState(0);
   const [currentSubsection, setCurrentSubsection] = useState(0);
   const { markComplete, isComplete, markVisited, getSubsectionProgress, resetSubsection } = useLearnProgress();
@@ -47,66 +47,56 @@ export default function LearnModule({ onBack }) {
     currentSubsection === sections[sections.length - 1].subsections.length - 1;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-6xl mx-auto px-4 py-6">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Learn the Fundamentals</h1>
-            <p className="text-sm text-gray-600 mt-1">PE financial statement analysis, step by step</p>
+    <div>
+      {/* Page header */}
+      <div className="mb-6">
+        <h2 className="text-4xl font-extrabold font-headline text-on-surface tracking-tight">Learn the Fundamentals</h2>
+        <p className="text-sm text-on-surface-variant mt-2">PE financial statement analysis, step by step</p>
+      </div>
+
+      {/* Two-column layout */}
+      <div className="flex gap-6">
+        {/* Section nav */}
+        <div className="w-64 shrink-0">
+          <div className="sticky top-20 bg-surface-container-lowest ghost-border rounded-xl p-4">
+            <LearnNav
+              sections={sections}
+              currentSection={currentSection}
+              currentSubsection={currentSubsection}
+              onNavigate={handleNavigate}
+              getSubsectionProgress={getSubsectionProgress}
+              onResetSubsection={resetSubsection}
+            />
           </div>
-          <button
-            onClick={onBack}
-            className="px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-          >
-            {"\u2190"} Back to Home
-          </button>
         </div>
 
-        {/* Two-column layout */}
-        <div className="flex gap-6">
-          {/* Sidebar nav */}
-          <div className="w-64 shrink-0">
-            <div className="sticky top-6 bg-white border border-gray-200 rounded-xl p-4">
-              <LearnNav
-                sections={sections}
-                currentSection={currentSection}
-                currentSubsection={currentSubsection}
-                onNavigate={handleNavigate}
-                getSubsectionProgress={getSubsectionProgress}
-                onResetSubsection={resetSubsection}
+        {/* Content area */}
+        <div className="flex-1 min-w-0">
+          <div className="bg-surface-container-lowest ghost-border rounded-xl p-6">
+            {activeSub && (
+              <LearnSection
+                subsection={activeSub}
+                isComplete={isComplete}
+                onExerciseComplete={markComplete}
               />
-            </div>
-          </div>
+            )}
 
-          {/* Content area */}
-          <div className="flex-1 min-w-0">
-            <div className="bg-white border border-gray-200 rounded-xl p-6">
-              {activeSub && (
-                <LearnSection
-                  subsection={activeSub}
-                  isComplete={isComplete}
-                  onExerciseComplete={markComplete}
-                />
-              )}
-
-              {/* Navigation buttons */}
-              <div className="flex justify-between mt-8 pt-4 border-t border-gray-200">
-                <button
-                  onClick={handlePrev}
-                  disabled={isFirst}
-                  className={`px-4 py-2 text-sm rounded-lg transition-colors ${isFirst ? "text-gray-300 cursor-not-allowed" : "text-gray-600 hover:bg-gray-100"}`}
-                >
-                  {"\u2190"} Previous
-                </button>
-                <button
-                  onClick={handleNext}
-                  disabled={isLast}
-                  className={`px-4 py-2 text-sm rounded-lg transition-colors ${isLast ? "text-gray-300 cursor-not-allowed" : "bg-blue-600 text-white hover:bg-blue-700"}`}
-                >
-                  Next {"\u2192"}
-                </button>
-              </div>
+            {/* Navigation buttons */}
+            <div className="flex justify-between mt-8 pt-4 border-t border-outline-variant/30">
+              <button
+                onClick={handlePrev}
+                disabled={isFirst}
+                className={`px-4 py-2 text-sm rounded-lg transition-colors ${isFirst ? "text-outline-variant cursor-not-allowed" : "text-on-surface-variant hover:bg-surface-container-low"}`}
+              >
+                Previous
+              </button>
+              <button
+                onClick={handleNext}
+                disabled={isLast}
+                className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors ${isLast ? "text-outline-variant cursor-not-allowed" : "bg-primary text-on-primary hover:opacity-90"}`}
+              >
+                Next
+              </button>
             </div>
           </div>
         </div>

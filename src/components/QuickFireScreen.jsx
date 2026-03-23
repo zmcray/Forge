@@ -4,7 +4,7 @@ import { formatCurrency, shuffleArray } from "../utils/format";
 
 const QUICK_FIRE_SECONDS = 60;
 
-export default function QuickFireScreen({ onBack, onScore }) {
+export default function QuickFireScreen() {
   const [queue, setQueue] = useState(() => shuffleArray([...COMPANIES]));
   const [currentIndex, setCurrentIndex] = useState(0);
   const [phase, setPhase] = useState("screen"); // screen, reveal, done
@@ -54,26 +54,21 @@ export default function QuickFireScreen({ onBack, onScore }) {
 
   if (phase === "done") {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="max-w-2xl mx-auto px-4 py-8">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Quick Screen Complete</h1>
-          <p className="text-gray-600 mb-6">You screened {results.length} companies. Here's how you did:</p>
-          <div className="space-y-3">
-            {results.map((r, i) => (
-              <div key={i} className="bg-white border border-gray-200 rounded-lg p-4">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="font-semibold text-gray-900">{r.company}</span>
-                  <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${r.decision === "go" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
-                    {r.decision === "go" ? "GO" : "NO-GO"}
-                  </span>
-                </div>
-                <p className="text-sm text-gray-600">{r.reasoning}</p>
+      <div className="max-w-2xl">
+        <h2 className="text-4xl font-extrabold font-headline text-on-surface tracking-tight mb-2">Quick Screen Complete</h2>
+        <p className="text-sm text-on-surface-variant mb-6">You screened {results.length} companies. Here's how you did:</p>
+        <div className="space-y-3">
+          {results.map((r, i) => (
+            <div key={i} className="bg-surface-container-lowest ghost-border rounded-xl p-4">
+              <div className="flex items-center justify-between mb-1">
+                <span className="font-semibold text-on-surface">{r.company}</span>
+                <span className={`text-[10px] uppercase tracking-widest font-semibold px-3 py-1 rounded-full ${r.decision === "go" ? "bg-tertiary-container/50 text-on-tertiary-container" : "bg-error/10 text-error"}`}>
+                  {r.decision === "go" ? "GO" : "NO-GO"}
+                </span>
               </div>
-            ))}
-          </div>
-          <button onClick={onBack} className="mt-6 px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-            {"\u2190"} Back to Home
-          </button>
+              <p className="text-sm text-on-surface-variant">{r.reasoning}</p>
+            </div>
+          ))}
         </div>
       </div>
     );
@@ -82,143 +77,136 @@ export default function QuickFireScreen({ onBack, onScore }) {
   const km = company.keyMetrics;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-2xl mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className="text-xl font-bold text-gray-900">Quick Screen</h1>
-            <p className="text-sm text-gray-500">Company {currentIndex + 1} of {queue.length}</p>
+    <div className="max-w-2xl">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <h2 className="text-4xl font-extrabold font-headline text-on-surface tracking-tight">Quick Screen</h2>
+          <p className="text-sm text-on-surface-variant mt-1">Company {currentIndex + 1} of {queue.length}</p>
+        </div>
+        <span className={`text-lg font-mono font-bold ${isExpired ? "text-error" : timer <= 15 ? "text-on-tertiary-container" : "text-on-surface"}`}>
+          0:{String(timer).padStart(2, "0")}
+        </span>
+      </div>
+
+      {isExpired && phase === "screen" && (
+        <div className="bg-error/10 rounded-lg p-3 mb-4 text-sm text-error font-semibold">
+          Time's up! Submit your decision.
+        </div>
+      )}
+
+      {/* Metrics table */}
+      {phase === "screen" && (
+        <div className="bg-surface-container-lowest ghost-border rounded-xl p-5 mb-4">
+          <div className="flex items-center gap-2 mb-4">
+            <h3 className="text-lg font-semibold text-on-surface">{company.name}</h3>
+            <span className="text-[10px] uppercase tracking-widest px-3 py-1 rounded-full bg-secondary-container text-on-secondary-container">{company.industry}</span>
           </div>
-          <div className="flex items-center gap-3">
-            <span className={`text-lg font-mono font-bold ${isExpired ? "text-red-600" : timer <= 15 ? "text-amber-600" : "text-gray-700"}`}>
-              0:{String(timer).padStart(2, "0")}
-            </span>
-            <button onClick={onBack} className="px-3 py-1.5 text-sm bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-              Exit
-            </button>
+          <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm">
+            {[
+              ["Revenue", formatCurrency(company.revenue)],
+              ["Revenue Growth", `${km.revenueGrowth > 0 ? "+" : ""}${km.revenueGrowth.toFixed(1)}%`],
+              ["Adj. EBITDA", formatCurrency(km.adjustedEbitda)],
+              ["Adj. EBITDA Margin", `${km.adjustedEbitdaMargin.toFixed(1)}%`],
+              ["Customer Concentration", `${km.customerConcentration}%`],
+              ["Recurring Revenue", `${km.recurringRevenuePct}%`],
+              ["Gross Margin", `${km.grossMargin.toFixed(1)}%`],
+            ].map(([label, value]) => (
+              <div key={label} className="flex justify-between py-1 border-b border-outline-variant/20">
+                <span className="text-on-surface-variant">{label}</span>
+                <span className="font-mono font-semibold text-on-surface">{value}</span>
+              </div>
+            ))}
           </div>
         </div>
+      )}
 
-        {isExpired && phase === "screen" && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4 text-sm text-red-800 font-semibold">
-            Time's up! Submit your decision.
-          </div>
-        )}
-
-        {/* Metrics table */}
-        {phase === "screen" && (
-          <div className="bg-white border border-gray-200 rounded-xl p-5 mb-4">
-            <div className="flex items-center gap-2 mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">{company.name}</h2>
-              <span className="text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded">{company.industry}</span>
-            </div>
-            <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm">
-              {[
-                ["Revenue", formatCurrency(company.revenue)],
-                ["Revenue Growth", `${km.revenueGrowth > 0 ? "+" : ""}${km.revenueGrowth.toFixed(1)}%`],
-                ["Adj. EBITDA", formatCurrency(km.adjustedEbitda)],
-                ["Adj. EBITDA Margin", `${km.adjustedEbitdaMargin.toFixed(1)}%`],
-                ["Customer Concentration", `${km.customerConcentration}%`],
-                ["Recurring Revenue", `${km.recurringRevenuePct}%`],
-                ["Gross Margin", `${km.grossMargin.toFixed(1)}%`],
-              ].map(([label, value]) => (
-                <div key={label} className="flex justify-between py-1 border-b border-gray-100">
-                  <span className="text-gray-600">{label}</span>
-                  <span className="font-mono font-semibold text-gray-900">{value}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Decision input */}
-        {phase === "screen" && (
-          <div className="bg-white border border-gray-200 rounded-xl p-5">
-            <p className="text-sm font-medium text-gray-700 mb-3">Would you take a deeper look at this company?</p>
-            <div className="flex gap-2 mb-3">
-              <button
-                onClick={() => setDecision("go")}
-                className={`flex-1 py-2 text-sm font-semibold rounded-lg border-2 transition-colors ${decision === "go" ? "border-green-500 bg-green-50 text-green-800" : "border-gray-200 text-gray-500 hover:border-gray-300"}`}
-              >
-                GO - Worth a deeper look
-              </button>
-              <button
-                onClick={() => setDecision("no-go")}
-                className={`flex-1 py-2 text-sm font-semibold rounded-lg border-2 transition-colors ${decision === "no-go" ? "border-red-500 bg-red-50 text-red-800" : "border-gray-200 text-gray-500 hover:border-gray-300"}`}
-              >
-                NO-GO - Pass
-              </button>
-            </div>
-            <textarea
-              className="w-full border border-gray-300 rounded-lg p-3 text-sm min-h-[60px] focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Why? One sentence..."
-              value={reasoning}
-              onChange={e => setReasoning(e.target.value)}
-            />
+      {/* Decision input */}
+      {phase === "screen" && (
+        <div className="bg-surface-container-lowest ghost-border rounded-xl p-5">
+          <p className="text-sm font-medium text-on-surface mb-3">Would you take a deeper look at this company?</p>
+          <div className="flex gap-2 mb-3">
             <button
-              onClick={handleSubmit}
-              disabled={!decision || reasoning.length < 10}
-              className={`mt-3 w-full py-2 text-sm font-semibold rounded-lg transition-colors ${decision && reasoning.length >= 10 ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-200 text-gray-400 cursor-not-allowed"}`}
+              onClick={() => setDecision("go")}
+              className={`flex-1 py-2 text-sm font-semibold rounded-lg border-2 transition-colors ${decision === "go" ? "border-on-tertiary-container bg-tertiary-container/30 text-on-tertiary-container" : "border-outline-variant/30 text-on-surface-variant hover:border-outline-variant"}`}
             >
-              Submit Decision
+              GO - Worth a deeper look
+            </button>
+            <button
+              onClick={() => setDecision("no-go")}
+              className={`flex-1 py-2 text-sm font-semibold rounded-lg border-2 transition-colors ${decision === "no-go" ? "border-error bg-error/10 text-error" : "border-outline-variant/30 text-on-surface-variant hover:border-outline-variant"}`}
+            >
+              NO-GO - Pass
             </button>
           </div>
-        )}
+          <textarea
+            className="w-full border border-outline-variant/30 bg-surface-container-low rounded-lg p-3 text-sm text-on-surface min-h-[60px] focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-outline-variant"
+            placeholder="Why? One sentence..."
+            value={reasoning}
+            onChange={e => setReasoning(e.target.value)}
+          />
+          <button
+            onClick={handleSubmit}
+            disabled={!decision || reasoning.length < 10}
+            className={`mt-3 w-full py-2 text-sm font-semibold rounded-lg transition-colors ${decision && reasoning.length >= 10 ? "bg-primary text-on-primary hover:opacity-90" : "bg-surface-container-low text-outline-variant cursor-not-allowed"}`}
+          >
+            Submit Decision
+          </button>
+        </div>
+      )}
 
-        {/* Reveal */}
-        {phase === "reveal" && (
-          <div className="space-y-4">
-            <div className="bg-white border border-gray-200 rounded-xl p-5">
-              <h2 className="text-lg font-semibold text-gray-900 mb-3">{company.name}</h2>
-              <p className="text-sm text-gray-600 mb-4">{company.description}</p>
-              <p className="text-sm text-gray-600 mb-4">{company.context}</p>
+      {/* Reveal */}
+      {phase === "reveal" && (
+        <div className="space-y-4">
+          <div className="bg-surface-container-lowest ghost-border rounded-xl p-5">
+            <h3 className="text-lg font-semibold text-on-surface mb-3">{company.name}</h3>
+            <p className="text-sm text-on-surface-variant mb-4">{company.description}</p>
+            <p className="text-sm text-on-surface-variant mb-4">{company.context}</p>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-white border border-red-200 rounded-lg p-3">
-                  <h3 className="text-xs font-semibold text-red-800 mb-1.5">Red Flags</h3>
-                  <ul className="space-y-1">
-                    {company.redFlags.map((f, i) => (
-                      <li key={i} className="text-xs text-red-700 flex gap-1.5">
-                        <span className="shrink-0">{"\u26A0"}</span>
-                        <span>{f}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div className="bg-white border border-green-200 rounded-lg p-3">
-                  <h3 className="text-xs font-semibold text-green-800 mb-1.5">Green Flags</h3>
-                  <ul className="space-y-1">
-                    {company.greenFlags.map((f, i) => (
-                      <li key={i} className="text-xs text-green-700 flex gap-1.5">
-                        <span className="shrink-0">{"\u2713"}</span>
-                        <span>{f}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-surface-container-lowest ghost-border rounded-lg p-3">
+                <h3 className="text-[10px] uppercase tracking-widest text-error font-semibold mb-1.5">Red Flags</h3>
+                <ul className="space-y-1">
+                  {company.redFlags.map((f, i) => (
+                    <li key={i} className="text-xs text-on-surface-variant flex gap-1.5">
+                      <span className="material-symbols-outlined text-[14px] text-error shrink-0 mt-0.5">warning</span>
+                      <span>{f}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="bg-surface-container-lowest ghost-border rounded-lg p-3">
+                <h3 className="text-[10px] uppercase tracking-widest text-on-tertiary-container font-semibold mb-1.5">Green Flags</h3>
+                <ul className="space-y-1">
+                  {company.greenFlags.map((f, i) => (
+                    <li key={i} className="text-xs text-on-surface-variant flex gap-1.5">
+                      <span className="material-symbols-outlined text-[14px] text-on-tertiary-container shrink-0 mt-0.5">check_circle</span>
+                      <span>{f}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
-
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm">
-              <span className="font-semibold text-gray-500 text-xs uppercase">Your Call</span>
-              <p className="mt-1">
-                <span className={`font-semibold ${decision === "go" ? "text-green-700" : "text-red-700"}`}>
-                  {decision === "go" ? "GO" : "NO-GO"}
-                </span>
-                {" -- "}{reasoning}
-              </p>
-            </div>
-
-            <button
-              onClick={handleNext}
-              className="w-full py-2 text-sm font-semibold bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              {currentIndex < queue.length - 1 ? "Next Company" : "See Results"}
-            </button>
           </div>
-        )}
-      </div>
+
+          <div className="bg-surface-container-low rounded-lg p-3 text-sm">
+            <span className="font-semibold text-on-surface-variant text-[10px] uppercase tracking-widest">Your Call</span>
+            <p className="mt-1">
+              <span className={`font-semibold ${decision === "go" ? "text-on-tertiary-container" : "text-error"}`}>
+                {decision === "go" ? "GO" : "NO-GO"}
+              </span>
+              {" ... "}{reasoning}
+            </p>
+          </div>
+
+          <button
+            onClick={handleNext}
+            className="w-full py-2 text-sm font-semibold bg-primary text-on-primary rounded-lg hover:opacity-90 transition-colors"
+          >
+            {currentIndex < queue.length - 1 ? "Next Company" : "See Results"}
+          </button>
+        </div>
+      )}
     </div>
   );
 }
