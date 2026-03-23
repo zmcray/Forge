@@ -38,13 +38,15 @@ Sidebar works on mobile with hamburger menu, overlay backdrop, and touch-friendl
 ### Search Functionality
 Cmd+K / Ctrl+K opens search modal. Searches across companies (9), learn topics (10 subsections), and PE metrics (8 terms). Keyboard navigation (arrows + Enter).
 
+### Deployment
+Deployed to Vercel at https://forge-six-kappa.vercel.app/. SPA rewrite config in vercel.json. Auto-deploys on push to main.
+
+### CI/CD Pipeline
+GitHub Actions workflow (.github/workflows/ci.yml) runs tests and build on push to main and PRs. Node 20, npm ci, two jobs: test then build.
+
 ---
 
 ## Remaining
-
-### Deployment
-Set up deployment pipeline. Options: Vercel (simplest for Vite + React), Netlify, or GitHub Pages. No backend required since everything is client-side with localStorage.
-**Priority:** P2 | **Effort:** S
 
 ### State Management
 Consider React Context or Zustand if prop drilling becomes unwieldy. Currently manageable with hooks + prop passing.
@@ -53,7 +55,3 @@ Consider React Context or Zustand if prop drilling becomes unwieldy. Currently m
 ### LLM-Generated Dynamic Scenarios
 Use Claude API to generate novel company profiles and scenario variations on demand. Requires API key setup.
 **Priority:** P3 | **Effort:** L
-
-### CI/CD Pipeline
-GitHub Actions for automated testing and deployment on push/PR.
-**Priority:** P3 | **Effort:** S
