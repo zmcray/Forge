@@ -1,4 +1,4 @@
-export default function ModuleCard({ icon, title, description, badges, ctaLabel, onClick }) {
+export default function ModuleCard({ icon, title, description, badges, ctaLabel, onClick, progress }) {
   return (
     <button
       onClick={onClick}
@@ -12,6 +12,16 @@ export default function ModuleCard({ icon, title, description, badges, ctaLabel,
       {/* Title + description */}
       <h3 className="text-xl font-bold font-headline text-on-surface mb-2">{title}</h3>
       <p className="text-sm text-on-surface-variant font-body leading-relaxed flex-1">{description}</p>
+
+      {/* Progress bar (optional) */}
+      {progress != null && progress > 0 && (
+        <div className="w-full h-1.5 bg-surface-container-low rounded-full overflow-hidden mt-2">
+          <div
+            className="h-full bg-primary rounded-full transition-all duration-300"
+            style={{ width: `${Math.min(progress, 100)}%` }}
+          />
+        </div>
+      )}
 
       {/* Bottom row */}
       <div className="flex items-center justify-between mt-4 pt-4">
