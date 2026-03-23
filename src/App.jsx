@@ -237,7 +237,7 @@ function HomeScreen({ scoring, totalQuestions, masteryLevel, completedCompanies,
       {/* Deep dive case studies */}
       <section>
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-[10px] uppercase tracking-widest text-on-surface-variant font-semibold">Deep Dive Case Studies</h3>
+          <h3 className="text-sm uppercase tracking-widest text-on-surface-variant font-semibold">Deep Dive Case Studies</h3>
         </div>
         <div className="grid grid-cols-2 gap-4">
           {COMPANIES.map(company => (
