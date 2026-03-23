@@ -1,4 +1,5 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
+import { Routes, Route, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { COMPANIES } from "./data/companies";
 import { SCENARIOS } from "./data/scenarios";
 import { shuffleArray } from "./utils/format";
@@ -16,12 +17,24 @@ import AppShell from "./components/AppShell";
 import StatCard from "./components/StatCard";
 import MasteryCard from "./components/MasteryCard";
 import ModuleCard from "./components/ModuleCard";
+import SearchModal from "./components/SearchModal";
 import useScoring from "./hooks/useScoring";
 import useTimer from "./hooks/useTimer";
 import useKeyboardShortcuts from "./hooks/useKeyboardShortcuts";
+import useLearnProgress from "./hooks/useLearnProgress";
+import useTheme from "./hooks/useTheme";
+import { LEARN_CONTENT } from "./data/learnContent";
+
+function viewFromPath(pathname) {
+  if (pathname.startsWith("/practice")) return "practice";
+  if (pathname.startsWith("/progress")) return "progress";
+  if (pathname.startsWith("/learn")) return "learn";
+  if (pathname.startsWith("/quickfire")) return "quickfire";
+  return "home";
+}
 
 export default function App() {
-  const [view, setView] = useState("home"); // home, practice, progress, learn, quickfire
+  const navigate = useNavigate();
   const [selectedCompany, setSelectedCompany] = useState(null);
   const [statementView, setStatementView] = useState("income");
   const [showSummary, setShowSummary] = useState(false);
@@ -30,9 +43,29 @@ export default function App() {
 
   const scoring = useScoring();
   const timer = useTimer(15);
+  const learnProgress = useLearnProgress();
+  const { theme, toggleTheme } = useTheme();
+  const [searchOpen, setSearchOpen] = useState(false);
+
+  // Cmd+K global shortcut
+  useEffect(() => {
+    const handleKey = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setSearchOpen(o => !o);
+      }
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, []);
+
+  const setView = useCallback((v) => {
+    const routes = { home: "/", practice: "/practice", progress: "/progress", learn: "/learn", quickfire: "/quickfire" };
+    navigate(routes[v] || "/");
+  }, [navigate]);
 
   useKeyboardShortcuts({
-    enabled: view === "practice",
+    enabled: !!selectedCompany,
     onBack: () => finishCompany(),
   });
 
@@ -90,9 +123,10 @@ export default function App() {
     setShuffledQuestions(shuffleArray([...practiceCompany.questions]));
     setSessionQuestions([]);
     timer.start();
-    setView("practice");
     setStatementView("income");
-  }, [timer]);
+    const url = scenarioId ? `/practice/${company.id}?scenario=${scenarioId}` : `/practice/${company.id}`;
+    navigate(url);
+  }, [timer, navigate]);
 
   const finishCompany = useCallback(() => {
     timer.stop();
@@ -106,69 +140,147 @@ export default function App() {
         return;
       }
     }
-    setView("home");
+    navigate("/");
     setSelectedCompany(null);
-  }, [selectedCompany, timer, scoring, sessionQuestions]);
+  }, [selectedCompany, timer, scoring, sessionQuestions, navigate]);
 
   const closeSummary = useCallback(() => {
     setShowSummary(false);
-    setView("home");
+    navigate("/");
     setSelectedCompany(null);
-  }, []);
+  }, [navigate]);
 
-  // Learn and QuickFire render full-screen (no AppShell)
-  if (view === "learn") {
-    return <LearnModule onBack={() => setView("home")} />;
-  }
+  const handleSearchCompany = useCallback((companyId) => {
+    const company = COMPANIES.find(c => c.id === companyId);
+    if (company) startPractice(company);
+  }, [startPractice]);
 
-  if (view === "quickfire") {
-    return <QuickFireScreen onBack={() => setView("home")} />;
-  }
+  const handleSearchLearn = useCallback((sectionIndex, subIndex) => {
+    navigate("/learn");
+  }, [navigate]);
 
-  // All other views use AppShell
   return (
-    <AppShell activeView={view} onNavigate={setView} streak={scoring.streak}>
-      {view === "home" && (
-        <HomeScreen
-          scoring={scoring}
-          totalQuestions={totalQuestions}
-          masteryLevel={masteryLevel}
-          completedCompanies={completedCompanies}
-          scenariosByCompany={scenariosByCompany}
-          startPractice={startPractice}
-          setView={setView}
-        />
-      )}
+    <>
+      <SearchModal
+        open={searchOpen}
+        onClose={() => setSearchOpen(false)}
+        onNavigateCompany={handleSearchCompany}
+        onNavigateLearn={handleSearchLearn}
+        onNavigateView={setView}
+      />
+      <Routes>
+        <Route path="/*" element={
+          <AppShellWrapper
+            setView={setView}
+            scoring={scoring}
+            totalQuestions={totalQuestions}
+            masteryLevel={masteryLevel}
+            completedCompanies={completedCompanies}
+            scenariosByCompany={scenariosByCompany}
+            startPractice={startPractice}
+            learnProgress={learnProgress}
+            selectedCompany={selectedCompany}
+            statementView={statementView}
+            setStatementView={setStatementView}
+            shuffledQuestions={shuffledQuestions}
+            handleScore={handleScore}
+            finishCompany={finishCompany}
+            timer={timer}
+            showSummary={showSummary}
+            sessionQuestions={sessionQuestions}
+            closeSummary={closeSummary}
+            theme={theme}
+            toggleTheme={toggleTheme}
+            onSearchOpen={() => setSearchOpen(true)}
+          />
+        } />
+      </Routes>
+    </>
+  );
+}
 
-      {view === "progress" && (
-        <ProgressDashboard
-          scores={scoring.getScoresByType()}
-          streak={scoring.streak}
-          quantitativeAccuracy={scoring.getQuantitativeAccuracy()}
-        />
-      )}
+function AppShellWrapper(props) {
+  const navigate = useNavigate();
+  const setView = props.setView;
 
-      {view === "practice" && selectedCompany && (
-        <PracticeScreen
-          company={selectedCompany}
-          statementView={statementView}
-          setStatementView={setStatementView}
-          shuffledQuestions={shuffledQuestions}
-          handleScore={handleScore}
-          finishCompany={finishCompany}
-          timer={timer}
-          showSummary={showSummary}
-          sessionQuestions={sessionQuestions}
-          closeSummary={closeSummary}
-        />
-      )}
+  // Determine active view from current URL
+  const activeView = viewFromPath(window.location.pathname);
+
+  const handleNavigate = useCallback((v) => {
+    setView(v);
+  }, [setView]);
+
+  return (
+    <AppShell activeView={activeView} onNavigate={handleNavigate} streak={props.scoring.streak} theme={props.theme} onToggleTheme={props.toggleTheme} onSearchOpen={props.onSearchOpen}>
+      <Routes>
+        <Route index element={
+          <HomeScreen
+            scoring={props.scoring}
+            totalQuestions={props.totalQuestions}
+            masteryLevel={props.masteryLevel}
+            completedCompanies={props.completedCompanies}
+            scenariosByCompany={props.scenariosByCompany}
+            startPractice={props.startPractice}
+            setView={setView}
+            learnProgress={props.learnProgress}
+          />
+        } />
+        <Route path="progress" element={
+          <ProgressDashboard
+            scores={props.scoring.getScoresByType()}
+            streak={props.scoring.streak}
+            quantitativeAccuracy={props.scoring.getQuantitativeAccuracy()}
+          />
+        } />
+        <Route path="practice/:companyId" element={
+          props.selectedCompany ? (
+            <PracticeScreen
+              company={props.selectedCompany}
+              statementView={props.statementView}
+              setStatementView={props.setStatementView}
+              shuffledQuestions={props.shuffledQuestions}
+              handleScore={props.handleScore}
+              finishCompany={props.finishCompany}
+              timer={props.timer}
+              showSummary={props.showSummary}
+              sessionQuestions={props.sessionQuestions}
+              closeSummary={props.closeSummary}
+            />
+          ) : <PracticeRedirect />
+        } />
+        <Route path="learn" element={<LearnModule />} />
+        <Route path="quickfire" element={<QuickFireScreen />} />
+      </Routes>
     </AppShell>
   );
 }
 
-function HomeScreen({ scoring, totalQuestions, masteryLevel, completedCompanies, scenariosByCompany, startPractice, setView }) {
+function PracticeRedirect() {
+  const navigate = useNavigate();
+  // If someone navigates directly to /practice/:id without starting a session, redirect home
+  useState(() => { navigate("/", { replace: true }); });
+  return null;
+}
+
+function getOverallLearnProgress(getSubsectionProgress) {
+  let completed = 0;
+  let total = 0;
+  for (const section of LEARN_CONTENT) {
+    for (const sub of section.subsections) {
+      const prog = getSubsectionProgress(sub);
+      if (prog) {
+        completed += prog.completed;
+        total += prog.total;
+      }
+    }
+  }
+  return { completed, total };
+}
+
+function HomeScreen({ scoring, totalQuestions, masteryLevel, completedCompanies, scenariosByCompany, startPractice, setView, learnProgress }) {
   const weakSpots = scoring.getWeakSpots();
   const quantitativeAccuracy = scoring.getQuantitativeAccuracy();
+  const learnStats = getOverallLearnProgress(learnProgress.getSubsectionProgress);
 
   return (
     <>
@@ -186,26 +298,51 @@ function HomeScreen({ scoring, totalQuestions, masteryLevel, completedCompanies,
         </button>
       </section>
 
-      {/* Stats bento grid */}
-      <section className="grid grid-cols-4 gap-4 mb-8">
-        <StatCard
-          label="Active Streak"
-          value={scoring.streak.current}
-          icon="local_fire_department"
-        />
-        <StatCard
-          label="Questions Answered"
-          value={totalQuestions}
-          suffix="/ 500"
-          icon="quiz"
-          progress={(totalQuestions / 500) * 100}
-        />
-        <MasteryCard
-          level={masteryLevel}
-          description="Complete more practice sessions to advance your analyst ranking."
-          onViewRanking={() => setView("progress")}
-        />
-      </section>
+      {/* Stats bento grid or welcome card */}
+      {totalQuestions === 0 && scoring.streak.current === 0 ? (
+        <section className="mb-8">
+          <div className="bg-surface-container-lowest ghost-border rounded-xl p-8">
+            <h3 className="text-2xl font-bold font-headline text-on-surface mb-2">Welcome to Forge</h3>
+            <p className="text-sm text-on-surface-variant max-w-lg mb-6">
+              Build your PE deal analysis skills through realistic LMM company scenarios. Start with the fundamentals or jump straight into a quick screen.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setView("learn")}
+                className="px-5 py-2.5 rounded-lg text-sm font-semibold text-on-primary bg-gradient-to-r from-primary to-primary-container hover:opacity-90 transition-opacity"
+              >
+                Start Learning
+              </button>
+              <button
+                onClick={() => setView("quickfire")}
+                className="px-5 py-2.5 rounded-lg text-sm font-semibold text-on-surface-variant bg-surface-container-low hover:bg-surface-container-high transition-colors"
+              >
+                Try Quick Screen
+              </button>
+            </div>
+          </div>
+        </section>
+      ) : (
+        <section className="grid grid-cols-4 gap-4 mb-8">
+          <StatCard
+            label="Active Streak"
+            value={scoring.streak.current}
+            icon="local_fire_department"
+          />
+          <StatCard
+            label="Questions Answered"
+            value={totalQuestions}
+            suffix="/ 500"
+            icon="quiz"
+            progress={(totalQuestions / 500) * 100}
+          />
+          <MasteryCard
+            level={masteryLevel}
+            description="Complete more practice sessions to advance your analyst ranking."
+            onViewRanking={() => setView("progress")}
+          />
+        </section>
+      )}
 
       {/* Learning modules */}
       <section className="grid grid-cols-2 gap-4 mb-8">
@@ -213,9 +350,10 @@ function HomeScreen({ scoring, totalQuestions, masteryLevel, completedCompanies,
           icon="menu_book"
           title="Learn the Fundamentals"
           description="Financial statements, screening metrics, and due diligence frameworks for PE analysis."
-          badges={["6 Modules", "Interactive"]}
-          ctaLabel="Start Learning"
+          badges={[`${learnStats.completed}/${learnStats.total} Exercises`, "Interactive"]}
+          ctaLabel={learnStats.completed > 0 ? "Continue Learning" : "Start Learning"}
           onClick={() => setView("learn")}
+          progress={learnStats.total > 0 ? (learnStats.completed / learnStats.total) * 100 : 0}
         />
         <ModuleCard
           icon="bolt"
