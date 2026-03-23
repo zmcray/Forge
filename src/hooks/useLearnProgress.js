@@ -73,5 +73,7 @@ export default function useLearnProgress() {
     });
   }, []);
 
-  return { markComplete, isComplete, markVisited, isVisited, getSubsectionProgress, resetSubsection };
+  return { markComplete, isComplete, markVisited, isVisited, getSubsectionProgress, resetSubsection, progress };
 }
+
+export { loadProgress, saveProgress };
