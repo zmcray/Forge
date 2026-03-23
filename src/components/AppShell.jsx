@@ -27,7 +27,7 @@ export default function AppShell({ activeView, onNavigate, streak, children }) {
                     onClick={() => onNavigate(item.id === "practice" ? "home" : item.id)}
                     className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
                       isActive
-                        ? "bg-surface-container-low text-on-surface font-semibold"
+                        ? "bg-surface-container-high text-on-surface font-semibold"
                         : "text-on-surface-variant hover:translate-x-1 hover:text-on-surface"
                     }`}
                   >
