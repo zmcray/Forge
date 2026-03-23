@@ -253,7 +253,7 @@ function HomeScreen({ scoring, totalQuestions, masteryLevel, completedCompanies,
                     <button
                       key={scenario.id}
                       onClick={() => startPractice(company, scenario.id)}
-                      className="text-[10px] uppercase tracking-widest px-3 py-1 bg-secondary-container/50 text-on-secondary-container rounded-full hover:bg-secondary-container transition-colors"
+                      className="text-[10px] uppercase tracking-widest px-3 py-2 bg-secondary-container/50 text-on-secondary-container rounded-full hover:bg-secondary-container transition-colors"
                     >
                       Scenario: {scenario.name}
                     </button>

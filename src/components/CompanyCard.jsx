@@ -63,7 +63,7 @@ export default function CompanyCard({ company, completed, onSelect }) {
         </div>
 
         {/* CTA button */}
-        <button className="w-full py-2.5 rounded-lg text-[11px] uppercase tracking-widest font-semibold bg-surface-container-low text-on-surface-variant group-hover:bg-primary group-hover:text-on-primary transition-all duration-200">
+        <button className="w-full py-3 rounded-lg text-[11px] uppercase tracking-widest font-semibold bg-surface-container-low text-on-surface-variant group-hover:bg-primary group-hover:text-on-primary transition-all duration-200">
           Open Case Study
         </button>
       </div>

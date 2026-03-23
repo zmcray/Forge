@@ -21,7 +21,7 @@ export default function MasteryCard({ level, description, onViewRanking }) {
         {onViewRanking && (
           <button
             onClick={onViewRanking}
-            className="mt-4 text-[11px] uppercase tracking-widest text-tertiary-fixed-dim font-semibold hover:text-on-primary transition-colors"
+            className="mt-4 py-2 text-[11px] uppercase tracking-widest text-tertiary-fixed-dim font-semibold hover:text-on-primary transition-colors"
           >
             View Ranking
           </button>
