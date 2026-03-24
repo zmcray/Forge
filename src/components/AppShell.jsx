@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useScoringState } from "../contexts/ScoringContext";
 
 const NAV_ITEMS = [
   { id: "home", label: "Dashboard", icon: "dashboard" },
@@ -8,7 +9,8 @@ const NAV_ITEMS = [
   { id: "progress", label: "Progress", icon: "trending_up" },
 ];
 
-export default function AppShell({ activeView, onNavigate, streak, theme, onToggleTheme, onSearchOpen, children }) {
+export default function AppShell({ activeView, onNavigate, theme, onToggleTheme, onSearchOpen, children }) {
+  const { streak } = useScoringState();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
