@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useEffect } from "react";
+import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { Routes, Route, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { COMPANIES } from "./data/companies";
 import { SCENARIOS } from "./data/scenarios";
@@ -40,6 +40,12 @@ export default function App() {
   const [showSummary, setShowSummary] = useState(false);
   const [sessionQuestions, setSessionQuestions] = useState([]);
   const [shuffledQuestions, setShuffledQuestions] = useState([]);
+
+  // Ref-mirror state for use in finishCompany to prevent stale closures
+  const selectedCompanyRef = useRef(null);
+  const sessionQuestionsRef = useRef([]);
+  useEffect(() => { selectedCompanyRef.current = selectedCompany; }, [selectedCompany]);
+  useEffect(() => { sessionQuestionsRef.current = sessionQuestions; }, [sessionQuestions]);
 
   const { sessions, streak } = useScoringState();
   const { addScore, updateSessionDuration } = useScoringDispatch();
@@ -130,20 +136,22 @@ export default function App() {
   }, [timer, navigate]);
 
   const finishCompany = useCallback(() => {
+    const company = selectedCompanyRef.current;
+    const questions = sessionQuestionsRef.current;
     timer.stop();
-    if (selectedCompany) {
+    if (company) {
       updateSessionDuration(
-        selectedCompany._scenarioId || selectedCompany.id,
+        company._scenarioId || company.id,
         timer.elapsedMinutes
       );
-      if (sessionQuestions.length > 0) {
+      if (questions.length > 0) {
         setShowSummary(true);
         return;
       }
     }
     navigate("/");
     setSelectedCompany(null);
-  }, [selectedCompany, timer, updateSessionDuration, sessionQuestions, navigate]);
+  }, [timer, updateSessionDuration, navigate]);
 
   const closeSummary = useCallback(() => {
     setShowSummary(false);
