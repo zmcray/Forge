@@ -47,7 +47,6 @@ export default function App() {
   useEffect(() => { selectedCompanyRef.current = selectedCompany; }, [selectedCompany]);
   useEffect(() => { sessionQuestionsRef.current = sessionQuestions; }, [sessionQuestions]);
 
-  const { sessions, streak } = useScoringState();
   const { addScore, updateSessionDuration } = useScoringDispatch();
   const timer = useTimer(15);
   const learnProgress = useLearnProgress();
@@ -76,18 +75,6 @@ export default function App() {
     onBack: () => finishCompany(),
   });
 
-  const completedCompanies = useMemo(() => {
-    const ids = new Set();
-    for (const session of sessions) {
-      if (session.questions.length > 0) ids.add(session.companyId);
-    }
-    return ids;
-  }, [sessions]);
-
-  const totalQuestions = useMemo(() => {
-    return sessions.reduce((sum, s) => sum + s.questions.length, 0);
-  }, [sessions]);
-
   const scenariosByCompany = useMemo(() => {
     const map = {};
     for (const s of SCENARIOS) {
@@ -96,14 +83,6 @@ export default function App() {
     }
     return map;
   }, []);
-
-  const masteryLevel = useMemo(() => {
-    if (totalQuestions >= 200) return "Senior Analyst";
-    if (totalQuestions >= 100) return "Analyst";
-    if (totalQuestions >= 50) return "Associate";
-    if (totalQuestions >= 20) return "Junior";
-    return "Beginner";
-  }, [totalQuestions]);
 
   const handleScore = useCallback((type, score, meta) => {
     if (!selectedCompany) return;
@@ -181,10 +160,6 @@ export default function App() {
         <Route path="/*" element={
           <AppShellWrapper
             setView={setView}
-            streak={streak}
-            totalQuestions={totalQuestions}
-            masteryLevel={masteryLevel}
-            completedCompanies={completedCompanies}
             scenariosByCompany={scenariosByCompany}
             startPractice={startPractice}
             learnProgress={learnProgress}
@@ -209,7 +184,6 @@ export default function App() {
 }
 
 function AppShellWrapper(props) {
-  const navigate = useNavigate();
   const setView = props.setView;
 
   // Determine active view from current URL
@@ -224,7 +198,6 @@ function AppShellWrapper(props) {
       <Routes>
         <Route index element={
           <HomeScreen
-            completedCompanies={props.completedCompanies}
             scenariosByCompany={props.scenariosByCompany}
             startPractice={props.startPractice}
             setView={setView}
@@ -278,9 +251,17 @@ function getOverallLearnProgress(getSubsectionProgress) {
   return { completed, total };
 }
 
-function HomeScreen({ completedCompanies, scenariosByCompany, startPractice, setView, learnProgress }) {
+function HomeScreen({ scenariosByCompany, startPractice, setView, learnProgress }) {
   const { sessions, streak } = useScoringState();
   const { getWeakSpots, getQuantitativeAccuracy } = useScoringDispatch();
+
+  const completedCompanies = useMemo(() => {
+    const ids = new Set();
+    for (const session of sessions) {
+      if (session.questions.length > 0) ids.add(session.companyId);
+    }
+    return ids;
+  }, [sessions]);
 
   const totalQuestions = useMemo(() => {
     return sessions.reduce((sum, s) => sum + s.questions.length, 0);
