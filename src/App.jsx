@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useEffect } from "react";
+import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { Routes, Route, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { COMPANIES } from "./data/companies";
 import { SCENARIOS } from "./data/scenarios";
@@ -18,7 +18,7 @@ import StatCard from "./components/StatCard";
 import MasteryCard from "./components/MasteryCard";
 import ModuleCard from "./components/ModuleCard";
 import SearchModal from "./components/SearchModal";
-import useScoring from "./hooks/useScoring";
+import { useScoringState, useScoringDispatch } from "./contexts/ScoringContext";
 import useTimer from "./hooks/useTimer";
 import useKeyboardShortcuts from "./hooks/useKeyboardShortcuts";
 import useLearnProgress from "./hooks/useLearnProgress";
@@ -41,7 +41,13 @@ export default function App() {
   const [sessionQuestions, setSessionQuestions] = useState([]);
   const [shuffledQuestions, setShuffledQuestions] = useState([]);
 
-  const scoring = useScoring();
+  // Ref-mirror state for use in finishCompany to prevent stale closures
+  const selectedCompanyRef = useRef(null);
+  const sessionQuestionsRef = useRef([]);
+  useEffect(() => { selectedCompanyRef.current = selectedCompany; }, [selectedCompany]);
+  useEffect(() => { sessionQuestionsRef.current = sessionQuestions; }, [sessionQuestions]);
+
+  const { addScore, updateSessionDuration } = useScoringDispatch();
   const timer = useTimer(15);
   const learnProgress = useLearnProgress();
   const { theme, toggleTheme } = useTheme();
@@ -69,18 +75,6 @@ export default function App() {
     onBack: () => finishCompany(),
   });
 
-  const completedCompanies = useMemo(() => {
-    const ids = new Set();
-    for (const session of scoring.sessions) {
-      if (session.questions.length > 0) ids.add(session.companyId);
-    }
-    return ids;
-  }, [scoring.sessions]);
-
-  const totalQuestions = useMemo(() => {
-    return scoring.sessions.reduce((sum, s) => sum + s.questions.length, 0);
-  }, [scoring.sessions]);
-
   const scenariosByCompany = useMemo(() => {
     const map = {};
     for (const s of SCENARIOS) {
@@ -90,17 +84,9 @@ export default function App() {
     return map;
   }, []);
 
-  const masteryLevel = useMemo(() => {
-    if (totalQuestions >= 200) return "Senior Analyst";
-    if (totalQuestions >= 100) return "Analyst";
-    if (totalQuestions >= 50) return "Associate";
-    if (totalQuestions >= 20) return "Junior";
-    return "Beginner";
-  }, [totalQuestions]);
-
   const handleScore = useCallback((type, score, meta) => {
     if (!selectedCompany) return;
-    scoring.addScore({
+    addScore({
       companyId: selectedCompany._scenarioId || selectedCompany.id,
       questionType: type,
       score,
@@ -109,7 +95,7 @@ export default function App() {
       timestamp: Date.now(),
     });
     setSessionQuestions(prev => [...prev, { type, score, delta: meta?.delta ?? null, unit: meta?.unit ?? null }]);
-  }, [selectedCompany, scoring]);
+  }, [selectedCompany, addScore]);
 
   const startPractice = useCallback((company, scenarioId) => {
     let practiceCompany = company;
@@ -129,20 +115,22 @@ export default function App() {
   }, [timer, navigate]);
 
   const finishCompany = useCallback(() => {
+    const company = selectedCompanyRef.current;
+    const questions = sessionQuestionsRef.current;
     timer.stop();
-    if (selectedCompany) {
-      scoring.updateSessionDuration(
-        selectedCompany._scenarioId || selectedCompany.id,
+    if (company) {
+      updateSessionDuration(
+        company._scenarioId || company.id,
         timer.elapsedMinutes
       );
-      if (sessionQuestions.length > 0) {
+      if (questions.length > 0) {
         setShowSummary(true);
         return;
       }
     }
     navigate("/");
     setSelectedCompany(null);
-  }, [selectedCompany, timer, scoring, sessionQuestions, navigate]);
+  }, [timer, updateSessionDuration, navigate]);
 
   const closeSummary = useCallback(() => {
     setShowSummary(false);
@@ -172,10 +160,6 @@ export default function App() {
         <Route path="/*" element={
           <AppShellWrapper
             setView={setView}
-            scoring={scoring}
-            totalQuestions={totalQuestions}
-            masteryLevel={masteryLevel}
-            completedCompanies={completedCompanies}
             scenariosByCompany={scenariosByCompany}
             startPractice={startPractice}
             learnProgress={learnProgress}
@@ -200,7 +184,6 @@ export default function App() {
 }
 
 function AppShellWrapper(props) {
-  const navigate = useNavigate();
   const setView = props.setView;
 
   // Determine active view from current URL
@@ -211,14 +194,10 @@ function AppShellWrapper(props) {
   }, [setView]);
 
   return (
-    <AppShell activeView={activeView} onNavigate={handleNavigate} streak={props.scoring.streak} theme={props.theme} onToggleTheme={props.toggleTheme} onSearchOpen={props.onSearchOpen}>
+    <AppShell activeView={activeView} onNavigate={handleNavigate} theme={props.theme} onToggleTheme={props.toggleTheme} onSearchOpen={props.onSearchOpen}>
       <Routes>
         <Route index element={
           <HomeScreen
-            scoring={props.scoring}
-            totalQuestions={props.totalQuestions}
-            masteryLevel={props.masteryLevel}
-            completedCompanies={props.completedCompanies}
             scenariosByCompany={props.scenariosByCompany}
             startPractice={props.startPractice}
             setView={setView}
@@ -226,11 +205,7 @@ function AppShellWrapper(props) {
           />
         } />
         <Route path="progress" element={
-          <ProgressDashboard
-            scores={props.scoring.getScoresByType()}
-            streak={props.scoring.streak}
-            quantitativeAccuracy={props.scoring.getQuantitativeAccuracy()}
-          />
+          <ProgressDashboard />
         } />
         <Route path="practice/:companyId" element={
           props.selectedCompany ? (
@@ -257,8 +232,7 @@ function AppShellWrapper(props) {
 
 function PracticeRedirect() {
   const navigate = useNavigate();
-  // If someone navigates directly to /practice/:id without starting a session, redirect home
-  useState(() => { navigate("/", { replace: true }); });
+  useEffect(() => { navigate("/", { replace: true }); }, [navigate]);
   return null;
 }
 
@@ -277,9 +251,32 @@ function getOverallLearnProgress(getSubsectionProgress) {
   return { completed, total };
 }
 
-function HomeScreen({ scoring, totalQuestions, masteryLevel, completedCompanies, scenariosByCompany, startPractice, setView, learnProgress }) {
-  const weakSpots = scoring.getWeakSpots();
-  const quantitativeAccuracy = scoring.getQuantitativeAccuracy();
+function HomeScreen({ scenariosByCompany, startPractice, setView, learnProgress }) {
+  const { sessions, streak } = useScoringState();
+  const { getWeakSpots, getQuantitativeAccuracy } = useScoringDispatch();
+
+  const completedCompanies = useMemo(() => {
+    const ids = new Set();
+    for (const session of sessions) {
+      if (session.questions.length > 0) ids.add(session.companyId);
+    }
+    return ids;
+  }, [sessions]);
+
+  const totalQuestions = useMemo(() => {
+    return sessions.reduce((sum, s) => sum + s.questions.length, 0);
+  }, [sessions]);
+
+  const masteryLevel = useMemo(() => {
+    if (totalQuestions >= 200) return "Senior Analyst";
+    if (totalQuestions >= 100) return "Analyst";
+    if (totalQuestions >= 50) return "Associate";
+    if (totalQuestions >= 20) return "Junior";
+    return "Beginner";
+  }, [totalQuestions]);
+
+  const weakSpots = getWeakSpots();
+  const quantitativeAccuracy = getQuantitativeAccuracy();
   const learnStats = getOverallLearnProgress(learnProgress.getSubsectionProgress);
 
   return (
@@ -299,7 +296,7 @@ function HomeScreen({ scoring, totalQuestions, masteryLevel, completedCompanies,
       </section>
 
       {/* Stats bento grid or welcome card */}
-      {totalQuestions === 0 && scoring.streak.current === 0 ? (
+      {totalQuestions === 0 && streak.current === 0 ? (
         <section className="mb-8">
           <div className="bg-surface-container-lowest ghost-border rounded-xl p-8">
             <h3 className="text-2xl font-bold font-headline text-on-surface mb-2">Welcome to Forge</h3>
@@ -326,7 +323,7 @@ function HomeScreen({ scoring, totalQuestions, masteryLevel, completedCompanies,
         <section className="grid grid-cols-4 gap-4 mb-8">
           <StatCard
             label="Active Streak"
-            value={scoring.streak.current}
+            value={streak.current}
             icon="local_fire_department"
           />
           <StatCard
