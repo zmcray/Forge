@@ -15,7 +15,6 @@ export default function QuestionCard({ question, index, onScore, companyContext 
   // LLM evaluation state (qualitative only, orthogonal to phase)
   const [llmResult, setLlmResult] = useState(null);
   const [llmLoading, setLlmLoading] = useState(false);
-  const [hasConfirmedScore, setHasConfirmedScore] = useState(false);
 
   const typeInfo = QUESTION_TYPES[question.type];
   const isQuantitative = typeInfo.inputMode === "quantitative";
@@ -59,7 +58,6 @@ export default function QuestionCard({ question, index, onScore, companyContext 
     setPhase("scored");
 
     if (isQuantitative) {
-      // Quantitative: score immediately (no calibration)
       onScore(question.type, n, {
         delta:
           committedNumeric !== null && modelExtracted
@@ -67,20 +65,14 @@ export default function QuestionCard({ question, index, onScore, companyContext 
             : null,
         unit: modelExtracted?.unit || null,
       });
-      setHasConfirmedScore(true);
+    } else {
+      onScore(question.type, n, {
+        delta: null,
+        unit: null,
+        selfScore: n,
+        aiScore: llmResult?.score || null,
+      });
     }
-    // Qualitative: wait for user to confirm via calibration card
-  };
-
-  const handleConfirmScore = (finalScore) => {
-    onScore(question.type, finalScore, {
-      delta: null,
-      unit: null,
-      selfScore,
-      aiScore: llmResult?.score || null,
-    });
-    setSelfScore(finalScore);
-    setHasConfirmedScore(true);
   };
 
   const modelExtracted = isQuantitative
@@ -202,17 +194,21 @@ export default function QuestionCard({ question, index, onScore, companyContext 
               />
             )}
 
-            {!isQuantitative && question.keywords && committedText && (
+            {answerComparison}
+
+            {/* LLM grading (qualitative): show inline on reveal */}
+            {!isQuantitative && llmLoading && <LLMFeedbackSkeleton />}
+            {!isQuantitative && llmResult && (
+              <LLMGrading result={llmResult} />
+            )}
+
+            {/* Keyword fallback only if LLM failed */}
+            {!isQuantitative && !llmLoading && !llmResult && question.keywords && committedText && (
               <KeywordFeedback
                 text={committedText}
                 keywords={question.keywords}
               />
             )}
-
-            {answerComparison}
-
-            {/* LLM loading skeleton (qualitative only, shown below answers) */}
-            {!isQuantitative && llmLoading && <LLMFeedbackSkeleton />}
 
             <div>
               <p className="text-sm font-medium text-gray-700 mb-2">
@@ -247,28 +243,19 @@ export default function QuestionCard({ question, index, onScore, companyContext 
               />
             )}
 
-            {!isQuantitative && question.keywords && committedText && (
+            {answerComparison}
+
+            {/* LLM grading persists in scored phase */}
+            {!isQuantitative && llmResult && (
+              <LLMGrading result={llmResult} />
+            )}
+
+            {/* Keyword fallback only if LLM failed */}
+            {!isQuantitative && !llmResult && question.keywords && committedText && (
               <KeywordFeedback
                 text={committedText}
                 keywords={question.keywords}
               />
-            )}
-
-            {answerComparison}
-
-            {/* AI Calibration (qualitative only) */}
-            {!isQuantitative && !hasConfirmedScore && (
-              <AICalibrationCard
-                selfScore={selfScore}
-                llmResult={llmResult}
-                llmLoading={llmLoading}
-                onConfirm={handleConfirmScore}
-              />
-            )}
-
-            {/* Show LLM feedback summary after confirmed (qualitative) */}
-            {!isQuantitative && hasConfirmedScore && llmResult && (
-              <LLMFeedbackSummary result={llmResult} />
             )}
           </div>
         )}
@@ -324,146 +311,50 @@ function LLMFeedbackSkeleton() {
   );
 }
 
-function AICalibrationCard({ selfScore, llmResult, llmLoading, onConfirm }) {
+function LLMGrading({ result }) {
   return (
-    <div className="border border-gray-200 rounded-lg overflow-hidden mt-3">
-      <div className="bg-gray-50 px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-        Calibration
+    <div className="space-y-3 mb-4">
+      <div className="flex items-center gap-2">
+        <span className={`text-sm font-bold px-2 py-0.5 rounded ${result.score >= 4 ? "bg-green-100 text-green-800" : result.score >= 3 ? "bg-amber-100 text-amber-800" : "bg-red-100 text-red-800"}`}>
+          {result.score}/5
+        </span>
+        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">AI Assessment</span>
       </div>
-      <div className="p-3 space-y-3">
-        {/* LLM feedback content */}
-        {llmLoading && <LLMFeedbackSkeleton />}
 
-        {llmResult && (
-          <>
-            {/* Strengths */}
-            {llmResult.strengths.length > 0 && (
-              <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-                <p className="font-semibold text-green-800 text-xs uppercase mb-1">
-                  Strengths Identified
-                </p>
-                <ul className="text-sm text-green-900 space-y-1">
-                  {llmResult.strengths.map((s, i) => (
-                    <li key={i} className="flex gap-1.5">
-                      <span className="shrink-0">&#10003;</span>
-                      <span>{s}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {/* Gaps */}
-            {llmResult.gaps.length > 0 && (
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
-                <p className="font-semibold text-amber-800 text-xs uppercase mb-1">
-                  Areas to Develop
-                </p>
-                <ul className="text-sm text-amber-900 space-y-1">
-                  {llmResult.gaps.map((g, i) => (
-                    <li key={i} className="flex gap-1.5">
-                      <span className="shrink-0">&#8594;</span>
-                      <span>{g}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {/* Suggestion */}
-            {llmResult.suggestion && (
-              <p className="text-xs text-gray-600 italic">
-                {llmResult.suggestion}
-              </p>
-            )}
-
-            {/* Score comparison */}
-            <div className="flex items-center gap-3 pt-2 border-t border-gray-200">
-              <span className="text-xs text-gray-500">Your score:</span>
-              <span className="text-sm font-semibold text-blue-700">
-                {selfScore}/5
-              </span>
-              <span className="text-xs text-gray-400">|</span>
-              <span className="text-xs text-gray-500">AI assessment:</span>
-              <span className="text-sm font-semibold text-gray-600">
-                {llmResult.score}/5
-              </span>
-            </div>
-          </>
-        )}
-
-        {/* Confirm buttons */}
-        <div className="flex gap-2 flex-wrap">
-          <button
-            onClick={() => onConfirm(selfScore)}
-            className="px-3 py-1.5 text-sm font-semibold bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Keep {selfScore}
-          </button>
-          {llmResult && llmResult.score !== selfScore && (
-            <button
-              onClick={() => onConfirm(llmResult.score)}
-              className="px-3 py-1.5 text-sm font-medium bg-gray-100 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors"
-            >
-              Adjust to {llmResult.score}
-            </button>
-          )}
-          {/* Full override buttons (collapsed) */}
-          {llmResult && (
-            <div className="flex gap-1 ml-auto">
-              {[1, 2, 3, 4, 5].map((n) => (
-                <button
-                  key={n}
-                  onClick={() => onConfirm(n)}
-                  className={`w-7 h-7 rounded text-xs font-semibold transition-all ${
-                    n === selfScore
-                      ? "bg-blue-100 text-blue-700 border border-blue-300"
-                      : "bg-gray-50 text-gray-500 border border-gray-200 hover:bg-gray-100"
-                  }`}
-                >
-                  {n}
-                </button>
-              ))}
-            </div>
-          )}
+      {/* What you got right */}
+      {result.strengths.length > 0 && (
+        <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+          <p className="font-semibold text-green-800 text-xs uppercase mb-1">What You Got Right</p>
+          <ul className="text-sm text-green-900 space-y-1">
+            {result.strengths.map((s, i) => (
+              <li key={i} className="flex gap-1.5">
+                <span className="shrink-0">&#10003;</span>
+                <span>{s}</span>
+              </li>
+            ))}
+          </ul>
         </div>
-      </div>
-    </div>
-  );
-}
+      )}
 
-function LLMFeedbackSummary({ result }) {
-  return (
-    <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 mt-3 text-sm">
-      <div className="flex gap-4">
-        {result.strengths.length > 0 && (
-          <div className="flex-1">
-            <p className="font-semibold text-green-700 text-xs uppercase mb-1">
-              Strengths
-            </p>
-            <ul className="text-xs text-green-800 space-y-0.5">
-              {result.strengths.map((s, i) => (
-                <li key={i}>&#10003; {s}</li>
-              ))}
-            </ul>
-          </div>
-        )}
-        {result.gaps.length > 0 && (
-          <div className="flex-1">
-            <p className="font-semibold text-amber-700 text-xs uppercase mb-1">
-              Areas to Develop
-            </p>
-            <ul className="text-xs text-amber-800 space-y-0.5">
-              {result.gaps.map((g, i) => (
-                <li key={i}>&#8594; {g}</li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
+      {/* What you missed */}
+      {result.gaps.length > 0 && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+          <p className="font-semibold text-red-800 text-xs uppercase mb-1">What You Missed</p>
+          <ul className="text-sm text-red-900 space-y-1">
+            {result.gaps.map((g, i) => (
+              <li key={i} className="flex gap-1.5">
+                <span className="shrink-0">&#10007;</span>
+                <span>{g}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Next time */}
       {result.suggestion && (
-        <p className="text-xs text-gray-500 italic mt-2">
-          {result.suggestion}
+        <p className="text-sm text-gray-600 bg-gray-50 border border-gray-200 rounded-lg p-3">
+          <span className="font-semibold text-gray-700">Next time:</span> {result.suggestion}
         </p>
       )}
     </div>
