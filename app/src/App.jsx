@@ -4,6 +4,7 @@ import { COMPANIES } from "./data/companies";
 import { SCENARIOS } from "./data/scenarios";
 import { shuffleArray } from "./utils/format";
 import { mergeScenario } from "./utils/scenarios";
+import { buildCompanyContext } from "./utils/buildCompanyContext";
 import FinancialTable from "./components/FinancialTable";
 import QuestionCard from "./components/QuestionCard";
 import ProgressDashboard from "./components/ProgressDashboard";
@@ -92,9 +93,11 @@ export default function App() {
       score,
       delta: meta?.delta ?? null,
       unit: meta?.unit ?? null,
+      selfScore: meta?.selfScore ?? null,
+      aiScore: meta?.aiScore ?? null,
       timestamp: Date.now(),
     });
-    setSessionQuestions(prev => [...prev, { type, score, delta: meta?.delta ?? null, unit: meta?.unit ?? null }]);
+    setSessionQuestions(prev => [...prev, { type, score, delta: meta?.delta ?? null, unit: meta?.unit ?? null, selfScore: meta?.selfScore ?? null, aiScore: meta?.aiScore ?? null }]);
   }, [selectedCompany, addScore]);
 
   const startPractice = useCallback((company, scenarioId) => {
@@ -109,6 +112,8 @@ export default function App() {
     setShuffledQuestions(shuffleArray([...practiceCompany.questions]));
     setSessionQuestions([]);
     timer.start();
+    // Warmup ping to reduce cold-start latency on first evaluation
+    fetch("/api/evaluate", { method: "OPTIONS" }).catch(() => {});
     setStatementView("income");
     const url = scenarioId ? `/practice/${company.id}?scenario=${scenarioId}` : `/practice/${company.id}`;
     navigate(url);
@@ -492,7 +497,7 @@ function PracticeScreen({ company: co, statementView, setStatementView, shuffled
           <h2 className="text-[10px] uppercase tracking-widest text-on-surface-variant font-semibold mb-3">Analysis Questions</h2>
           <div className="space-y-4">
             {shuffledQuestions.map((q, i) => (
-              <QuestionCard key={`${q.type}-${i}`} question={q} index={i} onScore={handleScore} />
+              <QuestionCard key={`${q.type}-${i}`} question={q} index={i} onScore={handleScore} companyContext={buildCompanyContext(co)} />
             ))}
           </div>
         </div>
