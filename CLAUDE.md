@@ -7,44 +7,52 @@ Forge is a React app that trains PE deal analysis skills through realistic LMM c
 
 ```
 forge/
-  src/
-    data/
-      companies.js         # 9 company profiles with full financials + questions
-      questionTypes.js      # 6 question types (metric, adjustment, valuation, risk, diagnostic, thesis)
-      learnContent.js       # Learn module structured content (3 sections, 10 subsections)
-      scenarios.js          # 5 scenario overlays (what-if variations on base companies)
-    components/
-      AppShell.jsx          # Sidebar nav + glassmorphism header (collapsible, mobile-responsive)
-      FinancialTable.jsx    # Income statement, balance sheet, cash flow, key metrics views
-      QuestionCard.jsx      # Commit-first question flow with keyword feedback
-      ProgressDashboard.jsx # Persisted scoring dashboard with streak + accuracy
-      CompanyCard.jsx       # Company selector card
-      DeltaDisplay.jsx      # Quantitative answer comparison (your answer vs model)
-      CommitInput.jsx       # Input component (number or textarea with char counter)
-      TimerBar.jsx          # 15-minute countdown with pace milestones
-      StatCard.jsx          # Dashboard stat card (streak, questions)
-      MasteryCard.jsx       # Mastery level card
-      ModuleCard.jsx        # Module card with optional progress bar
-      WeakSpotCard.jsx      # Focus areas by question type
-      SessionSummary.jsx    # Post-session modal with copy-to-clipboard
-      QuickFireScreen.jsx   # 60-second go/no-go screening mode
-      SearchModal.jsx       # Cmd+K search across companies, metrics, learn content
-      learn/                # Learn module components (LearnModule, LearnSection, LearnNav, etc.)
-    hooks/
-      useScoring.js         # localStorage persistence, sessions, streak, weak spots
-      useTimer.js           # Countdown timer with pace milestones
-      useKeyboardShortcuts.js # 1-5 score, Enter reveal, Esc back
-      useLearnProgress.js   # Learn module progress tracking
-      useTheme.js           # Dark mode toggle with localStorage persistence
-    utils/
-      format.js             # formatCurrency, extractNumericValue, getDeltaBand, shuffleArray
-      scenarios.js          # mergeScenario (deep merge with path validation)
-    App.jsx                 # Main orchestrator with React Router
-    main.jsx                # Vite entry point with BrowserRouter
-    index.css               # Tailwind import + design tokens (light + dark)
-  index.html
-  package.json
-  vite.config.js
+  app/                       # Vite + React application
+    src/
+      contexts/
+        ScoringContext.jsx    # State/dispatch split context for scoring data
+      data/
+        companies.js          # 9 company profiles with full financials + questions
+        questionTypes.js      # 6 question types (metric, adjustment, valuation, risk, diagnostic, thesis)
+        learnContent.js       # Learn module structured content (3 sections, 10 subsections)
+        scenarios.js          # 5 scenario overlays (what-if variations on base companies)
+      components/
+        AppShell.jsx          # Sidebar nav + glassmorphism header (collapsible, mobile-responsive)
+        FinancialTable.jsx    # Income statement, balance sheet, cash flow, key metrics views
+        QuestionCard.jsx      # Commit-first question flow with keyword feedback
+        ProgressDashboard.jsx # Persisted scoring dashboard with streak + accuracy
+        CompanyCard.jsx       # Company selector card
+        DeltaDisplay.jsx      # Quantitative answer comparison (your answer vs model)
+        CommitInput.jsx       # Input component (number or textarea with char counter)
+        TimerBar.jsx          # 15-minute countdown with pace milestones
+        StatCard.jsx          # Dashboard stat card (streak, questions)
+        MasteryCard.jsx       # Mastery level card
+        ModuleCard.jsx        # Module card with optional progress bar
+        WeakSpotCard.jsx      # Focus areas by question type
+        SessionSummary.jsx    # Post-session modal with copy-to-clipboard
+        QuickFireScreen.jsx   # 60-second go/no-go screening mode
+        SearchModal.jsx       # Cmd+K search across companies, metrics, learn content
+        learn/                # Learn module components (LearnModule, LearnSection, LearnNav, etc.)
+      hooks/
+        useScoring.js         # localStorage persistence, sessions, streak, weak spots
+        useTimer.js           # Countdown timer with pace milestones
+        useKeyboardShortcuts.js # 1-5 score, Enter reveal, Esc back
+        useLearnProgress.js   # Learn module progress tracking
+        useTheme.js           # Dark mode toggle with localStorage persistence
+      utils/
+        format.js             # formatCurrency, extractNumericValue, getDeltaBand, shuffleArray
+        scenarios.js          # mergeScenario (deep merge with path validation)
+      test/
+        renderWithProviders.jsx # Test helper with ScoringProvider + MemoryRouter
+      App.jsx                 # Main orchestrator with React Router
+      main.jsx                # Vite entry point with BrowserRouter + ScoringProvider
+      index.css               # Tailwind import + design tokens (light + dark)
+    index.html
+    package.json
+    vite.config.js
+    vercel.json
+  docs/                       # Plans and documentation
+  .github/                    # CI/CD workflows
 ```
 
 ## Key Mechanics
@@ -121,6 +129,7 @@ Users must enter an answer before revealing the model answer:
 - Number formatting: $XM for currency, X% for percentages, Xx for multiples
 
 ## Dev Workflow
+All commands run from `app/` directory:
 - `npm run dev` -- Vite dev server with HMR
 - `npm test` -- run all Vitest tests
 - `npm run test:watch` -- Vitest in watch mode
