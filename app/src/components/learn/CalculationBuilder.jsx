@@ -21,8 +21,8 @@ export default function CalculationBuilder({
   };
 
   const revealedExplanation = isRevealed && explanation && (
-    <div className="mt-4 bg-green-50 border border-green-200 rounded-lg p-3 text-sm text-green-900">
-      <span className="font-semibold text-green-700 text-xs uppercase">Why this matters</span>
+    <div className="mt-4 bg-tertiary-container border border-on-tertiary-container/30 rounded-lg p-3 text-sm text-on-tertiary-container">
+      <span className="font-semibold text-on-tertiary-container text-xs uppercase">Why this matters</span>
       <p className="mt-1">{explanation}</p>
     </div>
   );
@@ -32,7 +32,7 @@ export default function CalculationBuilder({
 
     return (
       <div>
-        <p className="text-sm text-gray-600 mb-4">{instruction}</p>
+        <p className="text-sm text-on-surface-variant mb-4">{instruction}</p>
         <div className="flex items-center gap-4">
           <div className="flex flex-col items-stretch">
             <DropZone
@@ -41,7 +41,7 @@ export default function CalculationBuilder({
               isIncorrect={incorrectFlash === numeratorZone.id}
               onDrop={onDrop}
             />
-            <div className="border-t-2 border-gray-800 my-1" />
+            <div className="border-t-2 border-on-surface my-1" />
             <DropZone
               zone={denominatorZone}
               filledItem={getFilledItem(denominatorZone)}
@@ -49,8 +49,8 @@ export default function CalculationBuilder({
               onDrop={onDrop}
             />
           </div>
-          <span className="text-xl text-gray-400">=</span>
-          <div className={`text-2xl font-bold transition-opacity duration-300 ${isRevealed ? "opacity-100 text-green-700" : "opacity-30 text-gray-400"}`}>
+          <span className="text-xl text-outline-variant">=</span>
+          <div className={`text-2xl font-bold transition-opacity duration-300 ${isRevealed ? "opacity-100 text-on-tertiary-container" : "opacity-30 text-outline-variant"}`}>
             {resultValue}
           </div>
         </div>
@@ -65,10 +65,10 @@ export default function CalculationBuilder({
 
   return (
     <div>
-      <p className="text-sm text-gray-600 mb-4">{instruction}</p>
+      <p className="text-sm text-on-surface-variant mb-4">{instruction}</p>
       <div className="flex flex-col gap-1.5 max-w-sm">
         <div className="flex items-center gap-2">
-          <span className="w-5 text-center text-gray-400 text-sm font-mono">&nbsp;</span>
+          <span className="w-5 text-center text-outline-variant text-sm font-mono">&nbsp;</span>
           <DropZone
             zone={baseZone}
             filledItem={getFilledItem(baseZone)}
@@ -78,7 +78,7 @@ export default function CalculationBuilder({
         </div>
         {addZones.map((zone) => (
           <div key={zone.id} className="flex items-center gap-2">
-            <span className="w-5 text-center text-gray-500 text-sm font-mono">+</span>
+            <span className="w-5 text-center text-outline-variant text-sm font-mono">+</span>
             <DropZone
               zone={zone}
               filledItem={getFilledItem(zone)}
@@ -87,13 +87,13 @@ export default function CalculationBuilder({
             />
           </div>
         ))}
-        <div className="border-t-2 border-gray-800 ml-7 mt-1" />
+        <div className="border-t-2 border-on-surface ml-7 mt-1" />
         <div className="flex items-center gap-2 ml-7">
-          <span className="text-gray-400">=</span>
-          <span className={`text-xl font-bold transition-opacity duration-300 ${isRevealed ? "opacity-100 text-green-700" : "opacity-30 text-gray-400"}`}>
+          <span className="text-outline-variant">=</span>
+          <span className={`text-xl font-bold transition-opacity duration-300 ${isRevealed ? "opacity-100 text-on-tertiary-container" : "opacity-30 text-outline-variant"}`}>
             {resultValue}
           </span>
-          {isRevealed && <span className="text-sm text-green-600 ml-1">{resultLabel}</span>}
+          {isRevealed && <span className="text-sm text-on-tertiary-container ml-1">{resultLabel}</span>}
         </div>
       </div>
       {revealedExplanation}

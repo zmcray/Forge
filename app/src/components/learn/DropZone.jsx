@@ -23,10 +23,10 @@ export default function DropZone({ zone, filledItem, isIncorrect, onDrop }) {
 
   if (filledItem) {
     return (
-      <div className="border-2 border-green-400 bg-green-50 rounded-lg px-4 py-2 flex items-center gap-2 min-w-[140px]">
-        <span className="text-green-600 font-bold">&#10003;</span>
-        <span className="text-sm font-medium text-green-800">{filledItem.label}</span>
-        <span className="text-xs text-green-600 ml-auto">{filledItem.value}</span>
+      <div className="border-2 border-on-tertiary-container bg-tertiary-container rounded-lg px-4 py-2 flex items-center gap-2 min-w-[140px]">
+        <span className="text-on-tertiary-container font-bold">&#10003;</span>
+        <span className="text-sm font-medium text-on-tertiary-container">{filledItem.label}</span>
+        <span className="text-xs text-on-tertiary-container ml-auto">{filledItem.value}</span>
       </div>
     );
   }
@@ -35,11 +35,11 @@ export default function DropZone({ zone, filledItem, isIncorrect, onDrop }) {
 
   let stateClasses;
   if (isIncorrect) {
-    stateClasses = "border-red-400 bg-red-50 animate-[shake_0.6s_ease-in-out]";
+    stateClasses = "border-error bg-error-container animate-[shake_0.6s_ease-in-out]";
   } else if (isDragOver) {
-    stateClasses = "border-blue-400 bg-blue-50";
+    stateClasses = "border-primary bg-secondary-container";
   } else {
-    stateClasses = "border-gray-300 bg-gray-50";
+    stateClasses = "border-outline-variant bg-surface-container-low";
   }
 
   return (
@@ -49,7 +49,7 @@ export default function DropZone({ zone, filledItem, isIncorrect, onDrop }) {
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
-      <span className="text-xs text-gray-400 select-none">{zone.hint}</span>
+      <span className="text-xs text-outline-variant select-none">{zone.hint}</span>
     </div>
   );
 }

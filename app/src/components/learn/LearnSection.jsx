@@ -5,19 +5,19 @@ import CalculationExercise from "./CalculationExercise";
 function LineItemTable({ rows, headers }) {
   return (
     <div className="overflow-x-auto my-3">
-      <table className="w-full text-sm border border-gray-200 rounded-lg overflow-hidden">
+      <table className="w-full text-sm border border-outline-variant/30 rounded-lg overflow-hidden">
         <thead>
-          <tr className="bg-gray-50">
+          <tr className="bg-surface-container-low">
             {headers.map((h, i) => (
-              <th key={i} className="text-left py-2 px-3 font-semibold text-gray-700 border-b border-gray-200">{h}</th>
+              <th key={i} className="text-left py-2 px-3 font-semibold text-on-surface border-b border-outline-variant/30">{h}</th>
             ))}
           </tr>
         </thead>
         <tbody>
           {rows.map((row, i) => (
-            <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+            <tr key={i} className={i % 2 === 0 ? "bg-surface-container-lowest" : "bg-surface-container-low"}>
               {row.map((cell, j) => (
-                <td key={j} className="py-1.5 px-3 text-gray-700 border-b border-gray-100">{cell}</td>
+                <td key={j} className="py-1.5 px-3 text-on-surface-variant border-b border-outline-variant/20">{cell}</td>
               ))}
             </tr>
           ))}
@@ -30,19 +30,19 @@ function LineItemTable({ rows, headers }) {
 function MetricTable({ rows, headers }) {
   return (
     <div className="overflow-x-auto my-3">
-      <table className="w-full text-sm border border-gray-200 rounded-lg overflow-hidden">
+      <table className="w-full text-sm border border-outline-variant/30 rounded-lg overflow-hidden">
         <thead>
-          <tr className="bg-blue-50">
+          <tr className="bg-secondary-container">
             {headers.map((h, i) => (
-              <th key={i} className="text-left py-2 px-3 font-semibold text-blue-900 border-b border-blue-200">{h}</th>
+              <th key={i} className="text-left py-2 px-3 font-semibold text-on-surface border-b border-outline-variant/30">{h}</th>
             ))}
           </tr>
         </thead>
         <tbody>
           {rows.map((row, i) => (
-            <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+            <tr key={i} className={i % 2 === 0 ? "bg-surface-container-lowest" : "bg-surface-container-low"}>
               {row.map((cell, j) => (
-                <td key={j} className={`py-1.5 px-3 border-b border-gray-100 ${j === 0 ? "font-medium text-gray-900" : "text-gray-700"}`}>{cell}</td>
+                <td key={j} className={`py-1.5 px-3 border-b border-outline-variant/20 ${j === 0 ? "font-medium text-on-surface" : "text-on-surface-variant"}`}>{cell}</td>
               ))}
             </tr>
           ))}
@@ -55,10 +55,10 @@ function MetricTable({ rows, headers }) {
 export default function LearnSection({ subsection, isComplete, onExerciseComplete }) {
   return (
     <div>
-      <h2 className="text-xl font-bold text-gray-900 mb-4">{subsection.title}</h2>
+      <h2 className="text-xl font-bold text-on-surface mb-4">{subsection.title}</h2>
       {subsection.blocks.map((block, i) => {
         if (block.type === "text") {
-          return <p key={i} className="text-gray-700 text-sm leading-relaxed mb-3">{block.content}</p>;
+          return <p key={i} className="text-on-surface-variant text-sm leading-relaxed mb-3">{block.content}</p>;
         }
         if (block.type === "lineItemTable") {
           return <LineItemTable key={i} rows={block.rows} headers={block.headers} />;

@@ -24,8 +24,8 @@ function DraggableItem({ item, isPlaced }) {
       onDragStart={handleDragStart}
       className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-sm font-medium transition-opacity ${
         isPlaced
-          ? "bg-gray-100 text-gray-400 opacity-40 cursor-default"
-          : "bg-blue-50 text-blue-800 border border-blue-200 cursor-grab active:cursor-grabbing hover:bg-blue-100"
+          ? "bg-surface-container-high text-outline-variant opacity-40 cursor-default"
+          : "bg-secondary-container text-on-surface border border-primary/30 cursor-grab active:cursor-grabbing hover:opacity-80"
       }`}
     >
       {item.label}
@@ -40,11 +40,11 @@ export default function SimplePnL({ draggables, supplementalItems = [], placedIt
 
   return (
     <div className="sticky top-4">
-      <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-        <div className="bg-gray-800 text-white px-4 py-2 text-sm font-semibold">
+      <div className="bg-surface-container-lowest border border-outline-variant/30 rounded-lg overflow-hidden">
+        <div className="bg-inverse-surface text-inverse-on-surface px-4 py-2 text-sm font-semibold">
           Summit Mechanical Services (2025)
         </div>
-        <div className="divide-y divide-gray-100">
+        <div className="divide-y divide-outline-variant/20">
           {PNL_LINES.map(line => {
             const isDraggable = draggableIds.has(line.id);
             const isPlaced = placedItemIds.has(line.id);
@@ -53,10 +53,10 @@ export default function SimplePnL({ draggables, supplementalItems = [], placedIt
               <div
                 key={line.id}
                 className={`flex items-center justify-between px-4 py-1.5 ${
-                  line.isSummary ? "bg-gray-50 border-t border-gray-200" : ""
+                  line.isSummary ? "bg-surface-container-low border-t border-outline-variant/30" : ""
                 }`}
               >
-                <span className={`text-sm ${line.isSummary ? "font-semibold text-gray-900" : "text-gray-700"}`}>
+                <span className={`text-sm ${line.isSummary ? "font-semibold text-on-surface" : "text-on-surface-variant"}`}>
                   {line.label}
                 </span>
                 {isDraggable ? (
@@ -72,11 +72,11 @@ export default function SimplePnL({ draggables, supplementalItems = [], placedIt
         </div>
 
         {supplementalItems.length > 0 && (
-          <div className="border-t-2 border-gray-300">
-            <div className="bg-amber-50 px-4 py-1.5 text-xs font-semibold text-amber-800 uppercase tracking-wide">
+          <div className="border-t-2 border-outline-variant">
+            <div className="bg-secondary-container px-4 py-1.5 text-xs font-semibold text-on-secondary-container uppercase tracking-wide">
               Additional Items
             </div>
-            <div className="divide-y divide-gray-100">
+            <div className="divide-y divide-outline-variant/20">
               {supplementalItems.map(item => {
                 const isDraggable = draggableIds.has(item.id);
                 const isPlaced = placedItemIds.has(item.id);
@@ -84,7 +84,7 @@ export default function SimplePnL({ draggables, supplementalItems = [], placedIt
                 return (
                   <div key={item.id} className="px-4 py-1.5">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-700">{item.label}</span>
+                      <span className="text-sm text-on-surface-variant">{item.label}</span>
                       {isDraggable ? (
                         <DraggableItem item={draggableMap[item.id] || item} isPlaced={isPlaced} />
                       ) : (
@@ -92,7 +92,7 @@ export default function SimplePnL({ draggables, supplementalItems = [], placedIt
                       )}
                     </div>
                     {item.note && (
-                      <p className="text-xs text-amber-700 mt-1 leading-relaxed">{item.note}</p>
+                      <p className="text-xs text-on-surface-variant mt-1 leading-relaxed">{item.note}</p>
                     )}
                   </div>
                 );

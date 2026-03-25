@@ -50,23 +50,23 @@ export default function CalculationExercise({ exercise, isComplete, onComplete }
   if (!expanded && isComplete) {
     return (
       <div
-        className="border border-green-200 bg-green-50 rounded-lg p-3 my-3 flex items-center justify-between cursor-pointer hover:bg-green-100 transition-colors"
+        className="border border-on-tertiary-container/30 bg-tertiary-container rounded-lg p-3 my-3 flex items-center justify-between cursor-pointer hover:opacity-90 transition-colors"
         onClick={() => setExpanded(true)}
       >
         <div className="flex items-center gap-2">
-          <span className="text-green-600 text-lg">&#10003;</span>
-          <span className="text-sm font-medium text-green-800">{exercise.instruction}</span>
+          <span className="text-on-tertiary-container text-lg">&#10003;</span>
+          <span className="text-sm font-medium text-on-tertiary-container">{exercise.instruction}</span>
         </div>
-        <span className="text-xs text-green-600">Click to review</span>
+        <span className="text-xs text-on-tertiary-container">Click to review</span>
       </div>
     );
   }
 
   return (
-    <div className="border border-gray-200 rounded-lg overflow-hidden my-3">
-      <div className="bg-blue-50 px-4 py-2 flex items-center gap-2">
-        <span className="text-sm font-semibold text-blue-800">Exercise</span>
-        {isRevealed && <span className="text-green-600">&#10003;</span>}
+    <div className="border border-outline-variant/30 rounded-lg overflow-hidden my-3">
+      <div className="bg-secondary-container px-4 py-2 flex items-center gap-2">
+        <span className="text-sm font-semibold text-on-surface">Exercise</span>
+        {isRevealed && <span className="text-on-tertiary-container">&#10003;</span>}
       </div>
       <div className="p-4">
         <div className="flex gap-6">

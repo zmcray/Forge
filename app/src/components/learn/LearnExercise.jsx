@@ -40,33 +40,33 @@ export default function LearnExercise({ exercise, isComplete, onComplete }) {
   if (!expanded && isComplete) {
     return (
       <div
-        className="border border-green-200 bg-green-50 rounded-lg p-3 my-3 flex items-center justify-between cursor-pointer hover:bg-green-100 transition-colors"
+        className="border border-on-tertiary-container/30 bg-tertiary-container rounded-lg p-3 my-3 flex items-center justify-between cursor-pointer hover:opacity-90 transition-colors"
         onClick={() => setExpanded(true)}
       >
         <div className="flex items-center gap-2">
-          <span className="text-green-600 text-lg">&#10003;</span>
-          <span className="text-sm font-medium text-green-800">{exercise.q}</span>
+          <span className="text-on-tertiary-container text-lg">&#10003;</span>
+          <span className="text-sm font-medium text-on-tertiary-container">{exercise.q}</span>
         </div>
-        <span className="text-xs text-green-600">Click to review</span>
+        <span className="text-xs text-on-tertiary-container">Click to review</span>
       </div>
     );
   }
 
   return (
-    <div className="border border-gray-200 rounded-lg overflow-hidden my-3">
-      <div className="bg-blue-50 px-4 py-2 flex items-center justify-between">
+    <div className="border border-outline-variant/30 rounded-lg overflow-hidden my-3">
+      <div className="bg-secondary-container px-4 py-2 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-semibold text-blue-800">Exercise</span>
-          {(phase === "done" || isComplete) && <span className="text-green-600">&#10003;</span>}
+          <span className="text-sm font-semibold text-on-surface">Exercise</span>
+          {(phase === "done" || isComplete) && <span className="text-on-tertiary-container">&#10003;</span>}
         </div>
         {isComplete && phase === "done" && (
-          <button onClick={handleRedo} className="text-xs text-blue-600 hover:text-blue-800">
+          <button onClick={handleRedo} className="text-xs text-primary hover:opacity-80">
             Redo
           </button>
         )}
       </div>
       <div className="p-4">
-        <p className="text-gray-900 font-medium mb-3">{exercise.q}</p>
+        <p className="text-on-surface font-medium mb-3">{exercise.q}</p>
 
         {phase === "commit" && (
           <div>
@@ -82,7 +82,7 @@ export default function LearnExercise({ exercise, isComplete, onComplete }) {
               <button
                 onClick={handleReveal}
                 disabled={!hasValidInput}
-                className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${hasValidInput ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-200 text-gray-400 cursor-not-allowed"}`}
+                className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${hasValidInput ? "bg-primary text-on-primary hover:opacity-90" : "bg-surface-container-high text-outline-variant cursor-not-allowed"}`}
               >
                 Reveal Answer
               </button>
@@ -94,13 +94,13 @@ export default function LearnExercise({ exercise, isComplete, onComplete }) {
           <div>
             {isQuantitative && <DeltaDisplay committedNumeric={committedNumeric} modelExtracted={modelExtracted} />}
             {committedText && (
-              <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 mb-3 text-sm">
-                <span className="font-semibold text-gray-500 text-xs uppercase">Your Answer</span>
-                <p className="mt-1 text-gray-700">{committedText}</p>
+              <div className="bg-surface-container-low border border-outline-variant/30 rounded-lg p-3 mb-3 text-sm">
+                <span className="font-semibold text-outline-variant text-xs uppercase">Your Answer</span>
+                <p className="mt-1 text-on-surface-variant">{committedText}</p>
               </div>
             )}
-            <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-sm text-green-900">
-              <span className="font-semibold text-green-700 text-xs uppercase">Model Answer</span>
+            <div className="bg-tertiary-container border border-on-tertiary-container/30 rounded-lg p-3 text-sm text-on-tertiary-container">
+              <span className="font-semibold text-on-tertiary-container text-xs uppercase">Model Answer</span>
               <p className="mt-1">{exercise.answer}</p>
             </div>
           </div>
