@@ -75,6 +75,17 @@ export default function QuestionCard({ question, index, onScore, companyContext 
     }
   };
 
+  const handleRetry = () => {
+    setPhase("commit");
+    setSelfScore(null);
+    setTextAnswer("");
+    setNumericAnswer(null);
+    setCommittedText("");
+    setCommittedNumeric(null);
+    setLlmResult(null);
+    setLlmLoading(false);
+  };
+
   const modelExtracted = isQuantitative
     ? extractNumericValue(question.answer)
     : null;
@@ -257,6 +268,13 @@ export default function QuestionCard({ question, index, onScore, companyContext 
                 keywords={question.keywords}
               />
             )}
+
+            <button
+              onClick={handleRetry}
+              className="px-3 py-1.5 text-sm font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
+            >
+              Try Again
+            </button>
           </div>
         )}
       </div>
