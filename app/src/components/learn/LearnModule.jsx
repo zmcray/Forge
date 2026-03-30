@@ -1,22 +1,29 @@
 import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { LEARN_CONTENT } from "../../data/learnContent";
 import useLearnProgress from "../../hooks/useLearnProgress";
 import LearnNav from "./LearnNav";
 import LearnSection from "./LearnSection";
+import ComparisonList from "./ComparisonList";
+import ComparisonView from "./ComparisonView";
 
 export default function LearnModule() {
   const [currentSection, setCurrentSection] = useState(0);
   const [currentSubsection, setCurrentSubsection] = useState(0);
   const { markComplete, isComplete, markVisited, getSubsectionProgress, resetSubsection } = useLearnProgress();
+  const location = useLocation();
+
+  const isCompareRoute = location.pathname.startsWith("/learn/compare");
+  const isCompareDetail = location.pathname.match(/^\/learn\/compare\/[^/]+$/);
 
   const sections = LEARN_CONTENT;
   const activeSub = sections[currentSection]?.subsections[currentSubsection];
 
   useEffect(() => {
-    if (activeSub) {
+    if (activeSub && !isCompareRoute) {
       markVisited(activeSub.id);
     }
-  }, [activeSub, markVisited]);
+  }, [activeSub, markVisited, isCompareRoute]);
 
   const handleNavigate = (si, ssi) => {
     setCurrentSection(si);
@@ -73,31 +80,39 @@ export default function LearnModule() {
         {/* Content area */}
         <div className="flex-1 min-w-0">
           <div className="bg-surface-container-lowest ghost-border rounded-xl p-6">
-            {activeSub && (
-              <LearnSection
-                subsection={activeSub}
-                isComplete={isComplete}
-                onExerciseComplete={markComplete}
-              />
-            )}
+            {isCompareDetail ? (
+              <ComparisonView />
+            ) : isCompareRoute ? (
+              <ComparisonList />
+            ) : (
+              <>
+                {activeSub && (
+                  <LearnSection
+                    subsection={activeSub}
+                    isComplete={isComplete}
+                    onExerciseComplete={markComplete}
+                  />
+                )}
 
-            {/* Navigation buttons */}
-            <div className="flex justify-between mt-8 pt-4 border-t border-outline-variant/30">
-              <button
-                onClick={handlePrev}
-                disabled={isFirst}
-                className={`px-4 py-2 text-sm rounded-lg transition-colors ${isFirst ? "text-outline-variant cursor-not-allowed" : "text-on-surface-variant hover:bg-surface-container-low"}`}
-              >
-                Previous
-              </button>
-              <button
-                onClick={handleNext}
-                disabled={isLast}
-                className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors ${isLast ? "text-outline-variant cursor-not-allowed" : "bg-primary text-on-primary hover:opacity-90"}`}
-              >
-                Next
-              </button>
-            </div>
+                {/* Navigation buttons */}
+                <div className="flex justify-between mt-8 pt-4 border-t border-outline-variant/30">
+                  <button
+                    onClick={handlePrev}
+                    disabled={isFirst}
+                    className={`px-4 py-2 text-sm rounded-lg transition-colors ${isFirst ? "text-outline-variant cursor-not-allowed" : "text-on-surface-variant hover:bg-surface-container-low"}`}
+                  >
+                    Previous
+                  </button>
+                  <button
+                    onClick={handleNext}
+                    disabled={isLast}
+                    className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors ${isLast ? "text-outline-variant cursor-not-allowed" : "bg-primary text-on-primary hover:opacity-90"}`}
+                  >
+                    Next
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
