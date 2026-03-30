@@ -56,6 +56,64 @@ function apiDevPlugin() {
           res.end(JSON.stringify({ error: "Evaluation unavailable" }));
         }
       });
+
+      // SSE streaming middleware for chat endpoint
+      server.middlewares.use("/api/chat", async (req, res) => {
+        if (req.method !== "POST") {
+          res.statusCode = 405;
+          res.end(JSON.stringify({ error: "Method not allowed" }));
+          return;
+        }
+
+        const chunks = [];
+        for await (const chunk of req) chunks.push(chunk);
+        let body;
+        try {
+          body = JSON.parse(Buffer.concat(chunks).toString());
+        } catch {
+          res.statusCode = 400;
+          res.end(JSON.stringify({ error: "Invalid JSON" }));
+          return;
+        }
+
+        res.writeHead(200, {
+          "Content-Type": "text/event-stream",
+          "Cache-Control": "no-cache",
+          "Connection": "keep-alive",
+        });
+
+        const ac = new AbortController();
+        req.on("close", () => ac.abort());
+
+        try {
+          const { POST } = await import("./api/chat.js");
+          const request = new Request("http://localhost/api/chat", {
+            method: "POST",
+            headers: { "content-type": "application/json", ...Object.fromEntries(
+              Object.entries(req.headers).filter(([k]) => k.startsWith("x-"))
+            )},
+            body: JSON.stringify(body),
+            signal: ac.signal,
+          });
+
+          const response = await POST(request);
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder();
+
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            if (ac.signal.aborted) { reader.cancel(); break; }
+            res.write(decoder.decode(value, { stream: true }));
+          }
+        } catch (err) {
+          if (!ac.signal.aborted) {
+            res.write(`data: ${JSON.stringify({ type: "error", message: "Chat unavailable" })}\n\n`);
+          }
+        } finally {
+          res.end();
+        }
+      });
     },
   };
 }

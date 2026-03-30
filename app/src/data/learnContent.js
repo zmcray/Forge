@@ -7,6 +7,10 @@ export const LEARN_CONTENT = [
       {
         id: "s1a",
         title: "1A. Gross Margin",
+        suggestedQuestions: [
+          "Why does gross margin matter more than revenue for PE investors?",
+          "How would a 2% drop in COGS impact Summit's valuation?",
+        ],
         blocks: [
           {
             type: "text",
@@ -42,6 +46,10 @@ export const LEARN_CONTENT = [
       {
         id: "s1b",
         title: "1B. Net Margin",
+        suggestedQuestions: [
+          "Why is net margin often misleading in LMM PE?",
+          "What expenses distort Summit's net margin?",
+        ],
         blocks: [
           {
             type: "text",
@@ -77,6 +85,10 @@ export const LEARN_CONTENT = [
       {
         id: "s1c",
         title: "1C. EBITDA",
+        suggestedQuestions: [
+          "Why do PE investors focus on EBITDA instead of net income?",
+          "What does each letter in EBITDA actually represent?",
+        ],
         blocks: [
           {
             type: "text",
@@ -119,6 +131,10 @@ export const LEARN_CONTENT = [
       {
         id: "s1d",
         title: "1D. Adjusted EBITDA",
+        suggestedQuestions: [
+          "What's the difference between EBITDA and Adjusted EBITDA?",
+          "How do you spot legitimate vs aggressive add-backs?",
+        ],
         blocks: [
           {
             type: "text",
@@ -173,6 +189,10 @@ export const LEARN_CONTENT = [
       {
         id: "s2a",
         title: "2A. The Seven Key Metrics",
+        suggestedQuestions: [
+          "Which of the seven metrics would you check first and why?",
+          "How do these metrics differ between industries?",
+        ],
         blocks: [
           {
             type: "text",
@@ -224,6 +244,10 @@ export const LEARN_CONTENT = [
       {
         id: "s2b",
         title: "2B. Working Capital Metrics",
+        suggestedQuestions: [
+          "Why is working capital a hidden trap in LMM acquisitions?",
+          "How do DSO, DPO, and DIO interact?",
+        ],
         blocks: [
           {
             type: "text",
@@ -269,6 +293,10 @@ export const LEARN_CONTENT = [
       {
         id: "s3a",
         title: "3A. Revenue Quality",
+        suggestedQuestions: [
+          "What makes revenue 'high quality' vs 'low quality'?",
+          "How does customer concentration affect revenue quality?",
+        ],
         blocks: [
           {
             type: "text",
@@ -315,6 +343,10 @@ export const LEARN_CONTENT = [
       {
         id: "s3b",
         title: "3B. EBITDA Quality",
+        suggestedQuestions: [
+          "How can EBITDA be high but 'low quality'?",
+          "What are the red flags in Summit's EBITDA?",
+        ],
         blocks: [
           {
             type: "text",
@@ -357,6 +389,10 @@ export const LEARN_CONTENT = [
       {
         id: "s3c",
         title: "3C. Working Capital in DD",
+        suggestedQuestions: [
+          "Why does working capital need special attention during due diligence?",
+          "What working capital adjustments would you make for Summit?",
+        ],
         blocks: [
           {
             type: "text",
@@ -397,6 +433,10 @@ export const LEARN_CONTENT = [
       {
         id: "s3d",
         title: "3D. Leverage & Capital Structure",
+        suggestedQuestions: [
+          "Why does debt-to-EBITDA matter for PE acquisitions?",
+          "What leverage ratio would be appropriate for Summit?",
+        ],
         blocks: [
           {
             type: "text",
@@ -446,6 +486,10 @@ export const LEARN_CONTENT = [
       {
         id: "s4a",
         title: "4A. EBITDA Add-backs",
+        suggestedQuestions: [
+          "When does an add-back cross the line from legitimate to aggressive?",
+          "How would you challenge a seller's add-back presentation?",
+        ],
         blocks: [
           {
             type: "text",
@@ -497,6 +541,10 @@ export const LEARN_CONTENT = [
       {
         id: "s4b",
         title: "4B. LBO Economics",
+        suggestedQuestions: [
+          "How does leverage amplify returns in an LBO?",
+          "What happens to returns if EBITDA grows slower than expected?",
+        ],
         blocks: [
           {
             type: "text",
@@ -548,6 +596,10 @@ export const LEARN_CONTENT = [
       {
         id: "s4c",
         title: "4C. Margin Drivers",
+        suggestedQuestions: [
+          "What's the difference between revenue-driven and cost-driven margin expansion?",
+          "Which margin driver is most durable post-acquisition?",
+        ],
         blocks: [
           {
             type: "text",
@@ -599,6 +651,10 @@ export const LEARN_CONTENT = [
       {
         id: "s4d",
         title: "4D. Cash Conversion",
+        suggestedQuestions: [
+          "Why can a profitable company still run out of cash?",
+          "How does cash conversion differ between asset-light and asset-heavy businesses?",
+        ],
         blocks: [
           {
             type: "text",
@@ -650,6 +706,10 @@ export const LEARN_CONTENT = [
       {
         id: "s4e",
         title: "4E. Customer Concentration",
+        suggestedQuestions: [
+          "At what threshold does customer concentration become a deal-breaker?",
+          "How does concentration affect valuation multiples?",
+        ],
         blocks: [
           {
             type: "text",
@@ -701,6 +761,10 @@ export const LEARN_CONTENT = [
       {
         id: "s4f",
         title: "4F. Key-Person Risk",
+        suggestedQuestions: [
+          "How do you evaluate whether a business can survive its founder leaving?",
+          "What are the most common mitigations for key-person risk?",
+        ],
         blocks: [
           {
             type: "text",
@@ -752,6 +816,10 @@ export const LEARN_CONTENT = [
       {
         id: "s4g",
         title: "4G. Valuation Multiples",
+        suggestedQuestions: [
+          "Why do similar companies trade at different multiples?",
+          "What drives the difference between 4x and 8x EBITDA?",
+        ],
         blocks: [
           {
             type: "text",
@@ -812,6 +880,10 @@ export const LEARN_CONTENT = [
       {
         id: "s4h",
         title: "4H. Investment Thesis Structure",
+        suggestedQuestions: [
+          "What makes a compelling investment thesis vs a weak one?",
+          "How do you structure the 'why now' section of a thesis?",
+        ],
         blocks: [
           {
             type: "text",
