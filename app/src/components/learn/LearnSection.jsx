@@ -1,6 +1,7 @@
 import CompanyDataPanel from "./CompanyDataPanel";
 import LearnExercise from "./LearnExercise";
 import CalculationExercise from "./CalculationExercise";
+import NotesBlock from "./NotesBlock";
 
 function LineItemTable({ rows, headers }) {
   return (
@@ -88,6 +89,9 @@ export default function LearnSection({ subsection, isComplete, onExerciseComplet
               onComplete={onExerciseComplete}
             />
           );
+        }
+        if (block.type === "notes") {
+          return <NotesBlock key={block.id} noteId={block.id} />;
         }
         return null;
       })}

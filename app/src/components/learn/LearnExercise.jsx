@@ -1,6 +1,8 @@
 import { useState } from "react";
 import CommitInput from "../CommitInput";
 import DeltaDisplay from "../DeltaDisplay";
+import { LLMGrading, LLMFeedbackSkeleton } from "../LLMFeedback";
+import { evaluateAnswer } from "../../utils/evaluateAnswer";
 import { extractNumericValue } from "../../utils/format";
 
 export default function LearnExercise({ exercise, isComplete, onComplete }) {
@@ -10,6 +12,11 @@ export default function LearnExercise({ exercise, isComplete, onComplete }) {
   const [committedText, setCommittedText] = useState("");
   const [committedNumeric, setCommittedNumeric] = useState(null);
   const [expanded, setExpanded] = useState(!isComplete);
+
+  // LLM evaluation state (qualitative only)
+  const [llmResult, setLlmResult] = useState(null);
+  const [llmLoading, setLlmLoading] = useState(false);
+  const [llmError, setLlmError] = useState(null);
 
   const mode = exercise.inputMode || "qualitative";
   const isQuantitative = mode === "quantitative";
@@ -23,6 +30,25 @@ export default function LearnExercise({ exercise, isComplete, onComplete }) {
     setCommittedNumeric(numericAnswer);
     setPhase("done");
     onComplete(exercise.id);
+
+    // Fire LLM evaluation for qualitative exercises
+    if (!isQuantitative && textAnswer.trim().length >= CommitInput.MIN_QUALITATIVE_CHARS) {
+      setLlmLoading(true);
+      setLlmError(null);
+      evaluateAnswer({
+        userAnswer: textAnswer,
+        modelAnswer: exercise.answer,
+        questionText: exercise.q,
+        questionType: "diagnostic",
+        companyContext: "",
+      })
+        .then(setLlmResult)
+        .catch((err) => {
+          console.warn("[Forge] LLM evaluation failed:", err);
+          setLlmError(true);
+        })
+        .finally(() => setLlmLoading(false));
+    }
   };
 
   const handleRedo = () => {
@@ -30,6 +56,9 @@ export default function LearnExercise({ exercise, isComplete, onComplete }) {
     setNumericAnswer(null);
     setCommittedText("");
     setCommittedNumeric(null);
+    setLlmResult(null);
+    setLlmLoading(false);
+    setLlmError(null);
     setPhase("commit");
     setExpanded(true);
   };
@@ -58,6 +87,11 @@ export default function LearnExercise({ exercise, isComplete, onComplete }) {
         <div className="flex items-center gap-2">
           <span className="text-sm font-semibold text-on-surface">Exercise</span>
           {(phase === "done" || isComplete) && <span className="text-on-tertiary-container">&#10003;</span>}
+          {llmResult && (
+            <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${llmResult.score >= 4 ? "bg-green-100 text-green-800" : llmResult.score >= 3 ? "bg-amber-100 text-amber-800" : "bg-red-100 text-red-800"}`}>
+              {llmResult.score}/5 AI
+            </span>
+          )}
         </div>
         {isComplete && phase === "done" && (
           <button onClick={handleRedo} className="text-xs text-primary hover:opacity-80">
@@ -99,6 +133,16 @@ export default function LearnExercise({ exercise, isComplete, onComplete }) {
                 <p className="mt-1 text-on-surface-variant">{committedText}</p>
               </div>
             )}
+
+            {/* LLM grading for qualitative exercises */}
+            {!isQuantitative && llmLoading && <LLMFeedbackSkeleton />}
+            {!isQuantitative && llmResult && <LLMGrading result={llmResult} />}
+            {!isQuantitative && llmError && (
+              <p className="text-xs text-amber-600 mb-2">
+                AI grading unavailable.
+              </p>
+            )}
+
             <div className="bg-tertiary-container border border-on-tertiary-container/30 rounded-lg p-3 text-sm text-on-tertiary-container">
               <span className="font-semibold text-on-tertiary-container text-xs uppercase">Model Answer</span>
               <p className="mt-1">{exercise.answer}</p>
@@ -109,3 +153,4 @@ export default function LearnExercise({ exercise, isComplete, onComplete }) {
     </div>
   );
 }
+
