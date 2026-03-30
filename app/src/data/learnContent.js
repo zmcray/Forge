@@ -33,7 +33,7 @@ export const LEARN_CONTENT = [
               { id: "cogs", label: "COGS", value: "$20.8M" },
               { id: "gross-profit", label: "Gross Profit", value: "$11.7M" },
               { id: "net-income", label: "Net Income", value: "$2.3M" },
-              { id: "sga", label: "SG&A", value: "$6.1M" }
+              { id: "sga", label: "SG&A", value: "$8.1M" }
             ],
             supplementalItems: []
           }
@@ -45,7 +45,7 @@ export const LEARN_CONTENT = [
         blocks: [
           {
             type: "text",
-            content: "Net margin shows how much of each revenue dollar survives all the way to the bottom line after every expense: COGS, overhead, owner compensation, depreciation, interest, and taxes. In public company analysis, net margin is a core metric. In LMM PE, it is often misleading because owner compensation, one-time costs, and tax structures distort it."
+            content: "Net margin shows how much of each revenue dollar survives all the way to the bottom line after every expense: COGS, SG&A, depreciation, interest, and taxes. In public company analysis, net margin is a core metric. In LMM PE, it is often misleading because one-time costs, discretionary spending, and tax structures distort it."
           },
           {
             type: "text",
@@ -58,7 +58,7 @@ export const LEARN_CONTENT = [
             instruction: "Build the net margin formula. What goes in the numerator and denominator?",
             resultLabel: "Net Margin",
             resultValue: "7.1%",
-            explanation: "Summit's 7.1% net margin looks thin, but in LMM this number is almost always misleading. The owner takes $2.0M in compensation plus $400K in perks. Interest expense reflects the current owner's debt choices, not what a buyer would structure. Depreciation is a non-cash charge. That is why PE strips all of this out and works with EBITDA and Adjusted EBITDA instead. The next two exercises show exactly how.",
+            explanation: "Summit's 7.1% net margin looks thin, but in LMM this number is almost always misleading. SG&A includes discretionary spending and perks that will change under new ownership. Interest expense reflects the current owner's debt choices, not what a buyer would structure. Depreciation is a non-cash charge. That is why PE strips all of this out and works with EBITDA and Adjusted EBITDA instead. The next two exercises show exactly how.",
             zones: [
               { id: "numerator", correctIds: ["net-income"], hint: "What is the bottom line?" },
               { id: "denominator", correctIds: ["revenue"], hint: "Divide by what?" }
@@ -68,7 +68,7 @@ export const LEARN_CONTENT = [
               { id: "gross-profit", label: "Gross Profit", value: "$11.7M" },
               { id: "net-income", label: "Net Income", value: "$2.3M" },
               { id: "cogs", label: "COGS", value: "$20.8M" },
-              { id: "owner-comp", label: "Owner Comp", value: "$2.0M" }
+              { id: "sga", label: "SG&A", value: "$8.1M" }
             ],
             supplementalItems: []
           }
@@ -93,7 +93,7 @@ export const LEARN_CONTENT = [
             instruction: "Build the EBITDA formula. Start with Net Income, then add back the four items that EBITDA removes.",
             resultLabel: "EBITDA",
             resultValue: "$4.6M",
-            explanation: "EBITDA of $4.6M on $32.5M revenue gives a 14.2% EBITDA margin. This is the operating earnings before any adjustments. But this is not the number PE uses to value the business. The owner's excess compensation, perks, and one-time costs still need to be added back. That is the next step: Adjusted EBITDA.",
+            explanation: "EBITDA of $4.6M on $32.5M revenue gives a 14.2% EBITDA margin. This is the operating earnings before any adjustments. But this is not the number PE uses to value the business. Discretionary spending buried in SG&A, perks, and one-time costs still need to be added back. That is the next step: Adjusted EBITDA.",
             zones: [
               { id: "base", correctIds: ["net-income"], hint: "Start with the bottom line" },
               { id: "add1", correctIds: ["interest", "taxes", "depreciation", "amortization"], hint: "Add back..." },
@@ -122,20 +122,20 @@ export const LEARN_CONTENT = [
         blocks: [
           {
             type: "text",
-            content: "Adjusted EBITDA is the number PE uses to value a business. It takes EBITDA and adds back costs that will not continue under new ownership: owner perks, one-time expenses, and above-market rent the owner charges. These add-backs are where the art of LMM analysis lives. Legitimate add-backs can double the effective profitability; aggressive ones are a red flag."
+            content: "Adjusted EBITDA is the number PE uses to value a business. It takes EBITDA and adds back costs that will not continue under new ownership. These add-backs are where the art of LMM analysis lives. Legitimate add-backs can double the effective profitability; aggressive ones are a red flag."
           },
           {
             type: "text",
-            content: "Summit has three add-backs. Drag them from the 'Additional Items' section into the equation to see how they transform the valuation basis."
+            content: "But where are the add-backs hiding? In LMM businesses, most of them are buried inside SG&A. Click on the SG&A line in the P&L to see what is inside, then drag the legitimate add-backs into the equation."
           },
           {
             type: "calculationExercise",
             id: "ex-1d-calc",
             layout: "addition",
-            instruction: "Build the Adjusted EBITDA formula. Start with EBITDA, then add the three legitimate add-backs.",
+            instruction: "Explore SG&A to find the add-backs, then build the Adjusted EBITDA formula.",
             resultLabel: "Adjusted EBITDA",
             resultValue: "$5.5M",
-            explanation: "The $0.9M in add-backs takes EBITDA from $4.6M to $5.5M, a 20% increase. At a typical 5-6x multiple, that $0.9M in add-backs is worth $4.5-5.4M in enterprise value. This is why add-back analysis is so critical in PE. Note: this does not yet include the biggest potential add-back, owner excess compensation ($2.0M salary vs. a $250K replacement GM), which would push Adjusted EBITDA even higher. That larger adjustment is typically negotiated separately.",
+            explanation: "The $0.9M in add-backs takes EBITDA from $4.6M to $5.5M, a 20% increase. At a typical 5-6x multiple, that $0.9M in add-backs is worth $4.5-5.4M in enterprise value. This is why digging into SG&A is critical.\n\nYou may have noticed the biggest line hiding in SG&A: Owner Compensation at $2.0M. A replacement GM might cost $250K, making the excess roughly $1.75M. So why is it not in the formula above? Owner comp is almost always the most contested add-back in a deal. Sellers argue their full salary should be added back; buyers argue only the excess above a market replacement is legitimate. The gap between $2.0M and $250K is where negotiations get heated. Many deals include an earn-out or consulting agreement specifically to bridge this disagreement. In practice, the owner comp add-back is negotiated separately from the 'clean' add-backs like perks and one-time costs.",
             zones: [
               { id: "base", correctIds: ["ebitda"], hint: "Start with EBITDA" },
               { id: "add1", correctIds: ["owner-perks", "one-time", "above-market-rent"], hint: "Add-back" },
@@ -146,15 +146,18 @@ export const LEARN_CONTENT = [
               { id: "ebitda", label: "EBITDA", value: "$4.6M" },
               { id: "owner-perks", label: "Owner Perks", value: "$0.4M" },
               { id: "one-time", label: "One-Time Expenses", value: "$0.3M" },
-              { id: "above-market-rent", label: "Above-Market Rent", value: "$0.2M" },
-              { id: "owner-comp", label: "Owner Comp", value: "$2.0M" },
-              { id: "sga", label: "SG&A", value: "$6.1M" }
+              { id: "above-market-rent", label: "Above-Market Rent", value: "$0.2M" }
+            ],
+            sgaBreakdown: [
+              { id: "owner-comp-line", label: "Owner Compensation", value: "$2.0M", isAddBack: true },
+              { id: "owner-perks", label: "Owner Perks", value: "$0.4M", isAddBack: true },
+              { id: "one-time", label: "One-Time Legal/Consulting", value: "$0.3M", isAddBack: true },
+              { id: "above-market-rent", label: "Above-Market Rent", value: "$0.2M", isAddBack: true },
+              { id: "sales-marketing", label: "Sales & Marketing", value: "$2.5M" },
+              { id: "office-admin", label: "Office & Admin", value: "$2.7M" }
             ],
             supplementalItems: [
-              { id: "ebitda", label: "EBITDA", value: "$4.6M" },
-              { id: "owner-perks", label: "Owner Perks", value: "$0.4M" },
-              { id: "one-time", label: "One-Time Expenses", value: "$0.3M" },
-              { id: "above-market-rent", label: "Above-Market Rent", value: "$0.2M" }
+              { id: "ebitda", label: "EBITDA", value: "$4.6M", note: "Calculated in the previous exercise: Net Income + Interest + Taxes + Depreciation + Amortization" }
             ]
           }
         ]
@@ -212,7 +215,7 @@ export const LEARN_CONTENT = [
           {
             type: "exercise",
             id: "ex-2a-2",
-            q: "Now screen BrightSmile Dental Partners using the same seven metrics. Look at its key metrics below and decide: pass or investigate further?",
+            q: "Now screen BrightSmile Dental Partners using the same seven metrics. Look at its key metrics above and decide: pass or investigate further?",
             inputMode: "qualitative",
             answer: "BrightSmile screens well for a roll-up: Revenue $9.8M (slightly below LMM threshold but growing fast at 32.4%). Gross margin 55.1% is excellent for dental. Adjusted EBITDA margin 25.5% is strong. Customer concentration 3% is ideal (diversified patient base). Recurring revenue 70% (patients return every 6 months). Leverage 2.0x is comfortable. The concern: $9.8M revenue is technically below the $10M floor, but the 32% growth rate means it will cross that threshold within a quarter. Also, how much of that growth is organic vs. acquired? Worth a deeper look, but it screens in."
           }

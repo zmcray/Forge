@@ -37,9 +37,12 @@ const feedbackSchema = {
 export const config = { maxDuration: 30 };
 
 export async function POST(request) {
-  const token = request.headers.get("x-forge-token");
-  if (token !== process.env.FORGE_AUTH_TOKEN) {
-    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  // Skip auth check in dev (no FORGE_AUTH_TOKEN configured)
+  if (process.env.FORGE_AUTH_TOKEN) {
+    const token = request.headers.get("x-forge-token");
+    if (token !== process.env.FORGE_AUTH_TOKEN) {
+      return Response.json({ error: "Unauthorized" }, { status: 401 });
+    }
   }
 
   let body;
