@@ -1,7 +1,4 @@
-import useNotes from "../../hooks/useNotes";
-
-export default function NotesBlock({ noteId }) {
-  const { getNoteText, setNoteText } = useNotes();
+export default function NotesBlock({ noteId, getNoteText, setNoteText }) {
   const text = getNoteText(noteId);
 
   return (
