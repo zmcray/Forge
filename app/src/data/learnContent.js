@@ -266,7 +266,7 @@ export const LEARN_CONTENT = [
           },
           {
             type: "text",
-            content: "Let's calculate DSO for Coastal Fresh Foods, which has $6.8M in AR on $48.2M in revenue."
+            content: "Let's calculate DSO, DIO, DPO, and the cash conversion cycle for Coastal Fresh Foods using their balance sheet and income statement."
           },
           {
             type: "companyData",
@@ -275,10 +275,42 @@ export const LEARN_CONTENT = [
           },
           {
             type: "exercise",
-            id: "ex-2b-1",
-            q: "Calculate Coastal's DSO, DIO, DPO, and cash conversion cycle. Is working capital helping or hurting this business?",
+            id: "ex-2b-dso",
+            q: "Calculate Coastal's DSO (Days Sales Outstanding). AR = $6.8M, Revenue = $48.2M.",
             inputMode: "quantitative",
-            answer: "DSO = ($6.8M / $48.2M) x 365 = 51.5 days (above 45-day benchmark). DIO = ($3.2M / $39.0M) x 365 = 30.0 days (reasonable for food distribution). DPO = ($5.1M / $39.0M) x 365 = 47.7 days (they are stretching supplier payments). Cash Conversion Cycle = 51.5 + 30.0 - 47.7 = 33.8 days. Working capital is hurting the business. The main problem is DSO at 51.5 days. They are collecting slowly from customers while carrying 30 days of perishable inventory. Every day of DSO improvement on $48.2M revenue frees up ~$132K in cash."
+            unit: "days",
+            answer: "DSO = ($6.8M / $48.2M) x 365 = 51.5 days. Above the 45-day benchmark, meaning slow-paying customers or loose collection practices."
+          },
+          {
+            type: "exercise",
+            id: "ex-2b-dio",
+            q: "Calculate Coastal's DIO (Days Inventory Outstanding). Inventory = $3.2M, COGS = $39.0M.",
+            inputMode: "quantitative",
+            unit: "days",
+            answer: "DIO = ($3.2M / $39.0M) x 365 = 30.0 days. Reasonable for food distribution where inventory turns quickly due to perishability."
+          },
+          {
+            type: "exercise",
+            id: "ex-2b-dpo",
+            q: "Calculate Coastal's DPO (Days Payable Outstanding). AP = $5.1M, COGS = $39.0M.",
+            inputMode: "quantitative",
+            unit: "days",
+            answer: "DPO = ($5.1M / $39.0M) x 365 = 47.7 days. They are stretching supplier payments, which helps cash flow but could strain relationships."
+          },
+          {
+            type: "exercise",
+            id: "ex-2b-ccc",
+            q: "Calculate Coastal's Cash Conversion Cycle (DSO + DIO - DPO).",
+            inputMode: "quantitative",
+            unit: "days",
+            answer: "CCC = 51.5 + 30.0 - 47.7 = 33.8 days. Cash is tied up for about 34 days between paying suppliers and collecting from customers."
+          },
+          {
+            type: "exercise",
+            id: "ex-2b-wc-assessment",
+            q: "Is working capital helping or hurting Coastal's business? Why?",
+            inputMode: "qualitative",
+            answer: "Working capital is hurting the business. The main problem is DSO at 51.5 days. They are collecting slowly from customers while carrying 30 days of perishable inventory. Every day of DSO improvement on $48.2M revenue frees up ~$132K in cash. The high DPO (47.7 days) partially offsets this, but stretching suppliers in food distribution risks losing preferred pricing or priority allocation."
           }
         ]
       }
