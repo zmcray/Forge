@@ -271,12 +271,17 @@ export const LEARN_CONTENT = [
           {
             type: "companyData",
             companyId: "coastal-foods",
+            view: "income"
+          },
+          {
+            type: "companyData",
+            companyId: "coastal-foods",
             view: "balance"
           },
           {
             type: "exercise",
             id: "ex-2b-dso",
-            q: "Calculate Coastal's DSO (Days Sales Outstanding). AR = $6.8M, Revenue = $48.2M.",
+            q: "Using the financials above, calculate Coastal's DSO (Days Sales Outstanding).",
             inputMode: "quantitative",
             unit: "days",
             answer: "DSO = ($6.8M / $48.2M) x 365 = 51.5 days. Above the 45-day benchmark, meaning slow-paying customers or loose collection practices."
@@ -284,7 +289,7 @@ export const LEARN_CONTENT = [
           {
             type: "exercise",
             id: "ex-2b-dio",
-            q: "Calculate Coastal's DIO (Days Inventory Outstanding). Inventory = $3.2M, COGS = $39.0M.",
+            q: "Calculate Coastal's DIO (Days Inventory Outstanding).",
             inputMode: "quantitative",
             unit: "days",
             answer: "DIO = ($3.2M / $39.0M) x 365 = 30.0 days. Reasonable for food distribution where inventory turns quickly due to perishability."
@@ -292,7 +297,7 @@ export const LEARN_CONTENT = [
           {
             type: "exercise",
             id: "ex-2b-dpo",
-            q: "Calculate Coastal's DPO (Days Payable Outstanding). AP = $5.1M, COGS = $39.0M.",
+            q: "Calculate Coastal's DPO (Days Payable Outstanding).",
             inputMode: "quantitative",
             unit: "days",
             answer: "DPO = ($5.1M / $39.0M) x 365 = 47.7 days. They are stretching supplier payments, which helps cash flow but could strain relationships."
@@ -300,7 +305,7 @@ export const LEARN_CONTENT = [
           {
             type: "exercise",
             id: "ex-2b-ccc",
-            q: "Calculate Coastal's Cash Conversion Cycle (DSO + DIO - DPO).",
+            q: "Using your calculations above, what is Coastal's Cash Conversion Cycle?",
             inputMode: "quantitative",
             unit: "days",
             answer: "CCC = 51.5 + 30.0 - 47.7 = 33.8 days. Cash is tied up for about 34 days between paying suppliers and collecting from customers."
