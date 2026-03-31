@@ -1,6 +1,8 @@
 import Anthropic from "@anthropic-ai/sdk";
 
-const client = new Anthropic();
+function getClient() {
+  return new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+}
 
 const MAX_MESSAGES = 20;
 const MAX_SYSTEM_PROMPT_LENGTH = 5000;
@@ -44,7 +46,7 @@ export async function POST(request) {
     return Response.json({ error: "Invalid systemPrompt" }, { status: 400 });
   }
 
-  const stream = client.messages.stream({
+  const stream = getClient().messages.stream({
     model: "claude-haiku-4-5",
     max_tokens: 1024,
     system: [{ type: "text", text: systemPrompt, cache_control: { type: "ephemeral" } }],

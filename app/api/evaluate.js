@@ -1,6 +1,8 @@
 import Anthropic from "@anthropic-ai/sdk";
 
-const client = new Anthropic();
+function getClient() {
+  return new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+}
 
 const VALID_TYPES = ["risk", "diagnostic", "thesis"];
 const MAX_FIELD_LENGTH = 5000;
@@ -77,7 +79,7 @@ export async function POST(request) {
   }
 
   try {
-    const response = await client.messages.create({
+    const response = await getClient().messages.create({
       model: "claude-haiku-4-5",
       max_tokens: 512,
       system: [
@@ -102,8 +104,6 @@ export async function POST(request) {
     return Response.json(feedback);
   } catch (err) {
     console.error("Evaluation failed:", err.message);
-    const keyExists = !!process.env.ANTHROPIC_API_KEY;
-    const keyPrefix = process.env.ANTHROPIC_API_KEY ? process.env.ANTHROPIC_API_KEY.slice(0, 10) : "MISSING";
-    return Response.json({ error: "Evaluation unavailable", debug: err.message, keyExists, keyPrefix }, { status: 502 });
+    return Response.json({ error: "Evaluation unavailable" }, { status: 502 });
   }
 }
