@@ -102,6 +102,6 @@ export async function POST(request) {
     return Response.json(feedback);
   } catch (err) {
     console.error("Evaluation failed:", err.message);
-    return Response.json({ error: "Evaluation unavailable" }, { status: 502 });
+    return Response.json({ error: "Evaluation unavailable", debug: err.message }, { status: 502 });
   }
 }
