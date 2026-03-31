@@ -48,10 +48,10 @@ export const config = { maxDuration: 30 };
 
 export async function POST(request) {
   // Skip auth check in dev (no FORGE_AUTH_TOKEN configured)
-  const forgeToken = getEnv("FORGE_AUTH_TOKEN");
-  if (forgeToken) {
+  // Use exact match here -- auth is opt-in and client/server must agree on casing
+  if (process.env.FORGE_AUTH_TOKEN) {
     const token = request.headers.get("x-forge-token");
-    if (token !== forgeToken) {
+    if (token !== process.env.FORGE_AUTH_TOKEN) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
   }
