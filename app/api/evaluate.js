@@ -1,7 +1,15 @@
 import Anthropic from "@anthropic-ai/sdk";
 
+// Case-insensitive env lookup (Vercel dashboard may have non-standard casing)
+function getEnv(name) {
+  if (process.env[name]) return process.env[name];
+  const lower = name.toLowerCase();
+  const key = Object.keys(process.env).find(k => k.toLowerCase() === lower);
+  return key ? process.env[key] : undefined;
+}
+
 function getClient() {
-  return new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+  return new Anthropic({ apiKey: getEnv("ANTHROPIC_API_KEY") });
 }
 
 const VALID_TYPES = ["risk", "diagnostic", "thesis"];
@@ -40,9 +48,10 @@ export const config = { maxDuration: 30 };
 
 export async function POST(request) {
   // Skip auth check in dev (no FORGE_AUTH_TOKEN configured)
-  if (process.env.FORGE_AUTH_TOKEN) {
+  const forgeToken = getEnv("FORGE_AUTH_TOKEN");
+  if (forgeToken) {
     const token = request.headers.get("x-forge-token");
-    if (token !== process.env.FORGE_AUTH_TOKEN) {
+    if (token !== forgeToken) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
   }
