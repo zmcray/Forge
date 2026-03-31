@@ -102,6 +102,8 @@ export async function POST(request) {
     return Response.json(feedback);
   } catch (err) {
     console.error("Evaluation failed:", err.message);
-    return Response.json({ error: "Evaluation unavailable", debug: err.message }, { status: 502 });
+    const keyExists = !!process.env.ANTHROPIC_API_KEY;
+    const keyPrefix = process.env.ANTHROPIC_API_KEY ? process.env.ANTHROPIC_API_KEY.slice(0, 10) : "MISSING";
+    return Response.json({ error: "Evaluation unavailable", debug: err.message, keyExists, keyPrefix }, { status: 502 });
   }
 }
