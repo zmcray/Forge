@@ -75,6 +75,7 @@ export default function CalculationExercise({ exercise, isComplete, onComplete }
               draggables={exercise.draggables}
               supplementalItems={exercise.supplementalItems || []}
               placedItemIds={placedItemIds}
+              sgaBreakdown={exercise.sgaBreakdown || []}
             />
           </div>
           <div className="w-3/5">

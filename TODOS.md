@@ -55,3 +55,11 @@ Consider React Context or Zustand if prop drilling becomes unwieldy. Currently m
 ### LLM-Generated Dynamic Scenarios
 Use Claude API to generate novel company profiles and scenario variations on demand. Requires API key setup.
 **Priority:** P3 | **Effort:** L
+
+### Socratic Mode Toggle for Chat
+Add a Direct/Socratic toggle to the chat drawer. Socratic mode asks guiding questions ("What do you think depreciation represents?") instead of giving direct answers. Research shows this produces deeper learning (Khanmigo pattern). Requires careful prompt engineering to avoid frustrating users who just want a quick explanation. Depends on: LLM Chat feature ships first.
+**Priority:** P2 | **Effort:** S
+
+### Extend Chat to Practice Mode
+Make the chat drawer available on /practice/:companyId pages. Context builder injects full company financials instead of lesson content. Users analyzing a company can ask follow-up questions ("Is 12% customer concentration risky for food distribution?") without leaving Forge. Needs different suggested questions per company and a larger context window (~2000 tokens for full financials). Depends on: LLM Chat feature ships first.
+**Priority:** P2 | **Effort:** M

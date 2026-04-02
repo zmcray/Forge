@@ -1,9 +1,10 @@
+import { useState } from "react";
+
 const PNL_LINES = [
   { id: "revenue", label: "Revenue", value: "$32.5M" },
   { id: "cogs", label: "COGS", value: "($20.8M)" },
   { id: "gross-profit", label: "Gross Profit", value: "$11.7M", isSummary: true },
-  { id: "sga", label: "SG&A", value: "($6.1M)" },
-  { id: "owner-comp", label: "Owner Compensation", value: "($2.0M)" },
+  { id: "sga", label: "SG&A", value: "($8.1M)" },
   { id: "depreciation", label: "Depreciation", value: "($1.1M)" },
   { id: "amortization", label: "Amortization", value: "($0.1M)" },
   { id: "interest", label: "Interest Expense", value: "($0.3M)" },
@@ -34,9 +35,29 @@ function DraggableItem({ item, isPlaced }) {
   );
 }
 
-export default function SimplePnL({ draggables, supplementalItems = [], placedItemIds }) {
+function SgaBreakdownRow({ item, isDraggable, isPlaced, draggableMap }) {
+  return (
+    <div className="flex items-center justify-between px-4 pl-8 py-1 bg-surface-container-low/50">
+      <span className={`text-xs ${item.isAddBack ? "text-amber-700 dark:text-amber-400 font-medium" : "text-on-surface-variant"}`}>
+        {item.isAddBack && <span className="mr-1">*</span>}
+        {item.label}
+      </span>
+      {isDraggable ? (
+        <DraggableItem item={draggableMap[item.id] || item} isPlaced={isPlaced} />
+      ) : (
+        <span className={`text-xs tabular-nums ${item.isAddBack ? "text-amber-700 dark:text-amber-400" : ""}`}>
+          {item.value}
+        </span>
+      )}
+    </div>
+  );
+}
+
+export default function SimplePnL({ draggables, supplementalItems = [], placedItemIds, sgaBreakdown = [] }) {
+  const [sgaExpanded, setSgaExpanded] = useState(false);
   const draggableIds = new Set(draggables.map(d => d.id));
   const draggableMap = Object.fromEntries(draggables.map(d => [d.id, d]));
+  const hasSgaBreakdown = sgaBreakdown.length > 0;
 
   return (
     <div className="sticky top-4">
@@ -48,23 +69,52 @@ export default function SimplePnL({ draggables, supplementalItems = [], placedIt
           {PNL_LINES.map(line => {
             const isDraggable = draggableIds.has(line.id);
             const isPlaced = placedItemIds.has(line.id);
+            const isSgaExpandable = line.id === "sga" && hasSgaBreakdown;
 
             return (
-              <div
-                key={line.id}
-                className={`flex items-center justify-between px-4 py-1.5 ${
-                  line.isSummary ? "bg-surface-container-low border-t border-outline-variant/30" : ""
-                }`}
-              >
-                <span className={`text-sm ${line.isSummary ? "font-semibold text-on-surface" : "text-on-surface-variant"}`}>
-                  {line.label}
-                </span>
-                {isDraggable ? (
-                  <DraggableItem item={draggableMap[line.id]} isPlaced={isPlaced} />
-                ) : (
-                  <span className={`text-sm tabular-nums ${line.isSummary ? "font-semibold" : ""}`}>
-                    {line.value}
+              <div key={line.id}>
+                <div
+                  className={`flex items-center justify-between px-4 py-1.5 ${
+                    line.isSummary ? "bg-surface-container-low border-t border-outline-variant/30" : ""
+                  } ${isSgaExpandable ? "cursor-pointer hover:bg-surface-container-high/50 transition-colors" : ""}`}
+                  onDoubleClick={isSgaExpandable ? () => setSgaExpanded(!sgaExpanded) : undefined}
+                  onClick={isSgaExpandable ? () => setSgaExpanded(!sgaExpanded) : undefined}
+                >
+                  <span className={`text-sm ${line.isSummary ? "font-semibold text-on-surface" : "text-on-surface-variant"} ${isSgaExpandable ? "flex items-center gap-1" : ""}`}>
+                    {isSgaExpandable && (
+                      <span className={`text-xs transition-transform inline-block ${sgaExpanded ? "rotate-90" : ""}`}>&#9654;</span>
+                    )}
+                    {line.label}
+                    {isSgaExpandable && !sgaExpanded && (
+                      <span className="text-[10px] text-primary ml-1 animate-pulse">click to explore</span>
+                    )}
                   </span>
+                  {isDraggable ? (
+                    <DraggableItem item={draggableMap[line.id]} isPlaced={isPlaced} />
+                  ) : (
+                    <span className={`text-sm tabular-nums ${line.isSummary ? "font-semibold" : ""}`}>
+                      {line.value}
+                    </span>
+                  )}
+                </div>
+
+                {isSgaExpandable && sgaExpanded && (
+                  <div className="border-t border-outline-variant/10">
+                    <div className="px-4 pl-8 py-1 bg-amber-50/30 dark:bg-amber-900/10 border-b border-outline-variant/10">
+                      <span className="text-[10px] font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wide">
+                        * = potential add-back
+                      </span>
+                    </div>
+                    {sgaBreakdown.map(item => (
+                      <SgaBreakdownRow
+                        key={item.id}
+                        item={item}
+                        isDraggable={draggableIds.has(item.id)}
+                        isPlaced={placedItemIds.has(item.id)}
+                        draggableMap={draggableMap}
+                      />
+                    ))}
+                  </div>
                 )}
               </div>
             );

@@ -1,6 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
 
-export default function LearnNav({ sections, currentSection, currentSubsection, onNavigate, getSubsectionProgress, onResetSubsection }) {
+export default function LearnNav({ sections, currentSection, currentSubsection, onNavigate, getSubsectionProgress, onResetSubsection, collapsed }) {
   const navigate = useNavigate();
   const location = useLocation();
   const isCompareActive = location.pathname.startsWith("/learn/compare");
@@ -10,7 +10,7 @@ export default function LearnNav({ sections, currentSection, currentSubsection, 
     <nav className="space-y-4">
       {sections.map((section, si) => (
         <div key={section.id}>
-          <h3 className="text-[10px] font-semibold text-on-surface-variant uppercase tracking-widest mb-1.5">{section.title}</h3>
+          <h3 className={`text-[10px] font-semibold text-on-surface-variant uppercase tracking-widest mb-1.5 ${collapsed ? "max-xl:hidden" : ""}`}>{section.title}</h3>
           <ul className="space-y-0.5">
             {section.subsections.map((sub, ssi) => {
               const isActive = currentSection === si && currentSubsection === ssi;
@@ -29,9 +29,9 @@ export default function LearnNav({ sections, currentSection, currentSubsection, 
                       }`}
                     >
                       {allDone && <span className="text-on-tertiary-container text-xs">&#10003;</span>}
-                      <span className="flex-1">{sub.title}</span>
+                      <span className={`flex-1 ${collapsed ? "max-xl:hidden" : ""}`}>{sub.title}</span>
                       {progress && !allDone && (
-                        <span className="text-xs text-outline-variant">{progress.completed}/{progress.total}</span>
+                        <span className={`text-xs text-outline-variant ${collapsed ? "max-xl:hidden" : ""}`}>{progress.completed}/{progress.total}</span>
                       )}
                     </button>
                     {allDone && onResetSubsection && (
@@ -79,7 +79,7 @@ export default function LearnNav({ sections, currentSection, currentSubsection, 
           }`}
         >
           <span className="material-symbols-outlined text-[18px]">compare_arrows</span>
-          <span>Cross-Industry Compare</span>
+          <span className={collapsed ? "max-xl:hidden" : ""}>Cross-Industry Compare</span>
         </button>
       </div>
     </nav>

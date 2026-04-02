@@ -1,6 +1,16 @@
 import Anthropic from "@anthropic-ai/sdk";
 
-const client = new Anthropic();
+// Case-insensitive env lookup (Vercel dashboard may have non-standard casing)
+function getEnv(name) {
+  if (process.env[name]) return process.env[name];
+  const lower = name.toLowerCase();
+  const key = Object.keys(process.env).find(k => k.toLowerCase() === lower);
+  return key ? process.env[key] : undefined;
+}
+
+function getClient() {
+  return new Anthropic({ apiKey: getEnv("ANTHROPIC_API_KEY") });
+}
 
 const VALID_TYPES = ["risk", "diagnostic", "thesis"];
 const MAX_FIELD_LENGTH = 5000;
@@ -37,9 +47,13 @@ const feedbackSchema = {
 export const config = { maxDuration: 30 };
 
 export async function POST(request) {
-  const token = request.headers.get("x-forge-token");
-  if (token !== process.env.FORGE_AUTH_TOKEN) {
-    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  // Skip auth check in dev (no FORGE_AUTH_TOKEN configured)
+  // Use exact match here -- auth is opt-in and client/server must agree on casing
+  if (process.env.FORGE_AUTH_TOKEN) {
+    const token = request.headers.get("x-forge-token");
+    if (token !== process.env.FORGE_AUTH_TOKEN) {
+      return Response.json({ error: "Unauthorized" }, { status: 401 });
+    }
   }
 
   let body;
@@ -74,7 +88,7 @@ export async function POST(request) {
   }
 
   try {
-    const response = await client.messages.create({
+    const response = await getClient().messages.create({
       model: "claude-haiku-4-5",
       max_tokens: 512,
       system: [

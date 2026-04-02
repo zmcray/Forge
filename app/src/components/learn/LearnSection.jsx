@@ -53,10 +53,22 @@ function MetricTable({ rows, headers }) {
   );
 }
 
-export default function LearnSection({ subsection, isComplete, onExerciseComplete }) {
+export default function LearnSection({ subsection, isComplete, onExerciseComplete, onOpenChat, getNoteText, setNoteText }) {
   return (
     <div>
-      <h2 className="text-xl font-bold text-on-surface mb-4">{subsection.title}</h2>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xl font-bold text-on-surface">{subsection.title}</h2>
+        {onOpenChat && (
+          <button
+            onClick={() => onOpenChat()}
+            className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-lg bg-secondary-container text-on-secondary-container hover:opacity-80 transition-opacity"
+            title="Chat about this topic"
+          >
+            <span className="material-symbols-outlined text-base">chat</span>
+            Chat
+          </button>
+        )}
+      </div>
       {subsection.blocks.map((block, i) => {
         if (block.type === "text") {
           return <p key={i} className="text-on-surface-variant text-sm leading-relaxed mb-3">{block.content}</p>;
@@ -77,6 +89,7 @@ export default function LearnSection({ subsection, isComplete, onExerciseComplet
               exercise={block}
               isComplete={isComplete(block.id)}
               onComplete={onExerciseComplete}
+              onOpenChat={onOpenChat}
             />
           );
         }
@@ -91,7 +104,7 @@ export default function LearnSection({ subsection, isComplete, onExerciseComplet
           );
         }
         if (block.type === "notes") {
-          return <NotesBlock key={block.id} noteId={block.id} />;
+          return <NotesBlock key={block.id} noteId={block.id} getNoteText={getNoteText} setNoteText={setNoteText} />;
         }
         return null;
       })}

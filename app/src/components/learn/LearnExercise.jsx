@@ -5,7 +5,7 @@ import { LLMGrading, LLMFeedbackSkeleton } from "../LLMFeedback";
 import { evaluateAnswer } from "../../utils/evaluateAnswer";
 import { extractNumericValue } from "../../utils/format";
 
-export default function LearnExercise({ exercise, isComplete, onComplete }) {
+export default function LearnExercise({ exercise, isComplete, onComplete, onOpenChat }) {
   const [phase, setPhase] = useState(isComplete ? "done" : "commit"); // commit, reveal, done
   const [textAnswer, setTextAnswer] = useState("");
   const [numericAnswer, setNumericAnswer] = useState(null);
@@ -141,6 +141,17 @@ export default function LearnExercise({ exercise, isComplete, onComplete }) {
               <p className="text-xs text-amber-600 mb-2">
                 AI grading unavailable.
               </p>
+            )}
+
+            {/* Dig deeper trigger -- opens chat with LLM grading context */}
+            {!isQuantitative && llmResult && onOpenChat && (
+              <button
+                onClick={() => onOpenChat({ llmResult })}
+                className="flex items-center gap-1.5 text-xs text-primary hover:opacity-80 transition-opacity mb-3"
+              >
+                <span className="material-symbols-outlined text-base">chat</span>
+                Want to dig deeper? Chat about your gaps
+              </button>
             )}
 
             <div className="bg-tertiary-container border border-on-tertiary-container/30 rounded-lg p-3 text-sm text-on-tertiary-container">

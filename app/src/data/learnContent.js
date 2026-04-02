@@ -7,6 +7,10 @@ export const LEARN_CONTENT = [
       {
         id: "s1a",
         title: "1A. Gross Margin",
+        suggestedQuestions: [
+          "Why does gross margin matter more than revenue for PE investors?",
+          "How would a 2% drop in COGS impact Summit's valuation?",
+        ],
         blocks: [
           {
             type: "text",
@@ -33,7 +37,7 @@ export const LEARN_CONTENT = [
               { id: "cogs", label: "COGS", value: "$20.8M" },
               { id: "gross-profit", label: "Gross Profit", value: "$11.7M" },
               { id: "net-income", label: "Net Income", value: "$2.3M" },
-              { id: "sga", label: "SG&A", value: "$6.1M" }
+              { id: "sga", label: "SG&A", value: "$8.1M" }
             ],
             supplementalItems: []
           }
@@ -42,10 +46,14 @@ export const LEARN_CONTENT = [
       {
         id: "s1b",
         title: "1B. Net Margin",
+        suggestedQuestions: [
+          "Why is net margin often misleading in LMM PE?",
+          "What expenses distort Summit's net margin?",
+        ],
         blocks: [
           {
             type: "text",
-            content: "Net margin shows how much of each revenue dollar survives all the way to the bottom line after every expense: COGS, overhead, owner compensation, depreciation, interest, and taxes. In public company analysis, net margin is a core metric. In LMM PE, it is often misleading because owner compensation, one-time costs, and tax structures distort it."
+            content: "Net margin shows how much of each revenue dollar survives all the way to the bottom line after every expense: COGS, SG&A, depreciation, interest, and taxes. In public company analysis, net margin is a core metric. In LMM PE, it is often misleading because one-time costs, discretionary spending, and tax structures distort it."
           },
           {
             type: "text",
@@ -58,7 +66,7 @@ export const LEARN_CONTENT = [
             instruction: "Build the net margin formula. What goes in the numerator and denominator?",
             resultLabel: "Net Margin",
             resultValue: "7.1%",
-            explanation: "Summit's 7.1% net margin looks thin, but in LMM this number is almost always misleading. The owner takes $2.0M in compensation plus $400K in perks. Interest expense reflects the current owner's debt choices, not what a buyer would structure. Depreciation is a non-cash charge. That is why PE strips all of this out and works with EBITDA and Adjusted EBITDA instead. The next two exercises show exactly how.",
+            explanation: "Summit's 7.1% net margin looks thin, but in LMM this number is almost always misleading. SG&A includes discretionary spending and perks that will change under new ownership. Interest expense reflects the current owner's debt choices, not what a buyer would structure. Depreciation is a non-cash charge. That is why PE strips all of this out and works with EBITDA and Adjusted EBITDA instead. The next two exercises show exactly how.",
             zones: [
               { id: "numerator", correctIds: ["net-income"], hint: "What is the bottom line?" },
               { id: "denominator", correctIds: ["revenue"], hint: "Divide by what?" }
@@ -68,7 +76,7 @@ export const LEARN_CONTENT = [
               { id: "gross-profit", label: "Gross Profit", value: "$11.7M" },
               { id: "net-income", label: "Net Income", value: "$2.3M" },
               { id: "cogs", label: "COGS", value: "$20.8M" },
-              { id: "owner-comp", label: "Owner Comp", value: "$2.0M" }
+              { id: "sga", label: "SG&A", value: "$8.1M" }
             ],
             supplementalItems: []
           }
@@ -77,6 +85,10 @@ export const LEARN_CONTENT = [
       {
         id: "s1c",
         title: "1C. EBITDA",
+        suggestedQuestions: [
+          "Why do PE investors focus on EBITDA instead of net income?",
+          "What does each letter in EBITDA actually represent?",
+        ],
         blocks: [
           {
             type: "text",
@@ -93,7 +105,7 @@ export const LEARN_CONTENT = [
             instruction: "Build the EBITDA formula. Start with Net Income, then add back the four items that EBITDA removes.",
             resultLabel: "EBITDA",
             resultValue: "$4.6M",
-            explanation: "EBITDA of $4.6M on $32.5M revenue gives a 14.2% EBITDA margin. This is the operating earnings before any adjustments. But this is not the number PE uses to value the business. The owner's excess compensation, perks, and one-time costs still need to be added back. That is the next step: Adjusted EBITDA.",
+            explanation: "EBITDA of $4.6M on $32.5M revenue gives a 14.2% EBITDA margin. This is the operating earnings before any adjustments. But this is not the number PE uses to value the business. Discretionary spending buried in SG&A, perks, and one-time costs still need to be added back. That is the next step: Adjusted EBITDA.",
             zones: [
               { id: "base", correctIds: ["net-income"], hint: "Start with the bottom line" },
               { id: "add1", correctIds: ["interest", "taxes", "depreciation", "amortization"], hint: "Add back..." },
@@ -119,23 +131,27 @@ export const LEARN_CONTENT = [
       {
         id: "s1d",
         title: "1D. Adjusted EBITDA",
+        suggestedQuestions: [
+          "What's the difference between EBITDA and Adjusted EBITDA?",
+          "How do you spot legitimate vs aggressive add-backs?",
+        ],
         blocks: [
           {
             type: "text",
-            content: "Adjusted EBITDA is the number PE uses to value a business. It takes EBITDA and adds back costs that will not continue under new ownership: owner perks, one-time expenses, and above-market rent the owner charges. These add-backs are where the art of LMM analysis lives. Legitimate add-backs can double the effective profitability; aggressive ones are a red flag."
+            content: "Adjusted EBITDA is the number PE uses to value a business. It takes EBITDA and adds back costs that will not continue under new ownership. These add-backs are where the art of LMM analysis lives. Legitimate add-backs can double the effective profitability; aggressive ones are a red flag."
           },
           {
             type: "text",
-            content: "Summit has three add-backs. Drag them from the 'Additional Items' section into the equation to see how they transform the valuation basis."
+            content: "But where are the add-backs hiding? In LMM businesses, most of them are buried inside SG&A. Click on the SG&A line in the P&L to see what is inside, then drag the legitimate add-backs into the equation."
           },
           {
             type: "calculationExercise",
             id: "ex-1d-calc",
             layout: "addition",
-            instruction: "Build the Adjusted EBITDA formula. Start with EBITDA, then add the three legitimate add-backs.",
+            instruction: "Explore SG&A to find the add-backs, then build the Adjusted EBITDA formula.",
             resultLabel: "Adjusted EBITDA",
             resultValue: "$5.5M",
-            explanation: "The $0.9M in add-backs takes EBITDA from $4.6M to $5.5M, a 20% increase. At a typical 5-6x multiple, that $0.9M in add-backs is worth $4.5-5.4M in enterprise value. This is why add-back analysis is so critical in PE. Note: this does not yet include the biggest potential add-back, owner excess compensation ($2.0M salary vs. a $250K replacement GM), which would push Adjusted EBITDA even higher. That larger adjustment is typically negotiated separately.",
+            explanation: "The $0.9M in add-backs takes EBITDA from $4.6M to $5.5M, a 20% increase. At a typical 5-6x multiple, that $0.9M in add-backs is worth $4.5-5.4M in enterprise value. This is why digging into SG&A is critical.\n\nYou may have noticed the biggest line hiding in SG&A: Owner Compensation at $2.0M. A replacement GM might cost $250K, making the excess roughly $1.75M. So why is it not in the formula above? Owner comp is almost always the most contested add-back in a deal. Sellers argue their full salary should be added back; buyers argue only the excess above a market replacement is legitimate. The gap between $2.0M and $250K is where negotiations get heated. Many deals include an earn-out or consulting agreement specifically to bridge this disagreement. In practice, the owner comp add-back is negotiated separately from the 'clean' add-backs like perks and one-time costs.",
             zones: [
               { id: "base", correctIds: ["ebitda"], hint: "Start with EBITDA" },
               { id: "add1", correctIds: ["owner-perks", "one-time", "above-market-rent"], hint: "Add-back" },
@@ -146,15 +162,18 @@ export const LEARN_CONTENT = [
               { id: "ebitda", label: "EBITDA", value: "$4.6M" },
               { id: "owner-perks", label: "Owner Perks", value: "$0.4M" },
               { id: "one-time", label: "One-Time Expenses", value: "$0.3M" },
-              { id: "above-market-rent", label: "Above-Market Rent", value: "$0.2M" },
-              { id: "owner-comp", label: "Owner Comp", value: "$2.0M" },
-              { id: "sga", label: "SG&A", value: "$6.1M" }
+              { id: "above-market-rent", label: "Above-Market Rent", value: "$0.2M" }
+            ],
+            sgaBreakdown: [
+              { id: "owner-comp-line", label: "Owner Compensation", value: "$2.0M", isAddBack: true },
+              { id: "owner-perks", label: "Owner Perks", value: "$0.4M", isAddBack: true },
+              { id: "one-time", label: "One-Time Legal/Consulting", value: "$0.3M", isAddBack: true },
+              { id: "above-market-rent", label: "Above-Market Rent", value: "$0.2M", isAddBack: true },
+              { id: "sales-marketing", label: "Sales & Marketing", value: "$2.5M" },
+              { id: "office-admin", label: "Office & Admin", value: "$2.7M" }
             ],
             supplementalItems: [
-              { id: "ebitda", label: "EBITDA", value: "$4.6M" },
-              { id: "owner-perks", label: "Owner Perks", value: "$0.4M" },
-              { id: "one-time", label: "One-Time Expenses", value: "$0.3M" },
-              { id: "above-market-rent", label: "Above-Market Rent", value: "$0.2M" }
+              { id: "ebitda", label: "EBITDA", value: "$4.6M", note: "Calculated in the previous exercise: Net Income + Interest + Taxes + Depreciation + Amortization" }
             ]
           }
         ]
@@ -170,6 +189,10 @@ export const LEARN_CONTENT = [
       {
         id: "s2a",
         title: "2A. The Seven Key Metrics",
+        suggestedQuestions: [
+          "Which of the seven metrics would you check first and why?",
+          "How do these metrics differ between industries?",
+        ],
         blocks: [
           {
             type: "text",
@@ -212,7 +235,7 @@ export const LEARN_CONTENT = [
           {
             type: "exercise",
             id: "ex-2a-2",
-            q: "Now screen BrightSmile Dental Partners using the same seven metrics. Look at its key metrics below and decide: pass or investigate further?",
+            q: "Now screen BrightSmile Dental Partners using the same seven metrics. Look at its key metrics above and decide: pass or investigate further?",
             inputMode: "qualitative",
             answer: "BrightSmile screens well for a roll-up: Revenue $9.8M (slightly below LMM threshold but growing fast at 32.4%). Gross margin 55.1% is excellent for dental. Adjusted EBITDA margin 25.5% is strong. Customer concentration 3% is ideal (diversified patient base). Recurring revenue 70% (patients return every 6 months). Leverage 2.0x is comfortable. The concern: $9.8M revenue is technically below the $10M floor, but the 32% growth rate means it will cross that threshold within a quarter. Also, how much of that growth is organic vs. acquired? Worth a deeper look, but it screens in."
           }
@@ -221,6 +244,10 @@ export const LEARN_CONTENT = [
       {
         id: "s2b",
         title: "2B. Working Capital Metrics",
+        suggestedQuestions: [
+          "Why is working capital a hidden trap in LMM acquisitions?",
+          "How do DSO, DPO, and DIO interact?",
+        ],
         blocks: [
           {
             type: "text",
@@ -239,7 +266,12 @@ export const LEARN_CONTENT = [
           },
           {
             type: "text",
-            content: "Let's calculate DSO for Coastal Fresh Foods, which has $6.8M in AR on $48.2M in revenue."
+            content: "Let's calculate DSO, DIO, DPO, and the cash conversion cycle for Coastal Fresh Foods using their balance sheet and income statement."
+          },
+          {
+            type: "companyData",
+            companyId: "coastal-foods",
+            view: "income"
           },
           {
             type: "companyData",
@@ -248,10 +280,42 @@ export const LEARN_CONTENT = [
           },
           {
             type: "exercise",
-            id: "ex-2b-1",
-            q: "Calculate Coastal's DSO, DIO, DPO, and cash conversion cycle. Is working capital helping or hurting this business?",
+            id: "ex-2b-dso",
+            q: "Using the financials above, calculate Coastal's DSO (Days Sales Outstanding).",
             inputMode: "quantitative",
-            answer: "DSO = ($6.8M / $48.2M) x 365 = 51.5 days (above 45-day benchmark). DIO = ($3.2M / $39.0M) x 365 = 30.0 days (reasonable for food distribution). DPO = ($5.1M / $39.0M) x 365 = 47.7 days (they are stretching supplier payments). Cash Conversion Cycle = 51.5 + 30.0 - 47.7 = 33.8 days. Working capital is hurting the business. The main problem is DSO at 51.5 days. They are collecting slowly from customers while carrying 30 days of perishable inventory. Every day of DSO improvement on $48.2M revenue frees up ~$132K in cash."
+            unit: "days",
+            answer: "DSO = ($6.8M / $48.2M) x 365 = 51.5 days. Above the 45-day benchmark, meaning slow-paying customers or loose collection practices."
+          },
+          {
+            type: "exercise",
+            id: "ex-2b-dio",
+            q: "Calculate Coastal's DIO (Days Inventory Outstanding).",
+            inputMode: "quantitative",
+            unit: "days",
+            answer: "DIO = ($3.2M / $39.0M) x 365 = 30.0 days. Reasonable for food distribution where inventory turns quickly due to perishability."
+          },
+          {
+            type: "exercise",
+            id: "ex-2b-dpo",
+            q: "Calculate Coastal's DPO (Days Payable Outstanding).",
+            inputMode: "quantitative",
+            unit: "days",
+            answer: "DPO = ($5.1M / $39.0M) x 365 = 47.7 days. They are stretching supplier payments, which helps cash flow but could strain relationships."
+          },
+          {
+            type: "exercise",
+            id: "ex-2b-ccc",
+            q: "Using your calculations above, what is Coastal's Cash Conversion Cycle?",
+            inputMode: "quantitative",
+            unit: "days",
+            answer: "CCC = 51.5 + 30.0 - 47.7 = 33.8 days. Cash is tied up for about 34 days between paying suppliers and collecting from customers."
+          },
+          {
+            type: "exercise",
+            id: "ex-2b-wc-assessment",
+            q: "Is working capital helping or hurting Coastal's business? Why?",
+            inputMode: "qualitative",
+            answer: "Working capital is hurting the business. The main problem is DSO at 51.5 days. They are collecting slowly from customers while carrying 30 days of perishable inventory. Every day of DSO improvement on $48.2M revenue frees up ~$132K in cash. The high DPO (47.7 days) partially offsets this, but stretching suppliers in food distribution risks losing preferred pricing or priority allocation."
           }
         ]
       }
@@ -266,6 +330,10 @@ export const LEARN_CONTENT = [
       {
         id: "s3a",
         title: "3A. Revenue Quality",
+        suggestedQuestions: [
+          "What makes revenue 'high quality' vs 'low quality'?",
+          "How does customer concentration affect revenue quality?",
+        ],
         blocks: [
           {
             type: "text",
@@ -312,6 +380,10 @@ export const LEARN_CONTENT = [
       {
         id: "s3b",
         title: "3B. EBITDA Quality",
+        suggestedQuestions: [
+          "How can EBITDA be high but 'low quality'?",
+          "What are the red flags in Summit's EBITDA?",
+        ],
         blocks: [
           {
             type: "text",
@@ -354,6 +426,10 @@ export const LEARN_CONTENT = [
       {
         id: "s3c",
         title: "3C. Working Capital in DD",
+        suggestedQuestions: [
+          "Why does working capital need special attention during due diligence?",
+          "What working capital adjustments would you make for Summit?",
+        ],
         blocks: [
           {
             type: "text",
@@ -394,6 +470,10 @@ export const LEARN_CONTENT = [
       {
         id: "s3d",
         title: "3D. Leverage & Capital Structure",
+        suggestedQuestions: [
+          "Why does debt-to-EBITDA matter for PE acquisitions?",
+          "What leverage ratio would be appropriate for Summit?",
+        ],
         blocks: [
           {
             type: "text",
@@ -443,6 +523,10 @@ export const LEARN_CONTENT = [
       {
         id: "s4a",
         title: "4A. EBITDA Add-backs",
+        suggestedQuestions: [
+          "When does an add-back cross the line from legitimate to aggressive?",
+          "How would you challenge a seller's add-back presentation?",
+        ],
         blocks: [
           {
             type: "text",
@@ -494,6 +578,10 @@ export const LEARN_CONTENT = [
       {
         id: "s4b",
         title: "4B. LBO Economics",
+        suggestedQuestions: [
+          "How does leverage amplify returns in an LBO?",
+          "What happens to returns if EBITDA grows slower than expected?",
+        ],
         blocks: [
           {
             type: "text",
@@ -545,6 +633,10 @@ export const LEARN_CONTENT = [
       {
         id: "s4c",
         title: "4C. Margin Drivers",
+        suggestedQuestions: [
+          "What's the difference between revenue-driven and cost-driven margin expansion?",
+          "Which margin driver is most durable post-acquisition?",
+        ],
         blocks: [
           {
             type: "text",
@@ -596,6 +688,10 @@ export const LEARN_CONTENT = [
       {
         id: "s4d",
         title: "4D. Cash Conversion",
+        suggestedQuestions: [
+          "Why can a profitable company still run out of cash?",
+          "How does cash conversion differ between asset-light and asset-heavy businesses?",
+        ],
         blocks: [
           {
             type: "text",
@@ -647,6 +743,10 @@ export const LEARN_CONTENT = [
       {
         id: "s4e",
         title: "4E. Customer Concentration",
+        suggestedQuestions: [
+          "At what threshold does customer concentration become a deal-breaker?",
+          "How does concentration affect valuation multiples?",
+        ],
         blocks: [
           {
             type: "text",
@@ -698,6 +798,10 @@ export const LEARN_CONTENT = [
       {
         id: "s4f",
         title: "4F. Key-Person Risk",
+        suggestedQuestions: [
+          "How do you evaluate whether a business can survive its founder leaving?",
+          "What are the most common mitigations for key-person risk?",
+        ],
         blocks: [
           {
             type: "text",
@@ -749,6 +853,10 @@ export const LEARN_CONTENT = [
       {
         id: "s4g",
         title: "4G. Valuation Multiples",
+        suggestedQuestions: [
+          "Why do similar companies trade at different multiples?",
+          "What drives the difference between 4x and 8x EBITDA?",
+        ],
         blocks: [
           {
             type: "text",
@@ -809,6 +917,10 @@ export const LEARN_CONTENT = [
       {
         id: "s4h",
         title: "4H. Investment Thesis Structure",
+        suggestedQuestions: [
+          "What makes a compelling investment thesis vs a weak one?",
+          "How do you structure the 'why now' section of a thesis?",
+        ],
         blocks: [
           {
             type: "text",

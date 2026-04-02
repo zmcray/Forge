@@ -1,9 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useLocation } from "react-router-dom";
 import { LEARN_CONTENT } from "../../data/learnContent";
 import useLearnProgress from "../../hooks/useLearnProgress";
+import useNotes from "../../hooks/useNotes";
 import LearnNav from "./LearnNav";
 import LearnSection from "./LearnSection";
+import ChatDrawer from "./ChatDrawer";
 import ComparisonList from "./ComparisonList";
 import ComparisonView from "./ComparisonView";
 import ConceptList from "./ConceptList";
@@ -13,7 +15,13 @@ export default function LearnModule() {
   const [currentSection, setCurrentSection] = useState(0);
   const [currentSubsection, setCurrentSubsection] = useState(0);
   const { markComplete, isComplete, markVisited, getSubsectionProgress, resetSubsection } = useLearnProgress();
+  const { getNoteText, setNoteText } = useNotes();
   const location = useLocation();
+
+  // Chat drawer state (lifted per eng review)
+  const [chatOpen, setChatOpen] = useState(false);
+  const [chatContext, setChatContext] = useState(null);
+  const [chatMessages, setChatMessages] = useState([]);
 
   const isCompareRoute = location.pathname.startsWith("/learn/compare");
   const isCompareDetail = location.pathname.match(/^\/learn\/compare\/[^/]+$/);
@@ -23,11 +31,32 @@ export default function LearnModule() {
   const sections = LEARN_CONTENT;
   const activeSub = sections[currentSection]?.subsections[currentSubsection];
 
+  // Get completed exercise IDs for current subsection
+  const completedIds = activeSub?.blocks
+    ?.filter(b => b.type === "exercise" && isComplete(b.id))
+    .map(b => b.id) || [];
+
   useEffect(() => {
     if (activeSub && !isCompareRoute && !isConceptRoute) {
       markVisited(activeSub.id);
     }
   }, [activeSub, markVisited, isCompareRoute, isConceptRoute]);
+
+  // Clear chat when navigating to a different subsection
+  useEffect(() => {
+    setChatOpen(false);
+    setChatContext(null);
+    setChatMessages([]);
+  }, [currentSection, currentSubsection]);
+
+  const handleOpenChat = useCallback((context) => {
+    setChatContext(context || null);
+    setChatOpen(true);
+  }, []);
+
+  const handleCloseChat = useCallback(() => {
+    setChatOpen(false);
+  }, []);
 
   const handleNavigate = (si, ssi) => {
     setCurrentSection(si);
@@ -65,10 +94,10 @@ export default function LearnModule() {
         <p className="text-sm text-on-surface-variant mt-2">PE financial statement analysis, step by step</p>
       </div>
 
-      {/* Two-column layout */}
+      {/* Two-column layout (three when chat open) */}
       <div className="flex gap-6">
-        {/* Section nav */}
-        <div className="w-64 shrink-0">
+        {/* Section nav -- auto-collapse to icons when chat open on narrow screens */}
+        <div className={`shrink-0 ${chatOpen ? "max-xl:w-16 w-64" : "w-64"}`}>
           <div className="sticky top-20 bg-surface-container-lowest ghost-border rounded-xl p-4">
             <LearnNav
               sections={sections}
@@ -77,6 +106,7 @@ export default function LearnModule() {
               onNavigate={handleNavigate}
               getSubsectionProgress={getSubsectionProgress}
               onResetSubsection={resetSubsection}
+              collapsed={chatOpen}
             />
           </div>
         </div>
@@ -99,6 +129,9 @@ export default function LearnModule() {
                     subsection={activeSub}
                     isComplete={isComplete}
                     onExerciseComplete={markComplete}
+                    onOpenChat={handleOpenChat}
+                    getNoteText={getNoteText}
+                    setNoteText={setNoteText}
                   />
                 )}
 
@@ -123,6 +156,20 @@ export default function LearnModule() {
             )}
           </div>
         </div>
+
+        {/* Chat drawer */}
+        {chatOpen && activeSub && (
+          <ChatDrawer
+            subsection={activeSub}
+            chatContext={chatContext}
+            messages={chatMessages}
+            setMessages={setChatMessages}
+            getNoteText={getNoteText}
+            setNoteText={setNoteText}
+            completedIds={completedIds}
+            onClose={handleCloseChat}
+          />
+        )}
       </div>
     </div>
   );
