@@ -1,10 +1,17 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { COMPANIES } from "../data/companies";
 import { formatCurrency, shuffleArray } from "../utils/format";
+import { useScoringState } from "../contexts/ScoringContext";
+import SoftGate from "./onboarding/SoftGate";
 
 const QUICK_FIRE_SECONDS = 60;
 
 export default function QuickFireScreen() {
+  const navigate = useNavigate();
+  const { sessions } = useScoringState();
+  const attemptedCount = useMemo(() => new Set(sessions.filter(s => s.questions.length > 0).map(s => s.companyId)).size, [sessions]);
+
   const [queue, setQueue] = useState(() => shuffleArray([...COMPANIES]));
   const [currentIndex, setCurrentIndex] = useState(0);
   const [phase, setPhase] = useState("screen"); // screen, reveal, done
@@ -78,6 +85,16 @@ export default function QuickFireScreen() {
 
   return (
     <div className="max-w-2xl">
+      {/* Soft gate: suggest practicing companies first */}
+      {attemptedCount < 3 && (
+        <SoftGate
+          gateId="quickfire-before-practice"
+          message="We recommend practicing a few companies first to build your analysis skills."
+          recommendedAction={() => navigate("/")}
+          recommendedLabel="Browse Companies"
+        />
+      )}
+
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div>

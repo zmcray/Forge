@@ -1,6 +1,9 @@
+export const DIFFICULTY_LABELS = { 1: "Beginner", 2: "Intermediate", 3: "Advanced" };
+
 export const COMPANIES = [
   {
     id: "summit-hvac",
+    difficulty: 1,
     name: "Summit Mechanical Services",
     industry: "HVAC / Mechanical Services",
     description: "Commercial HVAC installation and service provider serving the Southeast US. Founded 2008 by a former Carrier technician. 127 employees, 3 branch locations.",
@@ -68,6 +71,7 @@ export const COMPANIES = [
   },
   {
     id: "coastal-foods",
+    difficulty: 2,
     name: "Coastal Fresh Foods",
     industry: "Food Distribution",
     description: "Regional specialty food distributor serving restaurants, hotels, and grocery chains in the Mid-Atlantic. Founded 1995, second-generation family business. 85 employees, 2 warehouses.",
@@ -136,6 +140,7 @@ export const COMPANIES = [
   },
   {
     id: "precision-manufacturing",
+    difficulty: 2,
     name: "Precision CNC Solutions",
     industry: "Contract Manufacturing / CNC Machining",
     description: "Precision CNC machining shop serving aerospace, medical device, and industrial customers. Founded 2001, owner-operator with deep technical expertise. 45 employees, single facility.",
@@ -205,6 +210,7 @@ export const COMPANIES = [
   },
   {
     id: "bright-dental",
+    difficulty: 1,
     name: "BrightSmile Dental Partners",
     industry: "Healthcare Services / Dental",
     description: "Multi-location dental practice group with 5 offices across suburban markets. Founded 2015 through a single practice acquisition, expanded via de novo and acquisition. 62 employees, 8 dentists.",
@@ -273,6 +279,7 @@ export const COMPANIES = [
   },
   {
     id: "apex-logistics",
+    difficulty: 3,
     name: "Apex Last-Mile Logistics",
     industry: "Transportation & Logistics",
     description: "Last-mile delivery company specializing in white-glove delivery of heavy/bulky items (furniture, appliances, fitness equipment) for e-commerce retailers. Founded 2017. 210 employees + 80 independent contractors. Fleet of 65 box trucks across 4 metro markets.",
@@ -342,6 +349,7 @@ export const COMPANIES = [
   },
   {
     id: "truenorth-saas",
+    difficulty: 3,
     name: "TrueNorth Analytics",
     industry: "B2B SaaS / Cybersecurity Compliance",
     description: "Cloud-based cybersecurity compliance platform helping mid-market companies automate SOC 2, ISO 27001, and HIPAA audit readiness. Founded 2019 by two ex-Palo Alto Networks engineers. 68 employees, fully remote.",
@@ -423,6 +431,7 @@ export const COMPANIES = [
   },
   {
     id: "ironclad-construction",
+    difficulty: 3,
     name: "Ironclad Builders",
     industry: "Commercial Construction / General Contracting",
     description: "Regional commercial general contractor specializing in government, healthcare, and education projects. Founded 1998 by a veteran project manager. 185 employees, bonded up to $25M per project. Operates across three Southeastern states.",
@@ -504,6 +513,7 @@ export const COMPANIES = [
   },
   {
     id: "vitality-vet",
+    difficulty: 2,
     name: "Vitality Pet Wellness",
     industry: "Healthcare Services / Veterinary",
     description: "Multi-location veterinary clinic group with 3 clinics across suburban Atlanta. Founded 2018 by a veterinarian-turned-operator. 52 employees, 7 veterinarians. Offers primary care, surgery, dental, and wellness plans.",
@@ -585,6 +595,7 @@ export const COMPANIES = [
   },
   {
     id: "meridian-fulfillment",
+    difficulty: 2,
     name: "Meridian Fulfillment Co.",
     industry: "E-Commerce Fulfillment / 3PL",
     description: "Third-party logistics provider specializing in order fulfillment for direct-to-consumer e-commerce brands. Founded 2015. 145 employees across 3 warehouse locations (NJ, TX, NV). Handles pick, pack, ship, and returns processing.",

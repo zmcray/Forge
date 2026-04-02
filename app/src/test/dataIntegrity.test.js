@@ -52,6 +52,21 @@ describe("Data Integrity", () => {
     });
   });
 
+  describe("Company difficulty field", () => {
+    it("every company has a difficulty field with value 1, 2, or 3", () => {
+      for (const company of COMPANIES) {
+        expect([1, 2, 3]).toContain(company.difficulty);
+      }
+    });
+
+    it("at least one company per difficulty level exists", () => {
+      const levels = new Set(COMPANIES.map((c) => c.difficulty));
+      expect(levels.has(1)).toBe(true);
+      expect(levels.has(2)).toBe(true);
+      expect(levels.has(3)).toBe(true);
+    });
+  });
+
   describe("Comparisons data", () => {
     it("has 4 comparisons", () => {
       expect(COMPARISONS).toHaveLength(4);
