@@ -8,6 +8,8 @@ import LearnSection from "./LearnSection";
 import ChatDrawer from "./ChatDrawer";
 import ComparisonList from "./ComparisonList";
 import ComparisonView from "./ComparisonView";
+import ConceptList from "./ConceptList";
+import ConceptCard from "./ConceptCard";
 
 export default function LearnModule() {
   const [currentSection, setCurrentSection] = useState(0);
@@ -23,6 +25,8 @@ export default function LearnModule() {
 
   const isCompareRoute = location.pathname.startsWith("/learn/compare");
   const isCompareDetail = location.pathname.match(/^\/learn\/compare\/[^/]+$/);
+  const isConceptRoute = location.pathname.startsWith("/learn/concepts");
+  const isConceptDetail = location.pathname.match(/^\/learn\/concepts\/[^/]+$/);
 
   const sections = LEARN_CONTENT;
   const activeSub = sections[currentSection]?.subsections[currentSubsection];
@@ -33,10 +37,10 @@ export default function LearnModule() {
     .map(b => b.id) || [];
 
   useEffect(() => {
-    if (activeSub && !isCompareRoute) {
+    if (activeSub && !isCompareRoute && !isConceptRoute) {
       markVisited(activeSub.id);
     }
-  }, [activeSub, markVisited, isCompareRoute]);
+  }, [activeSub, markVisited, isCompareRoute, isConceptRoute]);
 
   // Clear chat when navigating to a different subsection
   useEffect(() => {
@@ -110,7 +114,11 @@ export default function LearnModule() {
         {/* Content area */}
         <div className="flex-1 min-w-0">
           <div className="bg-surface-container-lowest ghost-border rounded-xl p-6">
-            {isCompareDetail ? (
+            {isConceptDetail ? (
+              <ConceptCard />
+            ) : isConceptRoute ? (
+              <ConceptList />
+            ) : isCompareDetail ? (
               <ComparisonView />
             ) : isCompareRoute ? (
               <ComparisonList />

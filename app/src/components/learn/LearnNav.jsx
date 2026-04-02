@@ -4,6 +4,7 @@ export default function LearnNav({ sections, currentSection, currentSubsection, 
   const navigate = useNavigate();
   const location = useLocation();
   const isCompareActive = location.pathname.startsWith("/learn/compare");
+  const isConceptsActive = location.pathname.startsWith("/learn/concepts");
 
   return (
     <nav className="space-y-4">
@@ -56,8 +57,19 @@ export default function LearnNav({ sections, currentSection, currentSubsection, 
         </div>
       ))}
 
-      {/* Compare link */}
-      <div className="pt-3 mt-3 border-t border-outline-variant/30">
+      {/* Concepts + Compare links */}
+      <div className="pt-3 mt-3 border-t border-outline-variant/30 space-y-1">
+        <button
+          onClick={() => navigate("/learn/concepts")}
+          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors flex items-center gap-2 ${
+            isConceptsActive
+              ? "bg-surface-container-high text-on-surface font-medium"
+              : "text-primary hover:bg-primary/10"
+          }`}
+        >
+          <span className="material-symbols-outlined text-[18px]">lightbulb</span>
+          <span className={collapsed ? "max-xl:hidden" : ""}>Key Concepts</span>
+        </button>
         <button
           onClick={() => navigate("/learn/compare")}
           className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors flex items-center gap-2 ${
