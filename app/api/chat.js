@@ -79,7 +79,7 @@ export async function POST(request) {
         if (err.name !== "AbortError") {
           const message = err.status === 429
             ? "Too many requests. Wait a moment and try again."
-            : "Chat unavailable";
+            : `Chat unavailable (${err.status || "no status"}: ${err.message || "no message"})`;
           controller.enqueue(
             encoder.encode(`data: ${JSON.stringify({ type: "error", message })}\n\n`)
           );
