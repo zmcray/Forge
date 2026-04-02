@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { Routes, Route, useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { COMPANIES } from "./data/companies";
+import { COMPANIES, DIFFICULTY_LABELS } from "./data/companies";
 import { SCENARIOS } from "./data/scenarios";
 import { shuffleArray } from "./utils/format";
 import { mergeScenario } from "./utils/scenarios";
@@ -19,10 +19,14 @@ import StatCard from "./components/StatCard";
 import MasteryCard from "./components/MasteryCard";
 import ModuleCard from "./components/ModuleCard";
 import SearchModal from "./components/SearchModal";
+import IntroSequence from "./components/onboarding/IntroSequence";
+import SmartHomeRecommendations from "./components/onboarding/SmartHomeRecommendations";
+import SoftGate from "./components/onboarding/SoftGate";
 import { useScoringState, useScoringDispatch } from "./contexts/ScoringContext";
 import useTimer from "./hooks/useTimer";
 import useKeyboardShortcuts from "./hooks/useKeyboardShortcuts";
 import useLearnProgress from "./hooks/useLearnProgress";
+import { useOnboarding } from "./contexts/OnboardingContext";
 import useTheme from "./hooks/useTheme";
 import { LEARN_CONTENT } from "./data/learnContent";
 
@@ -263,6 +267,7 @@ function getOverallLearnProgress(getSubsectionProgress) {
 function HomeScreen({ scenariosByCompany, startPractice, setView, learnProgress }) {
   const { sessions, streak } = useScoringState();
   const { getWeakSpots, getQuantitativeAccuracy } = useScoringDispatch();
+  const { isIntroComplete, currentIntroStep, advanceIntro, skipIntro, completeIntro } = useOnboarding();
 
   const completedCompanies = useMemo(() => {
     const ids = new Set();
@@ -288,8 +293,38 @@ function HomeScreen({ scenariosByCompany, startPractice, setView, learnProgress 
   const quantitativeAccuracy = getQuantitativeAccuracy();
   const learnStats = getOverallLearnProgress(learnProgress.getSubsectionProgress);
 
+  const companiesByDifficulty = useMemo(() => {
+    const groups = { 1: [], 2: [], 3: [] };
+    for (const company of COMPANIES) {
+      const d = company.difficulty ?? 2;
+      groups[d].push(company);
+    }
+    return groups;
+  }, []);
+
+  const startPracticeById = useCallback((companyId) => {
+    const company = COMPANIES.find((c) => c.id === companyId);
+    if (company) startPractice(company);
+  }, [startPractice]);
+
+  const handleIntroStartPractice = useCallback(() => {
+    const summit = COMPANIES.find((c) => c.id === "summit-hvac");
+    if (summit) startPractice(summit);
+  }, [startPractice]);
+
   return (
     <>
+      {/* Intro overlay for first-time users */}
+      {!isIntroComplete && (
+        <IntroSequence
+          currentStep={currentIntroStep}
+          onAdvance={advanceIntro}
+          onSkip={skipIntro}
+          onComplete={completeIntro}
+          startPractice={handleIntroStartPractice}
+        />
+      )}
+
       {/* Page header */}
       <section className="mb-8">
         <h2 className="text-4xl font-extrabold font-headline text-on-surface tracking-tight">PE Financial Analyst</h2>
@@ -350,6 +385,9 @@ function HomeScreen({ scenariosByCompany, startPractice, setView, learnProgress 
         </section>
       )}
 
+      {/* Smart recommendations */}
+      <SmartHomeRecommendations startPracticeById={startPracticeById} />
+
       {/* Learning modules */}
       <section className="grid grid-cols-2 gap-4 mb-8">
         <ModuleCard
@@ -378,43 +416,67 @@ function HomeScreen({ scenariosByCompany, startPractice, setView, learnProgress 
         </section>
       )}
 
-      {/* Deep dive case studies */}
+      {/* Deep dive case studies, sorted by difficulty */}
       <section>
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm uppercase tracking-widest text-on-surface-variant font-semibold">Deep Dive Case Studies</h3>
-        </div>
-        <div className="grid grid-cols-2 gap-4">
-          {COMPANIES.map(company => (
-            <div key={company.id}>
-              <CompanyCard
-                company={company}
-                completed={completedCompanies.has(company.id)}
-                onSelect={() => startPractice(company)}
-              />
-              {scenariosByCompany[company.id] && (
-                <div className="mt-2 flex gap-2 flex-wrap px-2">
-                  {scenariosByCompany[company.id].map(scenario => (
-                    <button
-                      key={scenario.id}
-                      onClick={() => startPractice(company, scenario.id)}
-                      className="text-[10px] uppercase tracking-widest px-3 py-2 bg-secondary-container/50 text-on-secondary-container rounded-full hover:bg-secondary-container transition-colors"
-                    >
-                      Scenario: {scenario.name}
-                    </button>
-                  ))}
-                </div>
-              )}
+        {[1, 2, 3].map((difficulty) => {
+          const companies = companiesByDifficulty[difficulty];
+          if (!companies || companies.length === 0) return null;
+          return (
+            <div key={difficulty} className="mb-8">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-sm uppercase tracking-widest text-on-surface-variant font-semibold">
+                  {DIFFICULTY_LABELS[difficulty]}
+                </h3>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                {companies.map(company => (
+                  <div key={company.id}>
+                    <CompanyCard
+                      company={company}
+                      completed={completedCompanies.has(company.id)}
+                      onSelect={() => startPractice(company)}
+                    />
+                    {scenariosByCompany[company.id] && (
+                      <div className="mt-2 flex gap-2 flex-wrap px-2">
+                        {scenariosByCompany[company.id].map(scenario => (
+                          <button
+                            key={scenario.id}
+                            onClick={() => startPractice(company, scenario.id)}
+                            className="text-[10px] uppercase tracking-widest px-3 py-2 bg-secondary-container/50 text-on-secondary-container rounded-full hover:bg-secondary-container transition-colors"
+                          >
+                            Scenario: {scenario.name}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
-          ))}
-        </div>
+          );
+        })}
       </section>
     </>
   );
 }
 
 function PracticeScreen({ company: co, statementView, setStatementView, shuffledQuestions, handleScore, finishCompany, timer, showSummary, sessionQuestions, closeSummary }) {
+  const navigate = useNavigate();
+  const learnProgress = useLearnProgress();
+  const hasLearnProgress = learnProgress.progress.completedExercises.length > 0;
+
   return (
     <div>
+      {/* Soft gate: suggest learning first */}
+      {!hasLearnProgress && (
+        <SoftGate
+          gateId="practice-before-learn"
+          message="We recommend completing Section 1 of Learn before practicing."
+          recommendedAction={() => navigate("/learn")}
+          recommendedLabel="Go to Learn"
+        />
+      )}
+
       {/* Header */}
       <div className="flex items-center justify-between mb-2">
         <div>

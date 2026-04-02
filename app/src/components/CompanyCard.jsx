@@ -1,4 +1,11 @@
 import { formatCurrency } from "../utils/format";
+import { DIFFICULTY_LABELS } from "../data/companies";
+
+const DIFFICULTY_STYLES = {
+  1: "bg-tertiary-container text-on-tertiary-container",
+  2: "bg-secondary-container text-on-secondary-container",
+  3: "bg-error-container text-on-error-container",
+};
 
 export default function CompanyCard({ company, completed, onSelect }) {
   const metrics = [
@@ -25,6 +32,11 @@ export default function CompanyCard({ company, completed, onSelect }) {
       <div className="bg-surface-container-low px-5 py-3 flex items-center justify-between">
         <span className="text-[10px] uppercase tracking-widest text-on-surface-variant font-medium">{company.industry}</span>
         <div className="flex items-center gap-1.5">
+          {company.difficulty && (
+            <span className={`text-[10px] uppercase tracking-widest px-2.5 py-0.5 rounded-full font-medium ${DIFFICULTY_STYLES[company.difficulty] || ""}`}>
+              {DIFFICULTY_LABELS[company.difficulty]}
+            </span>
+          )}
           {completed && (
             <span className="text-[10px] uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-tertiary-fixed-dim/20 text-on-tertiary-container font-medium">
               Completed

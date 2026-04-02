@@ -1,6 +1,7 @@
 import { render } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { ScoringProvider } from "../contexts/ScoringContext";
+import { OnboardingProvider } from "../contexts/OnboardingContext";
 
 export function renderWithProviders(ui, options = {}) {
   const { route = "/", ...renderOptions } = options;
@@ -9,7 +10,9 @@ export function renderWithProviders(ui, options = {}) {
     return (
       <MemoryRouter initialEntries={[route]}>
         <ScoringProvider>
-          {children}
+          <OnboardingProvider>
+            {children}
+          </OnboardingProvider>
         </ScoringProvider>
       </MemoryRouter>
     );
