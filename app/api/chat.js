@@ -60,7 +60,6 @@ export async function POST(request) {
     max_tokens: 1024,
     system: [{ type: "text", text: systemPrompt, cache_control: { type: "ephemeral" } }],
     messages: messages.map(m => ({ role: m.role, content: m.content })),
-    signal: request.signal,
   });
 
   const encoder = new TextEncoder();
@@ -79,7 +78,7 @@ export async function POST(request) {
         if (err.name !== "AbortError") {
           const message = err.status === 429
             ? "Too many requests. Wait a moment and try again."
-            : `Chat unavailable (${err.status || "no status"}: ${err.message || "no message"})`;
+            : "Chat unavailable";
           controller.enqueue(
             encoder.encode(`data: ${JSON.stringify({ type: "error", message })}\n\n`)
           );
