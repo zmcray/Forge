@@ -160,6 +160,7 @@ export const LEARN_CONTENT = [
             ],
             draggables: [
               { id: "ebitda", label: "EBITDA", value: "$4.6M" },
+              { id: "owner-comp-line", label: "Owner Compensation", value: "$2.0M", rejectMessage: "Not yet. Owner compensation is the most contested add-back in any deal. A replacement CEO might cost $250K, making the excess ~$1.75M. But how much of that excess is truly avoidable is a negotiation point, not a clean add-back. Sellers argue the full salary disappears; buyers argue a professional CEO still costs real money. This gets negotiated separately from the 'clean' add-backs like perks and one-time costs." },
               { id: "owner-perks", label: "Owner Perks", value: "$0.4M" },
               { id: "one-time", label: "One-Time Expenses", value: "$0.3M" },
               { id: "above-market-rent", label: "Above-Market Rent", value: "$0.2M" }
