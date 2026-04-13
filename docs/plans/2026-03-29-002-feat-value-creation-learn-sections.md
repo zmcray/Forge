@@ -2039,3 +2039,29 @@ No migration needed. New keys are independent.
 - Export playbook as Word doc
 - Case study creation tool (user can document a real PE deal)
 - Peer playbook sharing (anonymized)
+
+## GSTACK REVIEW REPORT
+
+| Review | Trigger | Why | Runs | Status | Findings |
+|--------|---------|-----|------|--------|----------|
+| CEO Review | `/plan-ceo-review` | Scope & strategy | 1 | CLEAR | mode: HOLD_SCOPE, 0 critical gaps. Scoped to Phase 1 (Levers only). 50+ company IDs need fixing. |
+| Codex Review | `/codex review` | Independent 2nd opinion | 0 | -- | -- |
+| Eng Review | `/plan-eng-review` | Architecture & tests (required) | 1 | CLEAR | 0 issues, 0 critical gaps. 28 test paths identified. 7 files touched. |
+| Design Review | `/plan-design-review` | UI/UX gaps | 0 | -- | -- |
+
+**CEO DECISIONS (2026-04-01):**
+- Scope: HOLD SCOPE, Phase 1 (Value Creation Levers) only. Bridge, playbooks, rollups deferred to separate PRs.
+- Company IDs: Fix all shortened IDs to canonical IDs before implementation.
+- Exercises: Reuse LearnExercise + LLM grading + acceptance criteria checklist display.
+- Hooks: Reuse useNotes + useLearnProgress. No new hooks.
+- Nav: Group under "Value Creation" header in LearnNav.
+- Dependencies: Zero new npm packages.
+
+**ENG REVIEW (2026-04-02):**
+- Architecture: Clean. Follows exact pattern of concept cards + comparisons.
+- Code quality: No issues. Company ID fix is the only concern (already decided in CEO review).
+- Tests: 28 new test paths needed (7 data integrity, 10 component, 5 route, 6 integration).
+- Performance: No concerns. Static data only.
+- Files: 3 new (valueLevers.js, LeverList.jsx, LeverCard.jsx) + 4 modified (LearnModule, LearnNav, App, dataIntegrity.test).
+
+**VERDICT:** CEO + ENG CLEARED -- ready to implement.
