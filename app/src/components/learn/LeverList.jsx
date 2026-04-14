@@ -76,7 +76,7 @@ export default function LeverList() {
                     <button
                       key={lever.id}
                       onClick={() => navigate(`/learn/levers/${lever.id}`)}
-                      className="text-left bg-surface-container-lowest ghost-border rounded-xl p-4 hover:bg-surface-container-low transition-colors"
+                      className="text-left bg-surface-container-low border border-outline-variant/60 rounded-xl p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 hover:bg-surface-container-high transition-all duration-150"
                     >
                       <div className="flex items-start justify-between gap-2 mb-2">
                         <h4 className="text-sm font-bold text-on-surface leading-tight">
