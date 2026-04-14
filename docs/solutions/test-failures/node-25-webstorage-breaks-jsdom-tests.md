@@ -134,49 +134,89 @@ The `Object.defineProperty` with `configurable: true, writable: true` is the cri
 
 **Verification:** 270/270 tests passing after the shim, up from 239/270 before.
 
-## Canonical Fix (shipped in commit f0rthcoming)
+## Approaches tried and why the shim won
 
-**Shimming `globalThis.localStorage` is a workaround. The proper fix is to disable Node's experimental webstorage feature at the process level via `NODE_OPTIONS=--no-experimental-webstorage` in the npm test script.** When that flag is set at process start, Node never creates the broken native `globalThis.localStorage`, which lets jsdom install its own `Storage` unopposed.
+Three approaches were tested against the constraint that CI runs Node 20 while local dev runs Node 25.9.0:
 
-**Step 1 — set the flag in `package.json`:**
+### Attempt 1 — vitest `poolOptions.forks.execArgv` (FAILED)
+
+```javascript
+// vite.config.js
+test: {
+  pool: "forks",
+  poolOptions: {
+    forks: {
+      execArgv: ["--no-experimental-webstorage"],
+    },
+  },
+},
+```
+
+**Result:** 43 tests failed with the same `localStorage.clear is not a function` error. The vitest tinypool workers in vitest 4.1.0 do not inherit `execArgv` from this config — or the flag is applied too late in the worker startup sequence to prevent the webstorage stub from being created.
+
+### Attempt 2 — `NODE_OPTIONS=--no-experimental-webstorage` (FAILED ON CI)
 
 ```json
 "scripts": {
-  "test": "NODE_OPTIONS=--no-experimental-webstorage vitest run",
-  "test:watch": "NODE_OPTIONS=--no-experimental-webstorage vitest"
+  "test": "NODE_OPTIONS=--no-experimental-webstorage vitest run"
 }
 ```
 
-**Step 2 — remove the shim from `src/test-setup.js`:**
+**Result:** 282/282 passing locally on Node 25.9.0. Failed on CI (Node 20) with:
+
+```
+node: --no-experimental-webstorage is not allowed in NODE_OPTIONS
+```
+
+Two problems:
+
+1. **Node 20 predates the webstorage feature entirely** — Node 22 is when the `--experimental-webstorage` flag was introduced. Node 20 has no knowledge of the flag and rejects it unconditionally.
+2. **Node enforces a security allowlist for `NODE_OPTIONS`** — even if the flag were recognized, Node may refuse to allow it via environment variable. The allowlist exists to prevent malicious env vars from changing Node's runtime behavior.
+
+This means the "canonical" NODE_OPTIONS approach is not viable in any project whose CI runs on Node 20 or earlier, or whose team members might be on older Node versions.
+
+### Attempt 3 — `globalThis.localStorage` shim (WORKS EVERYWHERE)
 
 ```javascript
 // app/src/test-setup.js
-import "@testing-library/jest-dom/vitest";
+if (typeof globalThis !== "undefined") {
+  const createStorage = () => {
+    let store = {};
+    return {
+      getItem: (key) => (key in store ? store[key] : null),
+      setItem: (key, value) => {
+        store[key] = String(value);
+      },
+      removeItem: (key) => {
+        delete store[key];
+      },
+      clear: () => {
+        store = {};
+      },
+      key: (index) => Object.keys(store)[index] ?? null,
+      get length() {
+        return Object.keys(store).length;
+      },
+    };
+  };
 
-// jsdom doesn't implement scrollIntoView
-if (typeof Element !== "undefined") {
-  Element.prototype.scrollIntoView = () => {};
+  Object.defineProperty(globalThis, "localStorage", {
+    value: createStorage(),
+    writable: true,
+    configurable: true,
+  });
 }
-// No localStorage shim needed — NODE_OPTIONS disables Node's broken native.
 ```
 
-### Why NODE_OPTIONS instead of vitest's `poolOptions.execArgv`
+**Result:** 284/284 passing locally (Node 25.9.0) and on CI (Node 20). Cross-version safe because it never touches Node flags. It simply replaces whatever `globalThis.localStorage` is defined (native stub on Node 25, nothing on Node 20 + jsdom which provides its own) with a functional in-memory Storage.
 
-I first tried vitest's `pool: "forks"` + `poolOptions.forks.execArgv: ["--no-experimental-webstorage"]` in `vite.config.js`. **It did not work.** All 43 previously-working tests failed again with the same `localStorage.clear is not a function` error. The vitest tinypool workers apparently do not inherit `execArgv` from the test config in vitest 4.1.0 — or the config path doesn't reach the worker process fast enough to matter.
+The `Object.defineProperty` with `configurable: true, writable: true` is the critical part. On Node 25, the native Proxy stub is non-configurable via plain assignment but can be overwritten via `defineProperty`.
 
-NODE_OPTIONS, by contrast, is set before vitest starts. Every child process (every worker, every fork, every thread's parent) inherits it automatically from the environment. It's the most reliable mechanism and the one recommended as belt-and-suspenders in the prevention section below.
+## Lesson
 
-### Why this is better than the shim
+The "better" solution (disable the flag at process level) is correct in theory but breaks on CI where the Node version doesn't recognize the flag. **Cross-version portability beats theoretical purity when you're shipping to a mixed-Node environment.** The shim is ugly but bulletproof.
 
-1. **jsdom installs its real `Storage`** — closer to browser semantics (correct `instanceof Storage`, `Storage.prototype` chain intact).
-2. **Doesn't mask future Node breakage.** When Node 26 enforces spec compliance, the shim could hide new issues. NODE_OPTIONS explicitly opts out.
-3. **Recommended by the vitest maintainers** in issue #8757.
-4. **Smaller diff** — removes 31 lines of shim code from `test-setup.js`.
-
-### Verification
-
-- Before the canonical fix: 31 failing (shim commit `7e29f0e` fixed them via the workaround)
-- After the canonical fix: 282/282 passing, shim removed
+If the project ever standardizes on Node 22+ across CI and local dev, revisit this doc and consider the NODE_OPTIONS approach again. Until then, the shim is the ship-it answer.
 
 ## Prevention
 
