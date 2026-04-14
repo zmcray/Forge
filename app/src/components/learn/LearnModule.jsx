@@ -10,6 +10,8 @@ import ComparisonList from "./ComparisonList";
 import ComparisonView from "./ComparisonView";
 import ConceptList from "./ConceptList";
 import ConceptCard from "./ConceptCard";
+import LeverList from "./LeverList";
+import LeverCard from "./LeverCard";
 
 export default function LearnModule() {
   const [currentSection, setCurrentSection] = useState(0);
@@ -27,6 +29,8 @@ export default function LearnModule() {
   const isCompareDetail = location.pathname.match(/^\/learn\/compare\/[^/]+$/);
   const isConceptRoute = location.pathname.startsWith("/learn/concepts");
   const isConceptDetail = location.pathname.match(/^\/learn\/concepts\/[^/]+$/);
+  const isLeverRoute = location.pathname.startsWith("/learn/levers");
+  const isLeverDetail = location.pathname.match(/^\/learn\/levers\/[^/]+$/);
 
   const sections = LEARN_CONTENT;
   const activeSub = sections[currentSection]?.subsections[currentSubsection];
@@ -37,10 +41,10 @@ export default function LearnModule() {
     .map(b => b.id) || [];
 
   useEffect(() => {
-    if (activeSub && !isCompareRoute && !isConceptRoute) {
+    if (activeSub && !isCompareRoute && !isConceptRoute && !isLeverRoute) {
       markVisited(activeSub.id);
     }
-  }, [activeSub, markVisited, isCompareRoute, isConceptRoute]);
+  }, [activeSub, markVisited, isCompareRoute, isConceptRoute, isLeverRoute]);
 
   // Clear chat when navigating to a different subsection
   useEffect(() => {
@@ -114,7 +118,11 @@ export default function LearnModule() {
         {/* Content area */}
         <div className="flex-1 min-w-0">
           <div className="bg-surface-container-lowest ghost-border rounded-xl p-6">
-            {isConceptDetail ? (
+            {isLeverDetail ? (
+              <LeverCard />
+            ) : isLeverRoute ? (
+              <LeverList />
+            ) : isConceptDetail ? (
               <ConceptCard />
             ) : isConceptRoute ? (
               <ConceptList />
