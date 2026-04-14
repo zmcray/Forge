@@ -2,7 +2,10 @@ import { describe, it, expect } from "vitest";
 import { LEARN_CONTENT } from "../data/learnContent";
 import { COMPARISONS } from "../data/comparisons";
 import { COMPANIES } from "../data/companies";
+import { VALUE_LEVERS, LEVER_CATEGORIES } from "../data/valueLevers";
 import { resolveDataPath } from "../utils/resolveDataPath";
+
+const VALID_CATEGORIES = ["revenue", "margin", "organizational", "technology"];
 
 describe("Data Integrity", () => {
   describe("Concept card company references", () => {
@@ -132,6 +135,81 @@ describe("Data Integrity", () => {
 
     it("returns undefined for null company", () => {
       expect(resolveDataPath(null, "revenue")).toBeUndefined();
+    });
+  });
+
+  describe("Value Creation Levers", () => {
+    it("has exactly 12 levers", () => {
+      expect(VALUE_LEVERS).toHaveLength(12);
+    });
+
+    it("every lever has a unique id", () => {
+      const ids = new Set();
+      for (const lever of VALUE_LEVERS) {
+        expect(ids.has(lever.id), `Duplicate lever id: ${lever.id}`).toBe(false);
+        ids.add(lever.id);
+      }
+    });
+
+    it("every lever has a valid category", () => {
+      for (const lever of VALUE_LEVERS) {
+        expect(
+          VALID_CATEGORIES,
+          `Lever "${lever.id}" has invalid category "${lever.category}"`
+        ).toContain(lever.category);
+      }
+    });
+
+    it("every lever has exactly 2 company examples", () => {
+      for (const lever of VALUE_LEVERS) {
+        expect(
+          lever.companyExamples,
+          `Lever "${lever.id}" must have 2 companyExamples`
+        ).toHaveLength(2);
+      }
+    });
+
+    it("every company example references a canonical company id", () => {
+      for (const lever of VALUE_LEVERS) {
+        for (const example of lever.companyExamples) {
+          const company = COMPANIES.find((c) => c.id === example.companyId);
+          expect(
+            company,
+            `Lever "${lever.id}" references unknown companyId "${example.companyId}"`
+          ).toBeDefined();
+        }
+      }
+    });
+
+    it("every dataPoints path resolves to a defined value", () => {
+      for (const lever of VALUE_LEVERS) {
+        for (const example of lever.companyExamples) {
+          const company = COMPANIES.find((c) => c.id === example.companyId);
+          for (const dp of example.dataPoints) {
+            const value = resolveDataPath(company, dp.path);
+            expect(
+              value,
+              `Lever "${lever.id}" -> "${example.companyId}" path "${dp.path}" did not resolve`
+            ).toBeDefined();
+          }
+        }
+      }
+    });
+
+    it("every exercise has non-empty acceptance criteria", () => {
+      for (const lever of VALUE_LEVERS) {
+        expect(lever.exercise, `Lever "${lever.id}" missing exercise`).toBeDefined();
+        expect(
+          Array.isArray(lever.exercise.acceptanceCriteria) && lever.exercise.acceptanceCriteria.length > 0,
+          `Lever "${lever.id}" must have non-empty acceptanceCriteria`
+        ).toBe(true);
+      }
+    });
+
+    it("LEVER_CATEGORIES covers all four categories", () => {
+      for (const cat of VALID_CATEGORIES) {
+        expect(LEVER_CATEGORIES[cat]).toBeDefined();
+      }
     });
   });
 });
