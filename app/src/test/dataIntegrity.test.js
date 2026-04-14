@@ -5,7 +5,7 @@ import { COMPANIES } from "../data/companies";
 import { VALUE_LEVERS, LEVER_CATEGORIES } from "../data/valueLevers";
 import { resolveDataPath } from "../utils/resolveDataPath";
 
-const VALID_CATEGORIES = ["revenue", "margin", "organizational", "technology"];
+const VALID_CATEGORIES = ["revenue", "margin", "organizational", "technology", "strategic"];
 
 describe("Data Integrity", () => {
   describe("Concept card company references", () => {
@@ -139,8 +139,8 @@ describe("Data Integrity", () => {
   });
 
   describe("Value Creation Levers", () => {
-    it("has exactly 12 levers", () => {
-      expect(VALUE_LEVERS).toHaveLength(12);
+    it("has exactly 15 levers", () => {
+      expect(VALUE_LEVERS).toHaveLength(15);
     });
 
     it("every lever has a unique id", () => {
