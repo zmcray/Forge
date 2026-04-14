@@ -7,6 +7,36 @@ branch: feat/value-creation-levers
 parent_plan: 2026-03-29-002-feat-value-creation-learn-sections.md
 ---
 
+## Session resume state (paused 2026-04-13 evening)
+
+**Branch:** `feat/value-creation-levers` (8 commits ahead of main)
+
+**Chunks complete:**
+- Chunk 1: 15-lever data file (expanded from 12 per 2026 research, +strategic category)
+- Chunk 2: useLeverProgress hook
+- Chunk 3: LeverList grid + routing + nav wiring (+ card visibility style fix)
+- Chunk 4: LeverCard detail view + 12 component tests
+
+**Chunk 5 remaining:**
+- Route tests (/learn/levers mounts list, /learn/levers/:id mounts card, invalid id, deep-link, back nav)
+- Additional integration tests per the 28-path matrix
+- `npm run build` + `npm run lint` pass
+- Push branch
+- Open PR referencing parent plan
+
+**Tests:** 282/282 passing at pause.
+
+**D1-D4 decisions:** all approved and implemented.
+
+**Scope expansion mid-session:** user approved shipping the complete 15-lever framework (was 12) with a new `strategic` category and 2026 research calibration. Still one PR, not split.
+
+**Research doc landed mid-session:** `PE Value Creation Levers Review.md` at repo root. Scope and content expansion driven from this.
+
+**Resume command:** "resume levers Chunk 5" or "push the Levers PR"
+
+---
+
+
 # Value Creation Levers — Execution Plan
 
 Execution-ready breakdown of Phase 1 (Levers) from the parent plan. CEO and Eng reviews already cleared Phase 1; this file turns the cleared scope into file-by-file micro-tasks. Phases 2-4 (Bridge, Playbooks, Roll-ups) are explicitly out of scope.
