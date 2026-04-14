@@ -31,7 +31,7 @@ function buildModelAnswer(acceptanceCriteria) {
 export default function LeverCard() {
   const { leverId } = useParams();
   const navigate = useNavigate();
-  const { getLever, markStudied, markExerciseAttempted, setLeverNotes } = useLeverProgress();
+  const { markStudied, markExerciseAttempted, setLeverNotes } = useLeverProgress();
   const { getNoteText, setNoteText } = useNotes();
 
   const [textAnswer, setTextAnswer] = useState("");

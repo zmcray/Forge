@@ -60,6 +60,28 @@ describe("LeverList", () => {
     expect(screen.getByText("Technology Levers")).toBeInTheDocument();
     expect(screen.getByText("Strategic Levers")).toBeInTheDocument();
   });
+
+  it("navigates to lever detail on tile click", () => {
+    renderList();
+    const pricingTile = screen.getByText("Pricing Optimization").closest("button");
+    fireEvent.click(pricingTile);
+    expect(screen.getByText("When to Deploy")).toBeInTheDocument();
+  });
+
+  it("navigates back to list from detail via back link", () => {
+    render(
+      <MemoryRouter initialEntries={["/learn/levers/pricing-optimization"]}>
+        <Routes>
+          <Route path="/learn/levers" element={<LeverList />} />
+          <Route path="/learn/levers/:leverId" element={<LeverCard />} />
+        </Routes>
+      </MemoryRouter>
+    );
+    const backLink = screen.getByRole("button", { name: /All Levers/i });
+    fireEvent.click(backLink);
+    expect(screen.getByText("Value Creation Levers")).toBeInTheDocument();
+    expect(screen.getByText("Revenue Levers")).toBeInTheDocument();
+  });
 });
 
 describe("LeverCard", () => {
