@@ -10,7 +10,7 @@ function getRecommendations(sessions, streak, weakSpots, learnProgress) {
   const { progress, getSubsectionProgress } = learnProgress;
 
   // Compute learn state
-  let hasLearnProgress = progress.completedExercises.length > 0 || progress.visitedSubsections.length > 0;
+  const hasLearnProgress = progress.completedExercises.length > 0 || progress.visitedSubsections.length > 0;
   let incompleteSection = null;
 
   for (const section of LEARN_CONTENT) {

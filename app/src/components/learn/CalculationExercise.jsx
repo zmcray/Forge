@@ -20,6 +20,7 @@ export default function CalculationExercise({ exercise, isComplete, onComplete }
     isComplete ? autoFillZones(exercise.zones) : {}
   );
   const [incorrectFlash, setIncorrectFlash] = useState(null);
+  const [rejectFeedback, setRejectFeedback] = useState(null);
   const [isRevealed, setIsRevealed] = useState(isComplete);
   const [expanded, setExpanded] = useState(!isComplete);
 
@@ -33,9 +34,19 @@ export default function CalculationExercise({ exercise, isComplete, onComplete }
     }
   }, [allFilled, isRevealed, onComplete, exercise.id]);
 
+  const draggableMap = Object.fromEntries(exercise.draggables.map(d => [d.id, d]));
+
   const handleDrop = (zoneId, itemId) => {
     const zone = exercise.zones.find(z => z.id === zoneId);
     if (!zone || filledZones[zoneId] || placedItemIds.has(itemId)) return;
+
+    const dragged = draggableMap[itemId];
+    if (dragged?.rejectMessage) {
+      setRejectFeedback(dragged.rejectMessage);
+      setIncorrectFlash(zoneId);
+      setTimeout(() => setIncorrectFlash(null), 600);
+      return;
+    }
 
     if (!zone.correctIds.includes(itemId)) {
       setIncorrectFlash(zoneId);
@@ -43,6 +54,7 @@ export default function CalculationExercise({ exercise, isComplete, onComplete }
       return;
     }
 
+    setRejectFeedback(null);
     setFilledZones(prev => ({ ...prev, [zoneId]: itemId }));
   };
 
@@ -92,6 +104,17 @@ export default function CalculationExercise({ exercise, isComplete, onComplete }
               explanation={exercise.explanation}
               onDrop={handleDrop}
             />
+            {rejectFeedback && (
+              <div className="mt-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-300 dark:border-amber-700 rounded-lg p-3 text-sm text-amber-900 dark:text-amber-200">
+                <div className="flex items-start gap-2">
+                  <span className="text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0">&#9888;</span>
+                  <div>
+                    <span className="font-semibold text-xs uppercase tracking-wide text-amber-700 dark:text-amber-400">Not so fast</span>
+                    <p className="mt-1 leading-relaxed">{rejectFeedback}</p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

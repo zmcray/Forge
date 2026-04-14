@@ -5,6 +5,7 @@ export default function LearnNav({ sections, currentSection, currentSubsection, 
   const location = useLocation();
   const isCompareActive = location.pathname.startsWith("/learn/compare");
   const isConceptsActive = location.pathname.startsWith("/learn/concepts");
+  const isLeversActive = location.pathname.startsWith("/learn/levers");
 
   return (
     <nav className="space-y-4">
@@ -80,6 +81,24 @@ export default function LearnNav({ sections, currentSection, currentSubsection, 
         >
           <span className="material-symbols-outlined text-[18px]">compare_arrows</span>
           <span className={collapsed ? "max-xl:hidden" : ""}>Cross-Industry Compare</span>
+        </button>
+      </div>
+
+      {/* Value Creation group */}
+      <div className="pt-3 mt-3 border-t border-outline-variant/30">
+        <h3 className={`text-[10px] font-semibold text-on-surface-variant uppercase tracking-widest mb-1.5 px-3 ${collapsed ? "max-xl:hidden" : ""}`}>
+          Value Creation
+        </h3>
+        <button
+          onClick={() => navigate("/learn/levers")}
+          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors flex items-center gap-2 ${
+            isLeversActive
+              ? "bg-surface-container-high text-on-surface font-medium"
+              : "text-primary hover:bg-primary/10"
+          }`}
+        >
+          <span className="material-symbols-outlined text-[18px]">account_tree</span>
+          <span className={collapsed ? "max-xl:hidden" : ""}>Levers</span>
         </button>
       </div>
     </nav>

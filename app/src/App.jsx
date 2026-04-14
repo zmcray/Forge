@@ -237,6 +237,8 @@ function AppShellWrapper(props) {
         <Route path="learn/compare/:comparisonId" element={<LearnModule />} />
         <Route path="learn/concepts" element={<LearnModule />} />
         <Route path="learn/concepts/:cardId" element={<LearnModule />} />
+        <Route path="learn/levers" element={<LearnModule />} />
+        <Route path="learn/levers/:leverId" element={<LearnModule />} />
         <Route path="quickfire" element={<QuickFireScreen />} />
       </Routes>
     </AppShell>
