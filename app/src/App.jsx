@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from "react";
-import { Routes, Route, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import { COMPANIES, DIFFICULTY_LABELS } from "./data/companies";
 import { SCENARIOS } from "./data/scenarios";
 import { shuffleArray } from "./utils/format";
@@ -152,7 +152,7 @@ export default function App() {
     if (company) startPractice(company);
   }, [startPractice]);
 
-  const handleSearchLearn = useCallback((sectionIndex, subIndex) => {
+  const handleSearchLearn = useCallback(() => {
     navigate("/learn");
   }, [navigate]);
 

@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 const MIN_QUALITATIVE_CHARS = 50;
 
 export default function CommitInput({ mode, disabled, value, onChange, numericValue, onNumericChange }) {

@@ -11,7 +11,7 @@ export function ScoringProvider({ children }) {
     sessions: scoring.sessions,
     streak: scoring.streak,
     data: scoring.data,
-  }), [scoring.data]);
+  }), [scoring.data, scoring.sessions, scoring.streak]);
 
   const dispatch = useMemo(() => ({
     addScore: scoring.addScore,

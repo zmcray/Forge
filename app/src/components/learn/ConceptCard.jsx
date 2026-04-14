@@ -18,11 +18,10 @@ function formatValue(value) {
 export default function ConceptCard() {
   const { cardId } = useParams();
   const navigate = useNavigate();
-  const { getCard, markStudied, markPracticeAttempted, setCardNotes } = useConceptProgress();
+  const { markStudied, markPracticeAttempted } = useConceptProgress();
   const { getNoteText, setNoteText } = useNotes();
 
   const card = CONCEPT_CARDS.find((c) => c.id === cardId);
-  const cardProgress = getCard(cardId);
 
   // Practice prompt state
   const [textAnswer, setTextAnswer] = useState("");

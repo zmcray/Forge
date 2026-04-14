@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { COMPANIES } from "../data/companies";
 import { LEARN_CONTENT } from "../data/learnContent";
 
@@ -93,7 +93,7 @@ export default function SearchModal({ open, onClose, onNavigateCompany, onNaviga
     };
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [open, results, selectedIndex]);
+  }, [open, results, selectedIndex, onClose, selectResult]);
 
   // Global Cmd+K / Ctrl+K
   useEffect(() => {
@@ -108,7 +108,7 @@ export default function SearchModal({ open, onClose, onNavigateCompany, onNaviga
     return () => window.removeEventListener("keydown", handleGlobal);
   }, [open, onClose]);
 
-  const selectResult = (item) => {
+  const selectResult = useCallback((item) => {
     onClose();
     if (item.type === "company") {
       onNavigateCompany(item.id);
@@ -117,7 +117,7 @@ export default function SearchModal({ open, onClose, onNavigateCompany, onNaviga
     } else if (item.type === "metric") {
       onNavigateView("learn");
     }
-  };
+  }, [onClose, onNavigateCompany, onNavigateLearn, onNavigateView]);
 
   if (!open) return null;
 

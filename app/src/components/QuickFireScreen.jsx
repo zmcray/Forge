@@ -12,7 +12,7 @@ export default function QuickFireScreen() {
   const { sessions } = useScoringState();
   const attemptedCount = useMemo(() => new Set(sessions.filter(s => s.questions.length > 0).map(s => s.companyId)).size, [sessions]);
 
-  const [queue, setQueue] = useState(() => shuffleArray([...COMPANIES]));
+  const queue = useMemo(() => shuffleArray([...COMPANIES]), []);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [phase, setPhase] = useState("screen"); // screen, reveal, done
   const [decision, setDecision] = useState(""); // "go" or "no-go"
