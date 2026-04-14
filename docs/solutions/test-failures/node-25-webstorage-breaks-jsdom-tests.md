@@ -134,35 +134,49 @@ The `Object.defineProperty` with `configurable: true, writable: true` is the cri
 
 **Verification:** 270/270 tests passing after the shim, up from 239/270 before.
 
-## Better Solution (recommended for next iteration)
+## Canonical Fix (shipped in commit f0rthcoming)
 
-**Shimming `globalThis.localStorage` is a workaround, not the proper fix.** The canonical solution is to disable Node's experimental webstorage feature before jsdom initializes, using vitest's `poolOptions.execArgv` to pass `--no-experimental-webstorage` to every worker process at startup:
+**Shimming `globalThis.localStorage` is a workaround. The proper fix is to disable Node's experimental webstorage feature at the process level via `NODE_OPTIONS=--no-experimental-webstorage` in the npm test script.** When that flag is set at process start, Node never creates the broken native `globalThis.localStorage`, which lets jsdom install its own `Storage` unopposed.
 
-```javascript
-// app/vite.config.js
-export default defineConfig({
-  plugins: [apiDevPlugin(), react(), tailwindcss()],
-  // ...
-  test: {
-    globals: true,
-    setupFiles: ["./src/test-setup.js"],
-    poolOptions: {
-      forks: {
-        execArgv: ["--no-experimental-webstorage"],
-      },
-    },
-  },
-});
+**Step 1 — set the flag in `package.json`:**
+
+```json
+"scripts": {
+  "test": "NODE_OPTIONS=--no-experimental-webstorage vitest run",
+  "test:watch": "NODE_OPTIONS=--no-experimental-webstorage vitest"
+}
 ```
 
-With this fix, Node's native localStorage is disabled in test workers. jsdom then installs its own `Storage` instance unopposed, and the shim in `test-setup.js` becomes unnecessary.
+**Step 2 — remove the shim from `src/test-setup.js`:**
 
-**Why the execArgv approach is better:**
-1. It lets jsdom install its real `Storage` — closer to browser semantics (correct `instanceof Storage`, `Storage.prototype` chain intact).
-2. It doesn't mask the next Node breakage. When Node 26 enforces spec compliance, the shim might accidentally hide new issues. execArgv explicitly opts out.
-3. It's the approach recommended by the vitest maintainers in issue #8757.
+```javascript
+// app/src/test-setup.js
+import "@testing-library/jest-dom/vitest";
 
-**When to apply the better fix:** In a fresh session. Remove the 31-line shim block from `src/test-setup.js`, add the `execArgv` config, run `npm test` to confirm 270/270 still passing, commit.
+// jsdom doesn't implement scrollIntoView
+if (typeof Element !== "undefined") {
+  Element.prototype.scrollIntoView = () => {};
+}
+// No localStorage shim needed — NODE_OPTIONS disables Node's broken native.
+```
+
+### Why NODE_OPTIONS instead of vitest's `poolOptions.execArgv`
+
+I first tried vitest's `pool: "forks"` + `poolOptions.forks.execArgv: ["--no-experimental-webstorage"]` in `vite.config.js`. **It did not work.** All 43 previously-working tests failed again with the same `localStorage.clear is not a function` error. The vitest tinypool workers apparently do not inherit `execArgv` from the test config in vitest 4.1.0 — or the config path doesn't reach the worker process fast enough to matter.
+
+NODE_OPTIONS, by contrast, is set before vitest starts. Every child process (every worker, every fork, every thread's parent) inherits it automatically from the environment. It's the most reliable mechanism and the one recommended as belt-and-suspenders in the prevention section below.
+
+### Why this is better than the shim
+
+1. **jsdom installs its real `Storage`** — closer to browser semantics (correct `instanceof Storage`, `Storage.prototype` chain intact).
+2. **Doesn't mask future Node breakage.** When Node 26 enforces spec compliance, the shim could hide new issues. NODE_OPTIONS explicitly opts out.
+3. **Recommended by the vitest maintainers** in issue #8757.
+4. **Smaller diff** — removes 31 lines of shim code from `test-setup.js`.
+
+### Verification
+
+- Before the canonical fix: 31 failing (shim commit `7e29f0e` fixed them via the workaround)
+- After the canonical fix: 282/282 passing, shim removed
 
 ## Prevention
 
