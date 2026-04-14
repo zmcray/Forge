@@ -250,6 +250,17 @@ Summit Mechanical Services (HVAC, $32.5M), Coastal Fresh Foods (food distributio
 
 ## Compound Learnings
 
+- [2026-04-13] pattern: Clone proven component patterns aggressively. LeverCard was a ~300-line near-verbatim clone of ConceptCard; entire detail view was written as one file because the scaffold was proven. Pays back 5x on subsequent features. (Source: levers Phase 1)
+- [2026-04-13] testing: Validate cross-file data references via live resolution tests. `dataPoints.path resolves` tests fail at write time if a referenced ID or path is wrong, catching draft-plan vs canonical-source drift before any component code runs. (Source: levers Phase 1)
+- [2026-04-13] process: Document architecture decisions (D1/D2/... style) before writing code and get explicit signoff. Eliminates rework at review time. Capture them in the plan file so future sessions can pick up cold. (Source: levers Phase 1)
+- [2026-04-13] process: Screenshot and visually verify after every chunk that touches UI. Catches cheap issues (white-on-white cards, mis-aligned spacing) that are easier to see than reason about. (Source: levers Phase 1)
+- [2026-04-13] tooling: Read `.github/workflows/ci.yml` before any CI-sensitive change (Node version, test command, env vars). One second of prevention beats NODE_OPTIONS-style revert whiplash. (Source: levers Phase 1)
+- [2026-04-13] tooling: vitest 4.1 `poolOptions.forks.execArgv` does not propagate to workers in jsdom env. Use a setup-file shim or NODE_OPTIONS instead. Verified via repeated `localStorage.clear is not a function` failures after config change had no effect. (Source: levers Phase 1)
+- [2026-04-13] dx: Node 24+ ships a half-enabled `globalThis.localStorage` that lacks Storage API methods and breaks jsdom. Shim in `src/test-setup.js` works across Node 20-25+. The cleaner `--no-experimental-webstorage` flag is NOT viable via NODE_OPTIONS because Node 20 rejects unknown flags. See `docs/solutions/test-failures/node-25-webstorage-breaks-jsdom-tests.md` for full writeup. (Source: levers Phase 1)
+- [2026-04-13] process: Before launching session-spawned skills (ultraplan, autoplan), probe filesystem access with a 1-line `ls` or `git status`. If the spawned session can't see local files, pivot inline immediately instead of retrying. (Source: levers Phase 1)
+- [2026-04-13] process: Push prep commits or put them on their own branch before cutting a feature branch. Local-only commits on main cause divergence at squash-merge time, requiring `git reset --hard origin/main` to clean up. (Source: levers Phase 1)
+- [2026-04-13] pattern: When new research or spec material lands mid-session, explicitly ask if it changes scope before acting on it. Scope expansions deserve an explicit signoff, not silent absorption. (Source: levers Phase 1)
+
 ## Do NOT
 
 - No `var`. No `console.log` in production. No hardcoded secrets or env values.
