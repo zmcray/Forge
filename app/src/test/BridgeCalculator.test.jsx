@@ -168,4 +168,81 @@ describe("BridgeCalculator", () => {
     const stored = JSON.parse(localStorage.getItem("forge-bridge"));
     expect(stored.scenarios["services-platform"].lastStudied).toBeTruthy();
   });
+
+  it("persists slider changes to localStorage and rehydrates on remount", () => {
+    const { unmount } = renderDetail("services-platform");
+    fireEvent.change(screen.getByLabelText("Revenue CAGR"), { target: { value: "15" } });
+    const stored = JSON.parse(localStorage.getItem("forge-bridge"));
+    expect(stored.scenarios["services-platform"].customAssumptions.revenueCAGR).toBe(15);
+    unmount();
+    // Re-mount: hydrated value should appear, and Reset to plan should be visible
+    renderDetail("services-platform");
+    expect(screen.getByRole("button", { name: /Reset to plan/i })).toBeInTheDocument();
+  });
+
+  it("reset clears stored custom assumptions", () => {
+    renderDetail("services-platform");
+    fireEvent.change(screen.getByLabelText("Revenue CAGR"), { target: { value: "15" } });
+    fireEvent.click(screen.getByRole("button", { name: /Reset to plan/i }));
+    const stored = JSON.parse(localStorage.getItem("forge-bridge"));
+    expect(stored.scenarios["services-platform"].customAssumptions).toBeNull();
+  });
+
+  it("renders Value Destroyed panel instead of waterfall when MOIC goes negative", () => {
+    // cash-cow-deleveraging at min sliders produces exitEquity ≈ -4.10
+    renderDetail("cash-cow-deleveraging");
+    fireEvent.change(screen.getByLabelText("Revenue CAGR"), { target: { value: "-5" } });
+    fireEvent.change(screen.getByLabelText("Margin Expansion"), { target: { value: "-200" } });
+    fireEvent.change(screen.getByLabelText("Multiple Expansion"), { target: { value: "-1" } });
+    fireEvent.change(screen.getByLabelText("Debt Paydown"), { target: { value: "0" } });
+    expect(screen.getByText("Value Destroyed")).toBeInTheDocument();
+  });
+});
+
+describe("useBridgeProgress passed-vs-attempted semantics", () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  it("BridgeList counts passed attempts, not total attempts", () => {
+    // Seed two scenarios: one passed, one missed.
+    localStorage.setItem(
+      "forge-bridge",
+      JSON.stringify({
+        scenarios: {
+          "services-platform": { lastStudied: "2026-04-14", exerciseAttempted: true, exerciseScore: 5 },
+          "dental-rollup": { lastStudied: "2026-04-14", exerciseAttempted: true, exerciseScore: 0 },
+        },
+      })
+    );
+    renderList();
+    // 2 studied, 1 passed (not 2). The summary line should show "1/7 exercises passed".
+    expect(screen.getByText(/1\/7 exercises passed/i)).toBeInTheDocument();
+  });
+
+  it("a later miss does not downgrade a prior pass", () => {
+    // Pass first
+    renderDetail("services-platform");
+    fireEvent.change(screen.getByLabelText("Revenue CAGR"), { target: { value: "12" } });
+    fireEvent.change(screen.getByLabelText("Margin Expansion"), { target: { value: "400" } });
+    fireEvent.change(screen.getByLabelText("Multiple Expansion"), { target: { value: "2.5" } });
+    fireEvent.click(screen.getByRole("button", { name: /Check My Answer/i }));
+    expect(screen.getByText("PASSED")).toBeInTheDocument();
+    // Then miss
+    fireEvent.click(screen.getByRole("button", { name: /Reset to plan/i }));
+    fireEvent.click(screen.getByRole("button", { name: /Check My Answer/i }));
+    expect(screen.getByText("MISS")).toBeInTheDocument();
+    // Stored score should still be 5 (pass sticks)
+    const stored = JSON.parse(localStorage.getItem("forge-bridge"));
+    expect(stored.scenarios["services-platform"].exerciseScore).toBe(5);
+  });
+
+  it("survives a tampered nested-null scenarios entry without crashing", () => {
+    localStorage.setItem(
+      "forge-bridge",
+      JSON.stringify({ scenarios: { "services-platform": null } })
+    );
+    // Should render without throwing
+    expect(() => renderList()).not.toThrow();
+  });
 });

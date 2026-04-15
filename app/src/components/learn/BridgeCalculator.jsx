@@ -17,14 +17,20 @@ import BridgeExercise from "./BridgeExercise";
 export default function BridgeCalculator() {
   const { scenarioId } = useParams();
   const navigate = useNavigate();
-  const { markStudied, markExerciseAttempted, setCustomAssumptions } = useBridgeProgress();
+  const { getScenario, markStudied, markExerciseAttempted, setCustomAssumptions } = useBridgeProgress();
   const { getNoteText, setNoteText } = useNotes();
 
   const scenario = BRIDGE_SCENARIOS.find((s) => s.id === scenarioId);
 
-  const [userAssumptions, setUserAssumptions] = useState(
-    scenario ? { ...scenario.assumptions } : null
-  );
+  // Hydrate from previously persisted custom assumptions if present, else from plan baseline.
+  // The hook is stable across renders for the same scenarioId, so the lazy initializer is safe.
+  const [userAssumptions, setUserAssumptions] = useState(() => {
+    if (!scenario) return null;
+    const stored = getScenario(scenarioId).customAssumptions;
+    return stored && typeof stored === "object"
+      ? { ...scenario.assumptions, ...stored }
+      : { ...scenario.assumptions };
+  });
   const [lastResult, setLastResult] = useState(null);
 
   // Mark studied on mount
@@ -32,12 +38,19 @@ export default function BridgeCalculator() {
     if (scenario) markStudied(scenarioId);
   }, [scenarioId, scenario, markStudied]);
 
-  // Reset state when navigating to a different scenario
+  // Re-hydrate when navigating to a different scenario.
   useEffect(() => {
-    if (scenario) {
-      setUserAssumptions({ ...scenario.assumptions });
-      setLastResult(null);
-    }
+    if (!scenario) return;
+    const stored = getScenario(scenarioId).customAssumptions;
+    setUserAssumptions(
+      stored && typeof stored === "object"
+        ? { ...scenario.assumptions, ...stored }
+        : { ...scenario.assumptions }
+    );
+    setLastResult(null);
+    // getScenario is intentionally omitted: it changes identity on every progress mutation
+    // (e.g. markStudied), and we only want to rehydrate on actual route change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scenarioId, scenario]);
 
   // Derive exit and bridge from current user assumptions
@@ -52,22 +65,6 @@ export default function BridgeCalculator() {
         : null,
     [scenario, userExit, userAssumptions]
   );
-
-  // isDirty is null-safe: undefined scenario/userAssumptions -> false
-  const isDirty =
-    scenario && userAssumptions
-      ? Object.keys(scenario.assumptions).some(
-          (k) => userAssumptions[k] !== scenario.assumptions[k]
-        )
-      : false;
-
-  // Persist custom assumptions after user stops dragging (debounced).
-  // Skip while state matches the plan baseline to avoid a write on every mount.
-  useEffect(() => {
-    if (!scenario || !userAssumptions || !isDirty) return;
-    const t = setTimeout(() => setCustomAssumptions(scenarioId, userAssumptions), 250);
-    return () => clearTimeout(t);
-  }, [userAssumptions, scenarioId, scenario, isDirty, setCustomAssumptions]);
 
   if (!scenario) {
     return (
@@ -89,15 +86,27 @@ export default function BridgeCalculator() {
   const nextScenario =
     currentIndex < BRIDGE_SCENARIOS.length - 1 ? BRIDGE_SCENARIOS[currentIndex + 1] : null;
 
+  // Slider writes go straight through. Both setters fire from outside any updater
+  // function, so React's purity rule is honored. Persistence is synchronous because
+  // the JSON is small (a few hundred bytes) and modern browsers buffer localStorage
+  // writes async to disk. No debounce, no data loss on navigation.
   const handleSliderChange = (key, value) => {
-    setUserAssumptions((prev) => ({ ...prev, [key]: value }));
+    const next = { ...userAssumptions, [key]: value };
+    setUserAssumptions(next);
+    setCustomAssumptions(scenarioId, next);
     setLastResult(null);
   };
 
   const handleReset = () => {
     setUserAssumptions({ ...scenario.assumptions });
+    setCustomAssumptions(scenarioId, null);
     setLastResult(null);
   };
+
+  const planAssumptions = scenario.assumptions;
+  const isDirty = Object.keys(planAssumptions).some(
+    (k) => userAssumptions[k] !== planAssumptions[k]
+  );
 
   const handleCheckExercise = () => {
     const result = gradeExercise(

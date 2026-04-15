@@ -13,9 +13,9 @@ const SCENARIO_TILES = BRIDGE_SCENARIOS.map((scenario) => ({
 
 export default function BridgeList() {
   const navigate = useNavigate();
-  const { getScenario, getStudiedCount, getExerciseCount } = useBridgeProgress();
+  const { getScenario, getStudiedCount, getPassedCount } = useBridgeProgress();
   const studied = getStudiedCount();
-  const practiced = getExerciseCount();
+  const passed = getPassedCount();
 
   return (
     <div>
@@ -23,9 +23,9 @@ export default function BridgeList() {
       <p className="text-sm text-on-surface-variant mb-2">
         Seven PE investment scenarios. Adjust the levers, see how MOIC changes in real time.
       </p>
-      {(studied > 0 || practiced > 0) && (
+      {(studied > 0 || passed > 0) && (
         <p className="text-xs text-on-surface-variant mb-6">
-          {studied}/{BRIDGE_SCENARIOS.length} studied · {practiced}/{BRIDGE_SCENARIOS.length} exercises passed
+          {studied}/{BRIDGE_SCENARIOS.length} studied · {passed}/{BRIDGE_SCENARIOS.length} exercises passed
         </p>
       )}
 

@@ -26,16 +26,22 @@ export default function BridgeAttribution({ bridge }) {
           const pct = attr[key];
           const value = values[key];
           const barWidthPct = Math.max(0, Math.min(100, Math.abs(pct)));
+          // Negative contributors (e.g. multiple compression, debt taken on) destroy value.
+          // Recolor the bar to match so a negative dollar label and a positive-looking bar
+          // never disagree. Entry equity is always the basis, never "negative" in this sense.
+          const isNegativeContributor = key !== "entryEquity" && value < 0;
+          const barColor = isNegativeContributor ? "bg-error" : style.color;
+          const dotColor = isNegativeContributor ? "bg-error" : style.color;
 
           return (
             <div key={key} className="flex items-center gap-3">
               <div className="flex items-center gap-2 w-40 shrink-0">
-                <span className={`w-2 h-2 rounded-full ${style.color}`} />
+                <span className={`w-2 h-2 rounded-full ${dotColor}`} />
                 <span className="text-xs text-on-surface">{style.label}</span>
               </div>
               <div className="flex-1 bg-surface-container-lowest border border-outline-variant/30 rounded h-5 relative overflow-hidden">
                 <div
-                  className={`h-full ${style.color} opacity-60 rounded-l transition-all duration-200`}
+                  className={`h-full ${barColor} opacity-60 rounded-l transition-all duration-200`}
                   style={{ width: `${barWidthPct}%` }}
                 />
               </div>

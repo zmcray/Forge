@@ -6,6 +6,26 @@
 export default function BridgeWaterfall({ bridge }) {
   const { entryEquity, ebitdaGrowth, multipleExpansion, debtPaydown, exitEquity } = bridge;
 
+  // Negative or zero exit equity means value has been destroyed below the entry basis.
+  // The waterfall layout assumes a positive y-axis, so render an explicit value-destroyed
+  // panel instead. The user can recover by adjusting sliders.
+  if (exitEquity <= 0) {
+    return (
+      <div className="bg-error-container/40 border border-on-error-container/30 rounded-lg p-6 text-center">
+        <div className="text-[10px] uppercase tracking-widest text-on-error-container mb-1">
+          Value Destroyed
+        </div>
+        <div className="text-3xl font-bold font-mono text-on-error-container mb-2">
+          ${exitEquity.toFixed(1)}M
+        </div>
+        <p className="text-xs text-on-surface-variant max-w-sm mx-auto">
+          These assumptions wipe out the entry equity of ${entryEquity.toFixed(1)}M.
+          Adjust the sliders to find a path to value creation.
+        </p>
+      </div>
+    );
+  }
+
   // Scale: use the maximum of entry/exit/cumulative peak so every bar fits.
   const cumulativeAfterEbitda = entryEquity + ebitdaGrowth;
   const cumulativeAfterMultiple = cumulativeAfterEbitda + multipleExpansion;

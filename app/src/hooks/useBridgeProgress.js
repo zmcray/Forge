@@ -32,13 +32,16 @@ export default function useBridgeProgress() {
   const [progress, setProgress] = useState(loadProgress);
 
   const getScenario = useCallback(
-    (scenarioId) =>
-      progress.scenarios[scenarioId] || {
+    (scenarioId) => {
+      const stored = progress.scenarios[scenarioId];
+      if (stored && typeof stored === "object") return stored;
+      return {
         customAssumptions: null,
         lastStudied: null,
         exerciseAttempted: false,
         exerciseScore: null,
-      },
+      };
+    },
     [progress]
   );
 
@@ -61,14 +64,19 @@ export default function useBridgeProgress() {
 
   const markExerciseAttempted = useCallback((scenarioId, passed) => {
     setProgress((prev) => {
+      const existing = (prev.scenarios[scenarioId] && typeof prev.scenarios[scenarioId] === "object")
+        ? prev.scenarios[scenarioId]
+        : {};
+      // Once passed, stay passed. Subsequent misses don't downgrade a prior win.
+      const wasPassed = existing.exerciseScore === 5;
       const next = {
         ...prev,
         scenarios: {
           ...prev.scenarios,
           [scenarioId]: {
-            ...prev.scenarios[scenarioId],
+            ...existing,
             exerciseAttempted: true,
-            exerciseScore: passed ? 5 : 0,
+            exerciseScore: wasPassed || passed ? 5 : 0,
           },
         },
       };
@@ -77,14 +85,18 @@ export default function useBridgeProgress() {
     });
   }, []);
 
+  // Pass `null` for assumptions to clear the stored custom state (used by Reset to plan).
   const setCustomAssumptions = useCallback((scenarioId, assumptions) => {
     setProgress((prev) => {
+      const existing = (prev.scenarios[scenarioId] && typeof prev.scenarios[scenarioId] === "object")
+        ? prev.scenarios[scenarioId]
+        : {};
       const next = {
         ...prev,
         scenarios: {
           ...prev.scenarios,
           [scenarioId]: {
-            ...prev.scenarios[scenarioId],
+            ...existing,
             customAssumptions: assumptions,
             lastUpdated: new Date().toISOString(),
           },
@@ -96,12 +108,19 @@ export default function useBridgeProgress() {
   }, []);
 
   const getStudiedCount = useCallback(
-    () => Object.values(progress.scenarios).filter((s) => s.lastStudied).length,
+    () => Object.values(progress.scenarios).filter((s) => s && s.lastStudied).length,
     [progress]
   );
 
   const getExerciseCount = useCallback(
-    () => Object.values(progress.scenarios).filter((s) => s.exerciseAttempted).length,
+    () => Object.values(progress.scenarios).filter((s) => s && s.exerciseAttempted).length,
+    [progress]
+  );
+
+  // Counts scenarios where the user has actually solved the exercise (score === 5).
+  // Distinct from getExerciseCount, which counts all attempts including misses.
+  const getPassedCount = useCallback(
+    () => Object.values(progress.scenarios).filter((s) => s && s.exerciseScore === 5).length,
     [progress]
   );
 
@@ -112,5 +131,6 @@ export default function useBridgeProgress() {
     setCustomAssumptions,
     getStudiedCount,
     getExerciseCount,
+    getPassedCount,
   };
 }
