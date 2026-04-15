@@ -53,6 +53,22 @@ export default function BridgeCalculator() {
     [scenario, userExit, userAssumptions]
   );
 
+  // isDirty is null-safe: undefined scenario/userAssumptions -> false
+  const isDirty =
+    scenario && userAssumptions
+      ? Object.keys(scenario.assumptions).some(
+          (k) => userAssumptions[k] !== scenario.assumptions[k]
+        )
+      : false;
+
+  // Persist custom assumptions after user stops dragging (debounced).
+  // Skip while state matches the plan baseline to avoid a write on every mount.
+  useEffect(() => {
+    if (!scenario || !userAssumptions || !isDirty) return;
+    const t = setTimeout(() => setCustomAssumptions(scenarioId, userAssumptions), 250);
+    return () => clearTimeout(t);
+  }, [userAssumptions, scenarioId, scenario, isDirty, setCustomAssumptions]);
+
   if (!scenario) {
     return (
       <div className="text-center py-12">
@@ -73,17 +89,8 @@ export default function BridgeCalculator() {
   const nextScenario =
     currentIndex < BRIDGE_SCENARIOS.length - 1 ? BRIDGE_SCENARIOS[currentIndex + 1] : null;
 
-  const planAssumptions = scenario.assumptions;
-  const isDirty = Object.keys(planAssumptions).some(
-    (k) => userAssumptions[k] !== planAssumptions[k]
-  );
-
   const handleSliderChange = (key, value) => {
-    setUserAssumptions((prev) => {
-      const next = { ...prev, [key]: value };
-      setCustomAssumptions(scenarioId, next);
-      return next;
-    });
+    setUserAssumptions((prev) => ({ ...prev, [key]: value }));
     setLastResult(null);
   };
 

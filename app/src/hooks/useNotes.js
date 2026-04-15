@@ -4,9 +4,13 @@ const STORAGE_KEY = "forge-notes";
 
 function loadNotes() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch {}
+    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+      return parsed;
+    }
+  } catch {
+    // corrupt JSON or storage unavailable
+  }
   return {};
 }
 

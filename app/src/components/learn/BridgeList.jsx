@@ -4,6 +4,13 @@ import { COMPANIES } from "../../data/companies";
 import { calculateBridge } from "../../utils/bridgeMath";
 import useBridgeProgress from "../../hooks/useBridgeProgress";
 
+// Plan-case MOICs are static data. Compute once at module load, not per render.
+const SCENARIO_TILES = BRIDGE_SCENARIOS.map((scenario) => ({
+  ...scenario,
+  planMoic: calculateBridge(scenario.entry, scenario.exit, scenario.assumptions.holdPeriod).moic,
+  company: COMPANIES.find((c) => c.id === scenario.companyId),
+}));
+
 export default function BridgeList() {
   const navigate = useNavigate();
   const { getScenario, getStudiedCount, getExerciseCount } = useBridgeProgress();
@@ -23,9 +30,8 @@ export default function BridgeList() {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-        {BRIDGE_SCENARIOS.map((scenario) => {
-          const company = COMPANIES.find((c) => c.id === scenario.companyId);
-          const bridge = calculateBridge(scenario.entry, scenario.exit, scenario.assumptions.holdPeriod);
+        {SCENARIO_TILES.map((scenario) => {
+          const { company, planMoic } = scenario;
           const progress = getScenario(scenario.id);
           const hasStudied = !!progress.lastStudied;
           const hasPassed = progress.exerciseAttempted && progress.exerciseScore === 5;
@@ -63,7 +69,7 @@ export default function BridgeList() {
                 </div>
                 <div className="flex items-baseline gap-1">
                   <span className="text-lg font-bold font-mono text-on-surface">
-                    {bridge.moic.toFixed(1)}x
+                    {planMoic.toFixed(1)}x
                   </span>
                   <span className="text-[10px] text-on-surface-variant">MOIC</span>
                 </div>

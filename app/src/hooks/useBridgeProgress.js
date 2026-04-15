@@ -4,10 +4,20 @@ const STORAGE_KEY = "forge-bridge";
 
 function loadProgress() {
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || { scenarios: {} };
+    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if (
+      parsed &&
+      typeof parsed === "object" &&
+      parsed.scenarios &&
+      typeof parsed.scenarios === "object" &&
+      !Array.isArray(parsed.scenarios)
+    ) {
+      return parsed;
+    }
   } catch {
-    return { scenarios: {} };
+    // corrupt JSON or storage unavailable
   }
+  return { scenarios: {} };
 }
 
 function saveProgress(data) {
