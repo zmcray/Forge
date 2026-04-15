@@ -6,6 +6,7 @@ export default function LearnNav({ sections, currentSection, currentSubsection, 
   const isCompareActive = location.pathname.startsWith("/learn/compare");
   const isConceptsActive = location.pathname.startsWith("/learn/concepts");
   const isLeversActive = location.pathname.startsWith("/learn/levers");
+  const isBridgeActive = location.pathname.startsWith("/learn/bridge");
 
   return (
     <nav className="space-y-4">
@@ -99,6 +100,17 @@ export default function LearnNav({ sections, currentSection, currentSubsection, 
         >
           <span className="material-symbols-outlined text-[18px]">account_tree</span>
           <span className={collapsed ? "max-xl:hidden" : ""}>Levers</span>
+        </button>
+        <button
+          onClick={() => navigate("/learn/bridge")}
+          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors flex items-center gap-2 ${
+            isBridgeActive
+              ? "bg-surface-container-high text-on-surface font-medium"
+              : "text-primary hover:bg-primary/10"
+          }`}
+        >
+          <span className="material-symbols-outlined text-[18px]">stacked_bar_chart</span>
+          <span className={collapsed ? "max-xl:hidden" : ""}>Bridge</span>
         </button>
       </div>
     </nav>

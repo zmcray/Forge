@@ -71,6 +71,17 @@ export default function SearchModal({ open, onClose, onNavigateCompany, onNaviga
       .slice(0, 8);
   }, [query, index]);
 
+  const selectResult = useCallback((item) => {
+    onClose();
+    if (item.type === "company") {
+      onNavigateCompany(item.id);
+    } else if (item.type === "learn") {
+      onNavigateLearn(item.sectionIndex, item.subIndex);
+    } else if (item.type === "metric") {
+      onNavigateView("learn");
+    }
+  }, [onClose, onNavigateCompany, onNavigateLearn, onNavigateView]);
+
   useEffect(() => {
     if (open) {
       setQuery("");
@@ -107,17 +118,6 @@ export default function SearchModal({ open, onClose, onNavigateCompany, onNaviga
     window.addEventListener("keydown", handleGlobal);
     return () => window.removeEventListener("keydown", handleGlobal);
   }, [open, onClose]);
-
-  const selectResult = useCallback((item) => {
-    onClose();
-    if (item.type === "company") {
-      onNavigateCompany(item.id);
-    } else if (item.type === "learn") {
-      onNavigateLearn(item.sectionIndex, item.subIndex);
-    } else if (item.type === "metric") {
-      onNavigateView("learn");
-    }
-  }, [onClose, onNavigateCompany, onNavigateLearn, onNavigateView]);
 
   if (!open) return null;
 
