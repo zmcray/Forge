@@ -12,6 +12,8 @@ import ConceptList from "./ConceptList";
 import ConceptCard from "./ConceptCard";
 import LeverList from "./LeverList";
 import LeverCard from "./LeverCard";
+import BridgeList from "./BridgeList";
+import BridgeCalculator from "./BridgeCalculator";
 
 export default function LearnModule() {
   const [currentSection, setCurrentSection] = useState(0);
@@ -31,6 +33,8 @@ export default function LearnModule() {
   const isConceptDetail = location.pathname.match(/^\/learn\/concepts\/[^/]+$/);
   const isLeverRoute = location.pathname.startsWith("/learn/levers");
   const isLeverDetail = location.pathname.match(/^\/learn\/levers\/[^/]+$/);
+  const isBridgeRoute = location.pathname.startsWith("/learn/bridge");
+  const isBridgeDetail = location.pathname.match(/^\/learn\/bridge\/[^/]+$/);
 
   const sections = LEARN_CONTENT;
   const activeSub = sections[currentSection]?.subsections[currentSubsection];
@@ -41,10 +45,10 @@ export default function LearnModule() {
     .map(b => b.id) || [];
 
   useEffect(() => {
-    if (activeSub && !isCompareRoute && !isConceptRoute && !isLeverRoute) {
+    if (activeSub && !isCompareRoute && !isConceptRoute && !isLeverRoute && !isBridgeRoute) {
       markVisited(activeSub.id);
     }
-  }, [activeSub, markVisited, isCompareRoute, isConceptRoute, isLeverRoute]);
+  }, [activeSub, markVisited, isCompareRoute, isConceptRoute, isLeverRoute, isBridgeRoute]);
 
   // Clear chat when navigating to a different subsection
   useEffect(() => {
@@ -118,7 +122,11 @@ export default function LearnModule() {
         {/* Content area */}
         <div className="flex-1 min-w-0">
           <div className="bg-surface-container-lowest ghost-border rounded-xl p-6">
-            {isLeverDetail ? (
+            {isBridgeDetail ? (
+              <BridgeCalculator />
+            ) : isBridgeRoute ? (
+              <BridgeList />
+            ) : isLeverDetail ? (
               <LeverCard />
             ) : isLeverRoute ? (
               <LeverList />

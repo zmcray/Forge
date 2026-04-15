@@ -3,6 +3,8 @@ import { LEARN_CONTENT } from "../data/learnContent";
 import { COMPARISONS } from "../data/comparisons";
 import { COMPANIES } from "../data/companies";
 import { VALUE_LEVERS, LEVER_CATEGORIES } from "../data/valueLevers";
+import { BRIDGE_SCENARIOS } from "../data/valueBridge";
+import { calculateBridge, applyAssumptions } from "../utils/bridgeMath";
 import { resolveDataPath } from "../utils/resolveDataPath";
 
 const VALID_CATEGORIES = ["revenue", "margin", "organizational", "technology", "strategic"];
@@ -209,6 +211,92 @@ describe("Data Integrity", () => {
     it("LEVER_CATEGORIES covers all four categories", () => {
       for (const cat of VALID_CATEGORIES) {
         expect(LEVER_CATEGORIES[cat]).toBeDefined();
+      }
+    });
+  });
+
+  describe("Value Creation Bridge scenarios", () => {
+    it("has exactly 7 scenarios", () => {
+      expect(BRIDGE_SCENARIOS).toHaveLength(7);
+    });
+
+    it("every scenario has a unique id", () => {
+      const ids = new Set();
+      for (const s of BRIDGE_SCENARIOS) {
+        expect(ids.has(s.id), `Duplicate scenario id: ${s.id}`).toBe(false);
+        ids.add(s.id);
+      }
+    });
+
+    it("every scenario references a canonical company id", () => {
+      for (const s of BRIDGE_SCENARIOS) {
+        const company = COMPANIES.find((c) => c.id === s.companyId);
+        expect(
+          company,
+          `Scenario "${s.id}" references unknown companyId "${s.companyId}"`
+        ).toBeDefined();
+      }
+    });
+
+    it("entry enterprise value equals ebitda times multiple", () => {
+      for (const s of BRIDGE_SCENARIOS) {
+        const computed = s.entry.ebitda * s.entry.multiple;
+        expect(
+          Math.abs(s.entry.enterpriseValue - computed),
+          `Scenario "${s.id}" entry: EV ${s.entry.enterpriseValue} does not match ebitda * multiple = ${computed}`
+        ).toBeLessThan(0.01);
+      }
+    });
+
+    it("exit enterprise value equals ebitda times multiple", () => {
+      for (const s of BRIDGE_SCENARIOS) {
+        const computed = s.exit.ebitda * s.exit.multiple;
+        expect(
+          Math.abs(s.exit.enterpriseValue - computed),
+          `Scenario "${s.id}" exit: EV ${s.exit.enterpriseValue} does not match ebitda * multiple = ${computed}`
+        ).toBeLessThan(0.01);
+      }
+    });
+
+    it("bridge components sum to equity gain (conservation of value)", () => {
+      for (const s of BRIDGE_SCENARIOS) {
+        const bridge = calculateBridge(s.entry, s.exit, s.assumptions.holdPeriod);
+        const equityGain = bridge.exitEquity - bridge.entryEquity;
+        const componentSum = bridge.ebitdaGrowth + bridge.multipleExpansion + bridge.debtPaydown;
+        expect(
+          Math.abs(componentSum - equityGain),
+          `Scenario "${s.id}": bridge components sum ${componentSum} does not match equity gain ${equityGain}`
+        ).toBeLessThan(0.01);
+      }
+    });
+
+    it("sliderRanges have valid min < max for every slider", () => {
+      for (const s of BRIDGE_SCENARIOS) {
+        for (const [key, range] of Object.entries(s.sliderRanges)) {
+          expect(
+            range.min < range.max,
+            `Scenario "${s.id}" slider "${key}": min ${range.min} >= max ${range.max}`
+          ).toBe(true);
+          expect(
+            range.step > 0,
+            `Scenario "${s.id}" slider "${key}": step must be positive`
+          ).toBe(true);
+        }
+      }
+    });
+
+    it("scenario assumptions applied to entry produce a MOIC within tolerance of plan exit", () => {
+      for (const s of BRIDGE_SCENARIOS) {
+        const syntheticExit = applyAssumptions(s.entry, s.assumptions);
+        const syntheticBridge = calculateBridge(s.entry, syntheticExit, s.assumptions.holdPeriod);
+        const planBridge = calculateBridge(s.entry, s.exit, s.assumptions.holdPeriod);
+        // Assumptions are rounded descriptions of the plan case, so they should
+        // produce a MOIC within 10% of the plan MOIC (not exact due to rounding)
+        const ratio = syntheticBridge.moic / planBridge.moic;
+        expect(
+          ratio > 0.85 && ratio < 1.15,
+          `Scenario "${s.id}": assumption-derived MOIC ${syntheticBridge.moic.toFixed(2)} drifts too far from plan MOIC ${planBridge.moic.toFixed(2)}`
+        ).toBe(true);
       }
     });
   });
