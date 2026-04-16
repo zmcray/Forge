@@ -1,19 +1,34 @@
 import { useState, useCallback } from "react";
 
 const STORAGE_KEY = "forge-learn-progress";
+const DEFAULT_STATE = { completedExercises: [], visitedSubsections: [] };
 
 function loadProgress() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch {}
-  return { completedExercises: [], visitedSubsections: [] };
+    if (!raw) return DEFAULT_STATE;
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed.completedExercises) || !Array.isArray(parsed.visitedSubsections)) {
+      console.warn(`[Forge] Invalid shape in ${STORAGE_KEY}, resetting`);
+      return DEFAULT_STATE;
+    }
+    return parsed;
+  } catch (err) {
+    console.warn(`[Forge] Corrupt data in ${STORAGE_KEY}, resetting:`, err.message);
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) localStorage.setItem(`${STORAGE_KEY}-corrupt-backup`, raw);
+    } catch {}
+    return DEFAULT_STATE;
+  }
 }
 
 function saveProgress(progress) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
-  } catch {}
+  } catch (err) {
+    console.warn(`[Forge] Failed to save ${STORAGE_KEY}:`, err.message);
+  }
 }
 
 export default function useLearnProgress() {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { VALUE_LEVERS, LEVER_CATEGORIES } from "../../data/valueLevers";
 import { COMPANIES } from "../../data/companies";
@@ -41,7 +41,20 @@ export default function LeverCard() {
   const [llmLoading, setLlmLoading] = useState(false);
   const [llmError, setLlmError] = useState(null);
 
+  const abortRef = useRef(null);
+  useEffect(() => () => { abortRef.current?.abort(); }, []);
+
   const lever = VALUE_LEVERS.find((l) => l.id === leverId);
+
+  // Reset practice state when navigating between levers
+  useEffect(() => {
+    setTextAnswer("");
+    setCommittedText("");
+    setPhase("commit");
+    setLlmResult(null);
+    setLlmLoading(false);
+    setLlmError(null);
+  }, [leverId]);
 
   useEffect(() => {
     if (lever) markStudied(leverId);
@@ -74,6 +87,10 @@ export default function LeverCard() {
     setPhase("done");
     const modelAnswer = buildModelAnswer(lever.exercise.acceptanceCriteria);
 
+    abortRef.current?.abort();
+    const ctrl = new AbortController();
+    abortRef.current = ctrl;
+
     setLlmLoading(true);
     setLlmError(null);
     evaluateAnswer({
@@ -84,15 +101,19 @@ export default function LeverCard() {
       companyContext: "",
     })
       .then((result) => {
+        if (ctrl.signal.aborted) return;
         setLlmResult(result);
         markExerciseAttempted(leverId, result?.score ?? null);
       })
       .catch((err) => {
+        if (ctrl.signal.aborted) return;
         console.warn("[Forge] LLM evaluation failed:", err);
         setLlmError(true);
         markExerciseAttempted(leverId, null);
       })
-      .finally(() => setLlmLoading(false));
+      .finally(() => {
+        if (!ctrl.signal.aborted) setLlmLoading(false);
+      });
   };
 
   const handleRedo = () => {

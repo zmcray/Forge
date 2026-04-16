@@ -4,12 +4,25 @@ export function formatCurrency(val, decimals = 1) {
 }
 
 export function extractNumericValue(text) {
-  const pctMatch = text.match(/([\d]+\.?\d*)%/);
-  if (pctMatch) return { value: parseFloat(pctMatch[1]), unit: "%" };
-  const dollarMatch = text.match(/\$([\d]+\.?\d*)M/);
-  if (dollarMatch) return { value: parseFloat(dollarMatch[1]), unit: "$M" };
-  const xMatch = text.match(/([\d]+\.?\d*)x/);
-  if (xMatch) return { value: parseFloat(xMatch[1]), unit: "x" };
+  // Matches optional negative sign or parenthetical negatives, optional $, commas, decimals
+  const pctMatch = text.match(/[(-]?\s*\$?\s*([\d,]*\.?\d+)\s*%\s*\)?/);
+  if (pctMatch) {
+    const raw = parseFloat(pctMatch[1].replace(/,/g, ""));
+    const neg = /^\(|^-/.test(text.trim());
+    return { value: neg ? -raw : raw, unit: "%" };
+  }
+  const dollarMatch = text.match(/[(-]?\s*\$\s*([\d,]*\.?\d+)\s*M\s*\)?/);
+  if (dollarMatch) {
+    const raw = parseFloat(dollarMatch[1].replace(/,/g, ""));
+    const neg = /\(\s*\$/.test(text) || /-\s*\$/.test(text);
+    return { value: neg ? -raw : raw, unit: "$M" };
+  }
+  const xMatch = text.match(/[(-]?\s*([\d,]*\.?\d+)\s*x\s*\)?/);
+  if (xMatch) {
+    const raw = parseFloat(xMatch[1].replace(/,/g, ""));
+    const neg = /^\(|^-/.test(text.trim());
+    return { value: neg ? -raw : raw, unit: "x" };
+  }
   return null;
 }
 
@@ -22,11 +35,12 @@ export function formatUnit(unit) {
 
 export function formatDelta(userVal, modelVal, unit) {
   const delta = userVal - modelVal;
-  const sign = delta >= 0 ? "+" : "";
-  if (unit === "%") return `${sign}${delta.toFixed(1)}pp`;
-  if (unit === "$M") return `${sign}$${delta.toFixed(1)}M`;
-  if (unit === "x") return `${sign}${delta.toFixed(1)}x`;
-  return `${sign}${delta.toFixed(1)}`;
+  const sign = delta >= 0 ? "+" : "-";
+  const abs = Math.abs(delta);
+  if (unit === "%") return `${sign}${abs.toFixed(1)}pp`;
+  if (unit === "$M") return `${sign}$${abs.toFixed(1)}M`;
+  if (unit === "x") return `${sign}${abs.toFixed(1)}x`;
+  return `${sign}${abs.toFixed(1)}`;
 }
 
 // Diagnostic scoring tolerance bands (industry-calibrated)

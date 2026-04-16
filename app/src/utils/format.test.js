@@ -61,6 +61,34 @@ describe("extractNumericValue", () => {
     const result = extractNumericValue("Growth of 15%");
     expect(result).toEqual({ value: 15, unit: "%" });
   });
+
+  it("extracts negative percentages", () => {
+    expect(extractNumericValue("-5%")).toEqual({ value: -5, unit: "%" });
+  });
+
+  it("extracts parenthetical negative dollar values", () => {
+    expect(extractNumericValue("($5.0M)")).toEqual({ value: -5.0, unit: "$M" });
+  });
+
+  it("extracts comma-separated dollar values", () => {
+    expect(extractNumericValue("$1,234.5M")).toEqual({ value: 1234.5, unit: "$M" });
+  });
+
+  it("extracts decimal-only percentages", () => {
+    expect(extractNumericValue(".5%")).toEqual({ value: 0.5, unit: "%" });
+  });
+
+  it("extracts negative multiples", () => {
+    expect(extractNumericValue("-3.2x")).toEqual({ value: -3.2, unit: "x" });
+  });
+
+  it("extracts parenthetical negative percentages", () => {
+    expect(extractNumericValue("(12.5%)")).toEqual({ value: -12.5, unit: "%" });
+  });
+
+  it("extracts negative dollar values with dash", () => {
+    expect(extractNumericValue("-$5M")).toEqual({ value: -5, unit: "$M" });
+  });
 });
 
 describe("formatUnit", () => {
@@ -100,6 +128,14 @@ describe("formatDelta", () => {
 
   it("formats zero delta", () => {
     expect(formatDelta(5.0, 5.0, "%")).toBe("+0.0pp");
+  });
+
+  it("formats negative dollar-M delta with correct sign placement", () => {
+    expect(formatDelta(2.5, 5.5, "$M")).toBe("-$3.0M");
+  });
+
+  it("formats large negative dollar-M delta", () => {
+    expect(formatDelta(1.0, 10.0, "$M")).toBe("-$9.0M");
   });
 });
 

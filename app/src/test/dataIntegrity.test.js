@@ -138,6 +138,60 @@ describe("Data Integrity", () => {
     it("returns undefined for null company", () => {
       expect(resolveDataPath(null, "revenue")).toBeUndefined();
     });
+
+    it("blocks __proto__ traversal", () => {
+      expect(resolveDataPath(summit, "__proto__.polluted")).toBeUndefined();
+    });
+
+    it("blocks constructor traversal", () => {
+      expect(resolveDataPath(summit, "constructor.prototype")).toBeUndefined();
+    });
+
+    it("blocks prototype traversal", () => {
+      expect(resolveDataPath(summit, "prototype")).toBeUndefined();
+    });
+  });
+
+  describe("EBITDA reconciliation", () => {
+    it("Ironclad EBITDA matches Net Income + D + A + I", () => {
+      const ironclad = COMPANIES.find((c) => c.id === "ironclad-construction");
+      const is = ironclad.incomeStatement;
+      const latestIdx = is.years.length - 1;
+      const computed =
+        is.netIncome[latestIdx] +
+        is.depreciation[latestIdx] +
+        is.amortization[latestIdx] +
+        is.interestExpense[latestIdx];
+      expect(
+        Math.abs(computed - ironclad.keyMetrics.ebitda),
+        `Ironclad: computed EBITDA ${computed.toFixed(2)} does not match reported ${ironclad.keyMetrics.ebitda}`
+      ).toBeLessThan(0.1);
+    });
+
+    it("Ironclad adjusted EBITDA matches EBITDA + add-backs", () => {
+      const ironclad = COMPANIES.find((c) => c.id === "ironclad-construction");
+      const addBacks = ironclad.incomeStatement.addBacks;
+      const totalAddBacks =
+        addBacks.ownerPerks + addBacks.oneTimeExpenses + addBacks.aboveMarketRent;
+      const computed = ironclad.keyMetrics.ebitda + totalAddBacks;
+      expect(
+        Math.abs(computed - ironclad.keyMetrics.adjustedEbitda),
+        `Ironclad: computed adjusted EBITDA ${computed.toFixed(2)} does not match reported ${ironclad.keyMetrics.adjustedEbitda}`
+      ).toBeLessThan(0.1);
+    });
+
+    it("every company adjusted EBITDA equals EBITDA + add-backs", () => {
+      for (const company of COMPANIES) {
+        const addBacks = company.incomeStatement.addBacks;
+        const totalAddBacks =
+          addBacks.ownerPerks + addBacks.oneTimeExpenses + addBacks.aboveMarketRent;
+        const computed = company.keyMetrics.ebitda + totalAddBacks;
+        expect(
+          Math.abs(computed - company.keyMetrics.adjustedEbitda),
+          `${company.name}: computed adjusted EBITDA ${computed.toFixed(2)} does not match reported ${company.keyMetrics.adjustedEbitda}`
+        ).toBeLessThan(0.1);
+      }
+    });
   });
 
   describe("Value Creation Levers", () => {
