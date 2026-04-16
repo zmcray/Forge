@@ -4,6 +4,7 @@ import { COMPARISONS } from "../data/comparisons";
 import { COMPANIES } from "../data/companies";
 import { VALUE_LEVERS, LEVER_CATEGORIES } from "../data/valueLevers";
 import { BRIDGE_SCENARIOS } from "../data/valueBridge";
+import { PLAYBOOKS } from "../data/playbooks";
 import { calculateBridge, applyAssumptions } from "../utils/bridgeMath";
 import { resolveDataPath } from "../utils/resolveDataPath";
 
@@ -297,6 +298,118 @@ describe("Data Integrity", () => {
           ratio > 0.85 && ratio < 1.15,
           `Scenario "${s.id}": assumption-derived MOIC ${syntheticBridge.moic.toFixed(2)} drifts too far from plan MOIC ${planBridge.moic.toFixed(2)}`
         ).toBe(true);
+      }
+    });
+  });
+
+  // ── PLAYBOOKS DATA INTEGRITY ────────────────────────────────────────────
+  describe("Operating Playbooks data integrity", () => {
+    const PHASE_KEYS = ["months-1-6", "months-7-18", "months-19-36"];
+    const REQUIRED_INITIATIVE_FIELDS = [
+      "id", "name", "leverId", "description", "owner",
+      "timeline", "startCondition", "resources", "successMetrics", "dependencies",
+    ];
+    const leverIds = VALUE_LEVERS.map((l) => l.id);
+    const companyIds = COMPANIES.map((c) => c.id);
+
+    it("has exactly 9 playbooks", () => {
+      expect(PLAYBOOKS).toHaveLength(9);
+    });
+
+    it("every playbook has a unique ID", () => {
+      const ids = PLAYBOOKS.map((p) => p.id);
+      expect(new Set(ids).size).toBe(ids.length);
+    });
+
+    it("every playbook companyId resolves to a live company", () => {
+      for (const p of PLAYBOOKS) {
+        expect(
+          companyIds.includes(p.companyId),
+          `Playbook "${p.id}" references companyId "${p.companyId}" not found in COMPANIES`
+        ).toBe(true);
+      }
+    });
+
+    it("every playbook has exactly 3 phases", () => {
+      for (const p of PLAYBOOKS) {
+        const keys = Object.keys(p.timeline);
+        expect(
+          keys.length,
+          `Playbook "${p.id}" has ${keys.length} phases, expected 3`
+        ).toBe(3);
+        for (const k of PHASE_KEYS) {
+          expect(
+            p.timeline[k],
+            `Playbook "${p.id}" missing phase "${k}"`
+          ).toBeDefined();
+        }
+      }
+    });
+
+    it("every phase has at least 2 initiatives", () => {
+      for (const p of PLAYBOOKS) {
+        for (const k of PHASE_KEYS) {
+          const phase = p.timeline[k];
+          expect(
+            phase.initiatives.length >= 2,
+            `Playbook "${p.id}" phase "${k}" has only ${phase.initiatives.length} initiatives (min 2)`
+          ).toBe(true);
+        }
+      }
+    });
+
+    it("every initiative has all required fields", () => {
+      for (const p of PLAYBOOKS) {
+        for (const k of PHASE_KEYS) {
+          for (const init of p.timeline[k].initiatives) {
+            for (const field of REQUIRED_INITIATIVE_FIELDS) {
+              expect(
+                init[field] !== undefined && init[field] !== null,
+                `Playbook "${p.id}" initiative "${init.id}" missing field "${field}"`
+              ).toBe(true);
+            }
+            expect(
+              Array.isArray(init.successMetrics) && init.successMetrics.length > 0,
+              `Playbook "${p.id}" initiative "${init.id}" successMetrics must be a non-empty array`
+            ).toBe(true);
+            expect(
+              Array.isArray(init.dependencies),
+              `Playbook "${p.id}" initiative "${init.id}" dependencies must be an array`
+            ).toBe(true);
+          }
+        }
+      }
+    });
+
+    it("every initiative leverId resolves to a live lever", () => {
+      for (const p of PLAYBOOKS) {
+        for (const k of PHASE_KEYS) {
+          for (const init of p.timeline[k].initiatives) {
+            expect(
+              leverIds.includes(init.leverId),
+              `Playbook "${p.id}" initiative "${init.id}" references leverId "${init.leverId}" not found in VALUE_LEVERS`
+            ).toBe(true);
+          }
+        }
+      }
+    });
+
+    it("every initiative dependency resolves to a sibling initiative ID within the same playbook", () => {
+      for (const p of PLAYBOOKS) {
+        // Collect all initiative IDs across all phases for this playbook
+        const allInitIds = PHASE_KEYS.flatMap((k) =>
+          p.timeline[k].initiatives.map((init) => init.id)
+        );
+        for (const k of PHASE_KEYS) {
+          for (const init of p.timeline[k].initiatives) {
+            for (const dep of init.dependencies) {
+              expect(
+                allInitIds.includes(dep),
+                `Playbook "${p.id}" initiative "${init.id}" dependency "${dep}" not found in playbook initiatives`
+              ).toBe(true);
+            }
+          }
+        }
       }
     });
   });
