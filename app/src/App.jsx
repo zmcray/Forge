@@ -255,19 +255,14 @@ function PracticeRedirect() {
   return null;
 }
 
-function getOverallLearnProgress(getSubsectionProgress) {
-  let completed = 0;
-  let total = 0;
-  for (const section of LEARN_CONTENT) {
-    for (const sub of section.subsections) {
-      const prog = getSubsectionProgress(sub);
-      if (prog) {
-        completed += prog.completed;
-        total += prog.total;
-      }
-    }
-  }
-  return { completed, total };
+function getOverallLearnProgress(learnProgress) {
+  return {
+    completed: learnProgress.overallStats.completedExercises,
+    total: learnProgress.overallStats.totalExercises,
+    currentStepName: learnProgress.getCurrentStep()?.title || "Learn",
+    hasStarted: learnProgress.overallStats.completedExercises > 0 ||
+      learnProgress.progress.visitedSubsections.length > 0,
+  };
 }
 
 function HomeScreen({ scenariosByCompany, startPractice, setView, learnProgress }) {
@@ -297,7 +292,7 @@ function HomeScreen({ scenariosByCompany, startPractice, setView, learnProgress 
 
   const weakSpots = getWeakSpots();
   const quantitativeAccuracy = getQuantitativeAccuracy();
-  const learnStats = getOverallLearnProgress(learnProgress.getSubsectionProgress);
+  const learnStats = getOverallLearnProgress(learnProgress);
 
   const companiesByDifficulty = useMemo(() => {
     const groups = { 1: [], 2: [], 3: [] };
@@ -401,7 +396,7 @@ function HomeScreen({ scenariosByCompany, startPractice, setView, learnProgress 
           title="Learn the Fundamentals"
           description="Financial statements, screening metrics, and due diligence frameworks for PE analysis."
           badges={[`${learnStats.completed}/${learnStats.total} Exercises`, "Interactive"]}
-          ctaLabel={learnStats.completed > 0 ? "Continue Learning" : "Start Learning"}
+          ctaLabel={learnStats.hasStarted ? `Continue: ${learnStats.currentStepName}` : "Start Learning"}
           onClick={() => setView("learn")}
           progress={learnStats.total > 0 ? (learnStats.completed / learnStats.total) * 100 : 0}
         />

@@ -7,6 +7,13 @@ export const LEARN_CONTENT = [
       {
         id: "s1a",
         title: "1A. Gross Margin",
+        objectives: [
+          "Understand why gross margin is the first number PE checks",
+          "Build the gross margin formula from P&L components",
+          "Calculate Summit Mechanical's gross margin",
+        ],
+        skillTags: ["Gross Margin", "Income Statement", "Summit HVAC"],
+        timeEstimate: 6,
         suggestedQuestions: [
           "Why does gross margin matter more than revenue for PE investors?",
           "How would a 2% drop in COGS impact Summit's valuation?",
@@ -46,6 +53,13 @@ export const LEARN_CONTENT = [
       {
         id: "s1b",
         title: "1B. Net Margin",
+        objectives: [
+          "Build the net margin formula",
+          "Understand why net margin misleads in LMM PE",
+          "See how owner discretionary spending distorts the bottom line",
+        ],
+        skillTags: ["Net Margin", "Income Statement", "Summit HVAC"],
+        timeEstimate: 6,
         suggestedQuestions: [
           "Why is net margin often misleading in LMM PE?",
           "What expenses distort Summit's net margin?",
@@ -85,6 +99,13 @@ export const LEARN_CONTENT = [
       {
         id: "s1c",
         title: "1C. EBITDA",
+        objectives: [
+          "Understand why PE uses EBITDA instead of net income",
+          "Identify the four items EBITDA strips out",
+          "Calculate Summit's EBITDA from scratch",
+        ],
+        skillTags: ["EBITDA", "Earnings", "Summit HVAC"],
+        timeEstimate: 8,
         suggestedQuestions: [
           "Why do PE investors focus on EBITDA instead of net income?",
           "What does each letter in EBITDA actually represent?",
@@ -131,6 +152,14 @@ export const LEARN_CONTENT = [
       {
         id: "s1d",
         title: "1D. Adjusted EBITDA",
+        objectives: [
+          "Understand the difference between EBITDA and Adjusted EBITDA",
+          "Explore SG&A to find hidden add-backs",
+          "Calculate Summit's adjusted EBITDA",
+          "Learn why owner comp is the most contested add-back",
+        ],
+        skillTags: ["Adjusted EBITDA", "Add-backs", "SG&A", "Summit HVAC"],
+        timeEstimate: 10,
         suggestedQuestions: [
           "What's the difference between EBITDA and Adjusted EBITDA?",
           "How do you spot legitimate vs aggressive add-backs?",
@@ -190,6 +219,13 @@ export const LEARN_CONTENT = [
       {
         id: "s2a",
         title: "2A. The Seven Key Metrics",
+        objectives: [
+          "Learn the seven metrics that screen a deal in 10 minutes",
+          "Screen Precision CNC against the benchmarks",
+          "Screen BrightSmile Dental and make a go/no-go call",
+        ],
+        skillTags: ["Screening", "Benchmarks", "Precision CNC", "BrightSmile"],
+        timeEstimate: 12,
         suggestedQuestions: [
           "Which of the seven metrics would you check first and why?",
           "How do these metrics differ between industries?",
@@ -245,6 +281,13 @@ export const LEARN_CONTENT = [
       {
         id: "s2b",
         title: "2B. Working Capital Metrics",
+        objectives: [
+          "Calculate DSO, DIO, DPO, and the cash conversion cycle",
+          "Apply working capital analysis to Coastal Fresh Foods",
+          "Assess whether working capital helps or hurts the business",
+        ],
+        skillTags: ["Working Capital", "DSO", "DPO", "CCC", "Coastal Foods"],
+        timeEstimate: 15,
         suggestedQuestions: [
           "Why is working capital a hidden trap in LMM acquisitions?",
           "How do DSO, DPO, and DIO interact?",
@@ -331,6 +374,13 @@ export const LEARN_CONTENT = [
       {
         id: "s3a",
         title: "3A. Revenue Quality",
+        objectives: [
+          "Distinguish high-quality vs low-quality revenue",
+          "Compare Summit vs Apex on revenue durability",
+          "Understand why recurring % alone is misleading",
+        ],
+        skillTags: ["Revenue Quality", "Recurring Revenue", "Summit HVAC", "Apex Logistics"],
+        timeEstimate: 10,
         suggestedQuestions: [
           "What makes revenue 'high quality' vs 'low quality'?",
           "How does customer concentration affect revenue quality?",
@@ -381,6 +431,13 @@ export const LEARN_CONTENT = [
       {
         id: "s3b",
         title: "3B. EBITDA Quality",
+        objectives: [
+          "Rank add-backs from most to least defensible",
+          "Evaluate BrightSmile's $500K one-time claim",
+          "Spot recurring costs disguised as adjustable",
+        ],
+        skillTags: ["EBITDA Quality", "Add-backs", "BrightSmile"],
+        timeEstimate: 10,
         suggestedQuestions: [
           "How can EBITDA be high but 'low quality'?",
           "What are the red flags in Summit's EBITDA?",
@@ -427,6 +484,13 @@ export const LEARN_CONTENT = [
       {
         id: "s3c",
         title: "3C. Working Capital in DD",
+        objectives: [
+          "Understand working capital peg mechanics",
+          "Calculate the close adjustment for Coastal's NWC",
+          "Spot channel-stuffing red flags in AR spikes",
+        ],
+        skillTags: ["Working Capital", "NWC Peg", "DD", "Coastal Foods"],
+        timeEstimate: 10,
         suggestedQuestions: [
           "Why does working capital need special attention during due diligence?",
           "What working capital adjustments would you make for Summit?",
@@ -471,6 +535,13 @@ export const LEARN_CONTENT = [
       {
         id: "s3d",
         title: "3D. Leverage & Capital Structure",
+        objectives: [
+          "Understand leverage levels from conservative to distressed",
+          "Calculate leverage ratios for Precision and Apex",
+          "Assess additional debt capacity for each business",
+        ],
+        skillTags: ["Leverage", "Debt/EBITDA", "Capital Structure", "Precision CNC", "Apex"],
+        timeEstimate: 10,
         suggestedQuestions: [
           "Why does debt-to-EBITDA matter for PE acquisitions?",
           "What leverage ratio would be appropriate for Summit?",
@@ -524,6 +595,13 @@ export const LEARN_CONTENT = [
       {
         id: "s4a",
         title: "4A. EBITDA Add-backs",
+        objectives: [
+          "Rank add-back categories by defensibility",
+          "Analyze Summit's and Precision's add-back profiles",
+          "Challenge BrightSmile's roll-up add-back claims",
+        ],
+        skillTags: ["Add-backs", "EBITDA", "Summit HVAC", "Precision CNC"],
+        timeEstimate: 10,
         suggestedQuestions: [
           "When does an add-back cross the line from legitimate to aggressive?",
           "How would you challenge a seller's add-back presentation?",
@@ -579,6 +657,13 @@ export const LEARN_CONTENT = [
       {
         id: "s4b",
         title: "4B. LBO Economics",
+        objectives: [
+          "Understand the three value creation levers in PE",
+          "Evaluate LBO viability for TrueNorth vs Ironclad",
+          "Calculate MOIC on a TrueNorth acquisition",
+        ],
+        skillTags: ["LBO", "MOIC", "Leverage", "TrueNorth SaaS"],
+        timeEstimate: 12,
         suggestedQuestions: [
           "How does leverage amplify returns in an LBO?",
           "What happens to returns if EBITDA grows slower than expected?",
@@ -634,6 +719,13 @@ export const LEARN_CONTENT = [
       {
         id: "s4c",
         title: "4C. Margin Drivers",
+        objectives: [
+          "Analyze Coastal's margin compression problem",
+          "Contrast with BrightSmile's labor leverage model",
+          "Calculate enterprise value impact of 200bps margin improvement",
+        ],
+        skillTags: ["Margins", "Pricing Power", "Coastal Foods", "BrightSmile"],
+        timeEstimate: 10,
         suggestedQuestions: [
           "What's the difference between revenue-driven and cost-driven margin expansion?",
           "Which margin driver is most durable post-acquisition?",
@@ -689,6 +781,13 @@ export const LEARN_CONTENT = [
       {
         id: "s4d",
         title: "4D. Cash Conversion",
+        objectives: [
+          "Calculate FCF and cash conversion for Meridian and TrueNorth",
+          "Understand why high EBITDA can produce low cash",
+          "Explain Apex's 20% conversion gap to an investment committee",
+        ],
+        skillTags: ["Cash Conversion", "FCF", "Meridian", "TrueNorth SaaS"],
+        timeEstimate: 10,
         suggestedQuestions: [
           "Why can a profitable company still run out of cash?",
           "How does cash conversion differ between asset-light and asset-heavy businesses?",
@@ -744,6 +843,13 @@ export const LEARN_CONTENT = [
       {
         id: "s4e",
         title: "4E. Customer Concentration",
+        objectives: [
+          "Learn the 20%/35% concentration thresholds",
+          "Compare concentration risk across three companies",
+          "Design deal protections for each risk level",
+        ],
+        skillTags: ["Concentration", "Risk", "Coastal Foods", "Apex", "TrueNorth"],
+        timeEstimate: 10,
         suggestedQuestions: [
           "At what threshold does customer concentration become a deal-breaker?",
           "How does concentration affect valuation multiples?",
@@ -799,6 +905,13 @@ export const LEARN_CONTENT = [
       {
         id: "s4f",
         title: "4F. Key-Person Risk",
+        objectives: [
+          "Assess founder dependency in Summit and Precision",
+          "Design a 3-year founder transition plan",
+          "Structure deal terms to align founder incentives",
+        ],
+        skillTags: ["Key-Person Risk", "Transition", "Summit HVAC", "Precision CNC"],
+        timeEstimate: 10,
         suggestedQuestions: [
           "How do you evaluate whether a business can survive its founder leaving?",
           "What are the most common mitigations for key-person risk?",
@@ -854,6 +967,13 @@ export const LEARN_CONTENT = [
       {
         id: "s4g",
         title: "4G. Valuation Multiples",
+        objectives: [
+          "Know typical LMM multiples by sector",
+          "Understand what drives multiples up or down",
+          "Argue a valuation range for Summit against a broker's claim",
+        ],
+        skillTags: ["Valuation", "Multiples", "EV/EBITDA", "Summit HVAC", "TrueNorth"],
+        timeEstimate: 12,
         suggestedQuestions: [
           "Why do similar companies trade at different multiples?",
           "What drives the difference between 4x and 8x EBITDA?",
@@ -918,6 +1038,13 @@ export const LEARN_CONTENT = [
       {
         id: "s4h",
         title: "4H. Investment Thesis Structure",
+        objectives: [
+          "Learn the five components of a strong thesis",
+          "Evaluate the BrightSmile roll-up thesis",
+          "Write a 60-second investment thesis with bull/base/bear cases",
+        ],
+        skillTags: ["Thesis", "Value Creation", "BrightSmile", "Vitality Vet"],
+        timeEstimate: 15,
         suggestedQuestions: [
           "What makes a compelling investment thesis vs a weak one?",
           "How do you structure the 'why now' section of a thesis?",
