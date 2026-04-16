@@ -7,6 +7,7 @@ export default function LearnNav({ sections, currentSection, currentSubsection, 
   const isConceptsActive = location.pathname.startsWith("/learn/concepts");
   const isLeversActive = location.pathname.startsWith("/learn/levers");
   const isBridgeActive = location.pathname.startsWith("/learn/bridge");
+  const isPlaybooksActive = location.pathname.startsWith("/learn/playbooks");
 
   return (
     <nav className="space-y-4">
@@ -111,6 +112,17 @@ export default function LearnNav({ sections, currentSection, currentSubsection, 
         >
           <span className="material-symbols-outlined text-[18px]">stacked_bar_chart</span>
           <span className={collapsed ? "max-xl:hidden" : ""}>Bridge</span>
+        </button>
+        <button
+          onClick={() => navigate("/learn/playbooks")}
+          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors flex items-center gap-2 ${
+            isPlaybooksActive
+              ? "bg-surface-container-high text-on-surface font-medium"
+              : "text-primary hover:bg-primary/10"
+          }`}
+        >
+          <span className="material-symbols-outlined text-[18px]">assignment</span>
+          <span className={collapsed ? "max-xl:hidden" : ""}>Playbooks</span>
         </button>
       </div>
     </nav>
