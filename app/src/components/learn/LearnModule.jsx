@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import { LEARN_CONTENT } from "../../data/learnContent";
 import useLearnProgress from "../../hooks/useLearnProgress";
 import useNotes from "../../hooks/useNotes";
+import LearnHub from "./LearnHub";
 import LearnNav from "./LearnNav";
 import LearnSection from "./LearnSection";
 import ChatDrawer from "./ChatDrawer";
@@ -18,9 +19,11 @@ import PlaybookList from "./PlaybookList";
 import PlaybookDetail from "./PlaybookDetail";
 
 export default function LearnModule() {
+  const [showHub, setShowHub] = useState(true);
   const [currentSection, setCurrentSection] = useState(0);
   const [currentSubsection, setCurrentSubsection] = useState(0);
-  const { markComplete, isComplete, markVisited, getSubsectionProgress, resetSubsection } = useLearnProgress();
+  const learnProgress = useLearnProgress();
+  const { markComplete, isComplete, markVisited, getSubsectionProgress, resetSubsection } = learnProgress;
   const { getNoteText, setNoteText } = useNotes();
   const location = useLocation();
 
@@ -40,6 +43,9 @@ export default function LearnModule() {
   const isPlaybookRoute = location.pathname.startsWith("/learn/playbooks");
   const isPlaybookDetail = location.pathname.match(/^\/learn\/playbooks\/[^/]+$/);
 
+  // Show sub-module routes directly (not hub)
+  const isSubRoute = isCompareRoute || isConceptRoute || isLeverRoute || isBridgeRoute || isPlaybookRoute;
+
   const sections = LEARN_CONTENT;
   const activeSub = sections[currentSection]?.subsections[currentSubsection];
 
@@ -49,10 +55,10 @@ export default function LearnModule() {
     .map(b => b.id) || [];
 
   useEffect(() => {
-    if (activeSub && !isCompareRoute && !isConceptRoute && !isLeverRoute && !isBridgeRoute && !isPlaybookRoute) {
+    if (activeSub && !showHub && !isSubRoute) {
       markVisited(activeSub.id);
     }
-  }, [activeSub, markVisited, isCompareRoute, isConceptRoute, isLeverRoute, isBridgeRoute, isPlaybookRoute]);
+  }, [activeSub, markVisited, showHub, isSubRoute]);
 
   // Clear chat when navigating to a different subsection
   useEffect(() => {
@@ -76,6 +82,19 @@ export default function LearnModule() {
     window.scrollTo(0, 0);
   };
 
+  const handleStartLesson = useCallback((sectionIdx, subsectionIdx) => {
+    setCurrentSection(sectionIdx);
+    setCurrentSubsection(subsectionIdx);
+    setShowHub(false);
+    window.scrollTo(0, 0);
+  }, []);
+
+  const handleBackToHub = useCallback(() => {
+    setShowHub(true);
+    setChatOpen(false);
+    window.scrollTo(0, 0);
+  }, []);
+
   const handleNext = () => {
     const section = sections[currentSection];
     if (currentSubsection < section.subsections.length - 1) {
@@ -98,86 +117,85 @@ export default function LearnModule() {
   const isLast = currentSection === sections.length - 1 &&
     currentSubsection === sections[sections.length - 1].subsections.length - 1;
 
+  // Compute flat step index for nav header
+  let flatIdx = 0;
+  for (let si = 0; si < currentSection; si++) {
+    flatIdx += sections[si].subsections.length;
+  }
+  flatIdx += currentSubsection;
+  const totalSteps = learnProgress.allSteps.length;
+
+  // Sub-module routes render directly (concepts, levers, bridge, compare)
+  if (isSubRoute) {
+    return (
+      <div>
+        <div className="bg-surface-container-lowest ghost-border rounded-xl p-6">
+          {isPlaybookDetail ? <PlaybookDetail />
+            : isPlaybookRoute ? <PlaybookList />
+            : isBridgeDetail ? <BridgeCalculator />
+            : isBridgeRoute ? <BridgeList />
+            : isLeverDetail ? <LeverCard />
+            : isLeverRoute ? <LeverList />
+            : isConceptDetail ? <ConceptCard />
+            : isConceptRoute ? <ConceptList />
+            : isCompareDetail ? <ComparisonView />
+            : <ComparisonList />}
+        </div>
+      </div>
+    );
+  }
+
+  // Hub view (default)
+  if (showHub) {
+    return <LearnHub learnProgress={learnProgress} onStartLesson={handleStartLesson} />;
+  }
+
+  // Lesson content view
   return (
     <div>
-      {/* Page header */}
-      <div className="mb-6">
-        <h2 className="text-4xl font-extrabold font-headline text-on-surface tracking-tight">Learn the Fundamentals</h2>
-        <p className="text-sm text-on-surface-variant mt-2">PE financial statement analysis, step by step</p>
-      </div>
+      {/* Compact lesson nav header */}
+      <LearnNav
+        currentStep={activeSub}
+        stepIndex={flatIdx}
+        totalSteps={totalSteps}
+        isFirst={isFirst}
+        isLast={isLast}
+        onBack={handleBackToHub}
+        onPrev={handlePrev}
+        onNext={handleNext}
+      />
 
-      {/* Two-column layout (three when chat open) */}
-      <div className="flex gap-6">
-        {/* Section nav -- auto-collapse to icons when chat open on narrow screens */}
-        <div className={`shrink-0 ${chatOpen ? "max-xl:w-16 w-64" : "w-64"}`}>
-          <div className="sticky top-20 bg-surface-container-lowest ghost-border rounded-xl p-4">
-            <LearnNav
-              sections={sections}
-              currentSection={currentSection}
-              currentSubsection={currentSubsection}
-              onNavigate={handleNavigate}
-              getSubsectionProgress={getSubsectionProgress}
-              onResetSubsection={resetSubsection}
-              collapsed={chatOpen}
-            />
-          </div>
-        </div>
-
-        {/* Content area */}
+      {/* Content + chat layout */}
+      <div className={`flex gap-6 ${chatOpen ? "" : ""}`}>
         <div className="flex-1 min-w-0">
           <div className="bg-surface-container-lowest ghost-border rounded-xl p-6">
-            {isPlaybookDetail ? (
-              <PlaybookDetail />
-            ) : isPlaybookRoute ? (
-              <PlaybookList />
-            ) : isBridgeDetail ? (
-              <BridgeCalculator />
-            ) : isBridgeRoute ? (
-              <BridgeList />
-            ) : isLeverDetail ? (
-              <LeverCard />
-            ) : isLeverRoute ? (
-              <LeverList />
-            ) : isConceptDetail ? (
-              <ConceptCard />
-            ) : isConceptRoute ? (
-              <ConceptList />
-            ) : isCompareDetail ? (
-              <ComparisonView />
-            ) : isCompareRoute ? (
-              <ComparisonList />
-            ) : (
-              <>
-                {activeSub && (
-                  <LearnSection
-                    subsection={activeSub}
-                    isComplete={isComplete}
-                    onExerciseComplete={markComplete}
-                    onOpenChat={handleOpenChat}
-                    getNoteText={getNoteText}
-                    setNoteText={setNoteText}
-                  />
-                )}
-
-                {/* Navigation buttons */}
-                <div className="flex justify-between mt-8 pt-4 border-t border-outline-variant/30">
-                  <button
-                    onClick={handlePrev}
-                    disabled={isFirst}
-                    className={`px-4 py-2 text-sm rounded-lg transition-colors ${isFirst ? "text-outline-variant cursor-not-allowed" : "text-on-surface-variant hover:bg-surface-container-low"}`}
-                  >
-                    Previous
-                  </button>
-                  <button
-                    onClick={handleNext}
-                    disabled={isLast}
-                    className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors ${isLast ? "text-outline-variant cursor-not-allowed" : "bg-primary text-on-primary hover:opacity-90"}`}
-                  >
-                    Next
-                  </button>
-                </div>
-              </>
+            {activeSub && (
+              <LearnSection
+                subsection={activeSub}
+                isComplete={isComplete}
+                onExerciseComplete={markComplete}
+                onOpenChat={handleOpenChat}
+                getNoteText={getNoteText}
+                setNoteText={setNoteText}
+              />
             )}
+
+            {/* Navigation buttons */}
+            <div className="flex justify-between mt-8 pt-4 border-t border-outline-variant/30">
+              <button
+                onClick={handlePrev}
+                disabled={isFirst}
+                className={`px-4 py-2 text-sm rounded-lg transition-colors ${isFirst ? "text-outline-variant cursor-not-allowed" : "text-on-surface-variant hover:bg-surface-container-low"}`}
+              >
+                Previous
+              </button>
+              <button
+                onClick={isLast ? handleBackToHub : handleNext}
+                className="px-4 py-2 text-sm font-semibold rounded-lg bg-primary text-on-primary hover:opacity-90 transition-colors"
+              >
+                {isLast ? "Back to Overview" : "Next"}
+              </button>
+            </div>
           </div>
         </div>
 

@@ -1,130 +1,57 @@
-import { useNavigate, useLocation } from "react-router-dom";
-
-export default function LearnNav({ sections, currentSection, currentSubsection, onNavigate, getSubsectionProgress, onResetSubsection, collapsed }) {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const isCompareActive = location.pathname.startsWith("/learn/compare");
-  const isConceptsActive = location.pathname.startsWith("/learn/concepts");
-  const isLeversActive = location.pathname.startsWith("/learn/levers");
-  const isBridgeActive = location.pathname.startsWith("/learn/bridge");
-  const isPlaybooksActive = location.pathname.startsWith("/learn/playbooks");
-
+/**
+ * Compact lesson navigation header.
+ * Shows back button, current step name, step position, and prev/next arrows.
+ * Replaces the old full sidebar tree.
+ */
+export default function LearnNav({ currentStep, stepIndex, totalSteps, isFirst, isLast, onBack, onPrev, onNext }) {
   return (
-    <nav className="space-y-4">
-      {sections.map((section, si) => (
-        <div key={section.id}>
-          <h3 className={`text-[10px] font-semibold text-on-surface-variant uppercase tracking-widest mb-1.5 ${collapsed ? "max-xl:hidden" : ""}`}>{section.title}</h3>
-          <ul className="space-y-0.5">
-            {section.subsections.map((sub, ssi) => {
-              const isActive = currentSection === si && currentSubsection === ssi;
-              const progress = getSubsectionProgress(sub);
-              const allDone = progress && progress.completed === progress.total;
+    <div className="flex items-center gap-3 mb-5 pb-4 border-b border-outline-variant/20">
+      {/* Back to hub */}
+      <button
+        onClick={onBack}
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-on-surface-variant hover:bg-surface-container-low transition-colors shrink-0"
+      >
+        <span className="material-symbols-outlined text-[18px]">arrow_back</span>
+        Overview
+      </button>
 
-              return (
-                <li key={sub.id}>
-                  <div className="flex items-center gap-1">
-                    <button
-                      onClick={() => onNavigate(si, ssi)}
-                      className={`flex-1 text-left px-3 py-1.5 rounded-lg text-sm transition-colors flex items-center gap-2 ${
-                        isActive
-                          ? "bg-surface-container-high text-on-surface font-medium"
-                          : "text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface"
-                      }`}
-                    >
-                      {allDone && <span className="text-on-tertiary-container text-xs">&#10003;</span>}
-                      <span className={`flex-1 ${collapsed ? "max-xl:hidden" : ""}`}>{sub.title}</span>
-                      {progress && !allDone && (
-                        <span className={`text-xs text-outline-variant ${collapsed ? "max-xl:hidden" : ""}`}>{progress.completed}/{progress.total}</span>
-                      )}
-                    </button>
-                    {allDone && onResetSubsection && (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onResetSubsection(sub);
-                          onNavigate(si, ssi);
-                        }}
-                        title="Redo this section"
-                        className="p-1 rounded text-outline-variant hover:text-primary hover:bg-primary/10 transition-colors shrink-0"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5">
-                          <path fillRule="evenodd" d="M15.312 11.424a5.5 5.5 0 01-9.201 2.466l-.312-.311h2.433a.75.75 0 000-1.5H4.598a.75.75 0 00-.75.75v3.634a.75.75 0 001.5 0v-2.033l.312.311a7 7 0 0011.712-3.138.75.75 0 00-1.449-.39zm-10.624-2.85a5.5 5.5 0 019.201-2.465l.312.31H11.77a.75.75 0 000 1.5h3.634a.75.75 0 00.75-.75V3.535a.75.75 0 00-1.5 0v2.033l-.312-.311A7 7 0 002.63 8.395a.75.75 0 101.449.39z" clipRule="evenodd" />
-                        </svg>
-                      </button>
-                    )}
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      ))}
-
-      {/* Concepts + Compare links */}
-      <div className="pt-3 mt-3 border-t border-outline-variant/30 space-y-1">
-        <button
-          onClick={() => navigate("/learn/concepts")}
-          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors flex items-center gap-2 ${
-            isConceptsActive
-              ? "bg-surface-container-high text-on-surface font-medium"
-              : "text-primary hover:bg-primary/10"
-          }`}
-        >
-          <span className="material-symbols-outlined text-[18px]">lightbulb</span>
-          <span className={collapsed ? "max-xl:hidden" : ""}>Key Concepts</span>
-        </button>
-        <button
-          onClick={() => navigate("/learn/compare")}
-          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors flex items-center gap-2 ${
-            isCompareActive
-              ? "bg-surface-container-high text-on-surface font-medium"
-              : "text-primary hover:bg-primary/10"
-          }`}
-        >
-          <span className="material-symbols-outlined text-[18px]">compare_arrows</span>
-          <span className={collapsed ? "max-xl:hidden" : ""}>Cross-Industry Compare</span>
-        </button>
+      {/* Spacer */}
+      <div className="flex-1 min-w-0 text-center">
+        <span className="text-sm font-medium text-on-surface truncate">
+          {currentStep?.title}
+        </span>
+        <span className="text-xs text-outline-variant ml-2">
+          Step {stepIndex + 1} of {totalSteps}
+        </span>
       </div>
 
-      {/* Value Creation group */}
-      <div className="pt-3 mt-3 border-t border-outline-variant/30">
-        <h3 className={`text-[10px] font-semibold text-on-surface-variant uppercase tracking-widest mb-1.5 px-3 ${collapsed ? "max-xl:hidden" : ""}`}>
-          Value Creation
-        </h3>
+      {/* Prev / Next */}
+      <div className="flex items-center gap-1 shrink-0">
         <button
-          onClick={() => navigate("/learn/levers")}
-          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors flex items-center gap-2 ${
-            isLeversActive
-              ? "bg-surface-container-high text-on-surface font-medium"
-              : "text-primary hover:bg-primary/10"
+          onClick={onPrev}
+          disabled={isFirst}
+          className={`p-1.5 rounded-lg transition-colors ${
+            isFirst
+              ? "text-outline-variant/30 cursor-not-allowed"
+              : "text-on-surface-variant hover:bg-surface-container-low"
           }`}
+          title="Previous step"
         >
-          <span className="material-symbols-outlined text-[18px]">account_tree</span>
-          <span className={collapsed ? "max-xl:hidden" : ""}>Levers</span>
+          <span className="material-symbols-outlined text-[20px]">chevron_left</span>
         </button>
         <button
-          onClick={() => navigate("/learn/bridge")}
-          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors flex items-center gap-2 ${
-            isBridgeActive
-              ? "bg-surface-container-high text-on-surface font-medium"
-              : "text-primary hover:bg-primary/10"
+          onClick={onNext}
+          disabled={isLast}
+          className={`p-1.5 rounded-lg transition-colors ${
+            isLast
+              ? "text-outline-variant/30 cursor-not-allowed"
+              : "text-on-surface-variant hover:bg-surface-container-low"
           }`}
+          title="Next step"
         >
-          <span className="material-symbols-outlined text-[18px]">stacked_bar_chart</span>
-          <span className={collapsed ? "max-xl:hidden" : ""}>Bridge</span>
-        </button>
-        <button
-          onClick={() => navigate("/learn/playbooks")}
-          className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors flex items-center gap-2 ${
-            isPlaybooksActive
-              ? "bg-surface-container-high text-on-surface font-medium"
-              : "text-primary hover:bg-primary/10"
-          }`}
-        >
-          <span className="material-symbols-outlined text-[18px]">assignment</span>
-          <span className={collapsed ? "max-xl:hidden" : ""}>Playbooks</span>
+          <span className="material-symbols-outlined text-[20px]">chevron_right</span>
         </button>
       </div>
-    </nav>
+    </div>
   );
 }
