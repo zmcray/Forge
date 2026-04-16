@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { CONCEPT_CARDS } from "../../data/conceptCards";
 import { COMPANIES } from "../../data/companies";
@@ -31,6 +31,19 @@ export default function ConceptCard() {
   const [llmLoading, setLlmLoading] = useState(false);
   const [llmError, setLlmError] = useState(null);
 
+  const abortRef = useRef(null);
+  useEffect(() => () => { abortRef.current?.abort(); }, []);
+
+  // Reset practice state when navigating between cards
+  useEffect(() => {
+    setTextAnswer("");
+    setCommittedText("");
+    setPhase("commit");
+    setLlmResult(null);
+    setLlmLoading(false);
+    setLlmError(null);
+  }, [cardId]);
+
   // Mark studied on view
   useEffect(() => {
     if (card) markStudied(cardId);
@@ -61,6 +74,10 @@ export default function ConceptCard() {
     setPhase("done");
     markPracticeAttempted(cardId);
 
+    abortRef.current?.abort();
+    const ctrl = new AbortController();
+    abortRef.current = ctrl;
+
     setLlmLoading(true);
     setLlmError(null);
     evaluateAnswer({
@@ -70,12 +87,17 @@ export default function ConceptCard() {
       questionType: card.practicePrompt.type,
       companyContext: "",
     })
-      .then(setLlmResult)
+      .then((data) => {
+        if (!ctrl.signal.aborted) setLlmResult(data);
+      })
       .catch((err) => {
+        if (ctrl.signal.aborted) return;
         console.warn("[Forge] LLM evaluation failed:", err);
         setLlmError(true);
       })
-      .finally(() => setLlmLoading(false));
+      .finally(() => {
+        if (!ctrl.signal.aborted) setLlmLoading(false);
+      });
   };
 
   const handleRedo = () => {

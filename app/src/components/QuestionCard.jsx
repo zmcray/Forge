@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { QUESTION_TYPES } from "../data/questionTypes";
 import { extractNumericValue } from "../utils/format";
 import { evaluateAnswer } from "../utils/evaluateAnswer";
@@ -19,6 +19,9 @@ export default function QuestionCard({ question, index, onScore, companyContext 
   const [llmLoading, setLlmLoading] = useState(false);
   const [llmError, setLlmError] = useState(null);
 
+  const abortRef = useRef(null);
+  useEffect(() => () => { abortRef.current?.abort(); }, []);
+
   const typeInfo = QUESTION_TYPES[question.type];
   const isQuantitative = typeInfo.inputMode === "quantitative";
 
@@ -33,6 +36,10 @@ export default function QuestionCard({ question, index, onScore, companyContext 
 
     // Fire LLM evaluation for qualitative questions
     if (!isQuantitative) {
+      abortRef.current?.abort();
+      const ctrl = new AbortController();
+      abortRef.current = ctrl;
+
       setLlmLoading(true);
       setLlmError(null);
       evaluateAnswer({
@@ -43,6 +50,7 @@ export default function QuestionCard({ question, index, onScore, companyContext 
         companyContext: companyContext || "",
       })
         .then((data) => {
+          if (ctrl.signal.aborted) return;
           setLlmResult(data);
           // Auto-score using the LLM's score
           setSelfScore(data.score);
@@ -54,10 +62,13 @@ export default function QuestionCard({ question, index, onScore, companyContext 
           });
         })
         .catch((err) => {
+          if (ctrl.signal.aborted) return;
           console.warn("[Forge] LLM evaluation failed:", err);
           setLlmError(true);
         })
-        .finally(() => setLlmLoading(false));
+        .finally(() => {
+          if (!ctrl.signal.aborted) setLlmLoading(false);
+        });
     }
   };
 

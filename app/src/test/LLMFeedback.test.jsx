@@ -69,4 +69,41 @@ describe("LLMGrading", () => {
     const badge = screen.getByText("1/5");
     expect(badge.className).toContain("bg-red-100");
   });
+
+  it("renders without crashing when strengths is missing", () => {
+    const { container } = render(
+      <LLMGrading result={{ score: 3, gaps: ["Missed something"], suggestion: null }} />
+    );
+    expect(screen.getByText("3/5")).toBeInTheDocument();
+    expect(screen.queryByText("What You Got Right")).not.toBeInTheDocument();
+    expect(screen.getByText("Missed something")).toBeInTheDocument();
+  });
+
+  it("renders without crashing when gaps is null", () => {
+    const { container } = render(
+      <LLMGrading result={{ score: 4, strengths: ["Good"], gaps: null, suggestion: null }} />
+    );
+    expect(screen.getByText("4/5")).toBeInTheDocument();
+    expect(screen.getByText("Good")).toBeInTheDocument();
+    expect(screen.queryByText("What You Missed")).not.toBeInTheDocument();
+  });
+
+  it("renders with only score field", () => {
+    const { container } = render(
+      <LLMGrading result={{ score: 2 }} />
+    );
+    expect(screen.getByText("2/5")).toBeInTheDocument();
+    expect(screen.queryByText("What You Got Right")).not.toBeInTheDocument();
+    expect(screen.queryByText("What You Missed")).not.toBeInTheDocument();
+  });
+
+  it("returns null for null result", () => {
+    const { container } = render(<LLMGrading result={null} />);
+    expect(container.innerHTML).toBe("");
+  });
+
+  it("returns null for non-object result", () => {
+    const { container } = render(<LLMGrading result="bad" />);
+    expect(container.innerHTML).toBe("");
+  });
 });

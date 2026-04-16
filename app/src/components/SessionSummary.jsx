@@ -52,21 +52,21 @@ export default function SessionSummary({ company, questions, elapsedMinutes, onC
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
-        <h2 className="text-lg font-bold text-gray-900 mb-4">Session Summary</h2>
+      <div className="bg-surface-container-lowest rounded-2xl shadow-xl max-w-md w-full p-6">
+        <h2 className="text-lg font-bold text-on-surface mb-4">Session Summary</h2>
 
         <div className="grid grid-cols-3 gap-3 mb-4">
-          <div className="text-center bg-gray-50 rounded-lg p-3">
-            <p className="text-2xl font-bold text-gray-900">{elapsedMinutes}</p>
-            <p className="text-xs text-gray-500">Minutes</p>
+          <div className="text-center bg-surface-container-low rounded-lg p-3">
+            <p className="text-2xl font-bold text-on-surface">{elapsedMinutes}</p>
+            <p className="text-xs text-on-surface-variant">Minutes</p>
           </div>
-          <div className="text-center bg-gray-50 rounded-lg p-3">
+          <div className="text-center bg-surface-container-low rounded-lg p-3">
             <p className="text-2xl font-bold text-blue-600">{avgScore}</p>
-            <p className="text-xs text-gray-500">Avg Score</p>
+            <p className="text-xs text-on-surface-variant">Avg Score</p>
           </div>
-          <div className="text-center bg-gray-50 rounded-lg p-3">
+          <div className="text-center bg-surface-container-low rounded-lg p-3">
             <p className="text-2xl font-bold text-green-600">{questions.filter(q => q.score >= 4).length}</p>
-            <p className="text-xs text-gray-500">Strong (4-5)</p>
+            <p className="text-xs text-on-surface-variant">Strong (4-5)</p>
           </div>
         </div>
 
@@ -76,7 +76,7 @@ export default function SessionSummary({ company, questions, elapsedMinutes, onC
           return (
             <div key={type} className="flex items-center gap-2 text-sm mb-1.5">
               <span>{info?.icon}</span>
-              <span className="text-gray-700 flex-1">{info?.label}</span>
+              <span className="text-on-surface-variant flex-1">{info?.label}</span>
               <span className="font-mono font-semibold">{avg}/5</span>
             </div>
           );
@@ -91,7 +91,7 @@ export default function SessionSummary({ company, questions, elapsedMinutes, onC
           </button>
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            className="flex-1 px-4 py-2 text-sm font-medium bg-surface-container-lowest border border-outline-variant rounded-lg hover:bg-gray-50 transition-colors"
           >
             Done
           </button>

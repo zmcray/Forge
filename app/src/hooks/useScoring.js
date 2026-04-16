@@ -1,20 +1,37 @@
 import { useState, useCallback } from "react";
 
 const STORAGE_KEY = "forge-data";
+const DEFAULT_STATE = { sessions: [], streak: { current: 0, lastDate: null } };
 
 function loadData() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch {}
-  return { sessions: [], streak: { current: 0, lastDate: null } };
+    if (!raw) return DEFAULT_STATE;
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed.sessions)) {
+      console.warn(`[Forge] Invalid shape in ${STORAGE_KEY}, resetting`);
+      return DEFAULT_STATE;
+    }
+    if (!parsed.streak || typeof parsed.streak !== "object") {
+      console.warn(`[Forge] Invalid shape in ${STORAGE_KEY}, resetting`);
+      return DEFAULT_STATE;
+    }
+    return parsed;
+  } catch (err) {
+    console.warn(`[Forge] Corrupt data in ${STORAGE_KEY}, resetting:`, err.message);
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) localStorage.setItem(`${STORAGE_KEY}-corrupt-backup`, raw);
+    } catch {}
+    return DEFAULT_STATE;
+  }
 }
 
 function saveData(data) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  } catch {
-    // Quota exceeded -- data not persisted but app continues
+  } catch (err) {
+    console.warn(`[Forge] Failed to save ${STORAGE_KEY}:`, err.message);
   }
 }
 
@@ -127,9 +144,9 @@ export default function useScoring() {
 function updateStreak(streak, today) {
   if (streak.lastDate === today) return streak;
 
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-  const yesterdayStr = yesterday.toLocaleDateString("en-CA");
+  const d = new Date(today + "T00:00:00");
+  d.setDate(d.getDate() - 1);
+  const yesterdayStr = d.toLocaleDateString("en-CA");
 
   if (streak.lastDate === yesterdayStr) {
     return { current: streak.current + 1, lastDate: today };

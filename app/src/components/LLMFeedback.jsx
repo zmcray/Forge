@@ -21,20 +21,25 @@ export function LLMFeedbackSkeleton() {
 }
 
 export function LLMGrading({ result }) {
+  if (!result || typeof result !== "object") return null;
+  const score = result.score ?? 0;
+  const strengths = Array.isArray(result.strengths) ? result.strengths : [];
+  const gaps = Array.isArray(result.gaps) ? result.gaps : [];
+
   return (
     <div className="space-y-3 mb-3">
       <div className="flex items-center gap-2">
-        <span className={`text-sm font-bold px-2 py-0.5 rounded ${result.score >= 4 ? "bg-green-100 text-green-800" : result.score >= 3 ? "bg-amber-100 text-amber-800" : "bg-red-100 text-red-800"}`}>
-          {result.score}/5
+        <span className={`text-sm font-bold px-2 py-0.5 rounded ${score >= 4 ? "bg-green-100 text-green-800" : score >= 3 ? "bg-amber-100 text-amber-800" : "bg-red-100 text-red-800"}`}>
+          {score}/5
         </span>
         <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">AI Assessment</span>
       </div>
 
-      {result.strengths.length > 0 && (
+      {strengths.length > 0 && (
         <div className="bg-green-50 border border-green-200 rounded-lg p-3">
           <p className="font-semibold text-green-800 text-xs uppercase mb-1">What You Got Right</p>
           <ul className="text-sm text-green-900 space-y-1">
-            {result.strengths.map((s, i) => (
+            {strengths.map((s, i) => (
               <li key={i} className="flex gap-1.5">
                 <span className="shrink-0">&#10003;</span>
                 <span>{s}</span>
@@ -44,11 +49,11 @@ export function LLMGrading({ result }) {
         </div>
       )}
 
-      {result.gaps.length > 0 && (
+      {gaps.length > 0 && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-3">
           <p className="font-semibold text-red-800 text-xs uppercase mb-1">What You Missed</p>
           <ul className="text-sm text-red-900 space-y-1">
-            {result.gaps.map((g, i) => (
+            {gaps.map((g, i) => (
               <li key={i} className="flex gap-1.5">
                 <span className="shrink-0">&#10007;</span>
                 <span>{g}</span>
