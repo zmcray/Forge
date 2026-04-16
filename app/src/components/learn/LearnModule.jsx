@@ -52,7 +52,7 @@ export default function LearnModule() {
     if (activeSub && !isCompareRoute && !isConceptRoute && !isLeverRoute && !isBridgeRoute && !isPlaybookRoute) {
       markVisited(activeSub.id);
     }
-  }, [activeSub, markVisited, isCompareRoute, isConceptRoute, isLeverRoute, isBridgeRoute]);
+  }, [activeSub, markVisited, isCompareRoute, isConceptRoute, isLeverRoute, isBridgeRoute, isPlaybookRoute]);
 
   // Clear chat when navigating to a different subsection
   useEffect(() => {

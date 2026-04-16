@@ -37,16 +37,35 @@ export default function PlaybookDetail() {
   // Notes state
   const [notes, setNotes] = useState(progress?.notes || "");
 
+  // Reset all route-local state when playbookId changes (P1+P2 fix:
+  // React Router reuses this component on Prev/Next nav, so local
+  // state leaks across playbooks without this reset)
+  useEffect(() => {
+    setAnswer("");
+    setRevealed(false);
+    setLlmResult(null);
+    setLlmLoading(false);
+    setLlmError(null);
+  }, [playbookId]);
+
+  // Sync notes from progress when playbookId changes
+  useEffect(() => {
+    if (playbook) {
+      const p = getPlaybook(playbook.id);
+      setNotes(p?.notes || "");
+    }
+  }, [playbookId, playbook, getPlaybook]);
+
   useEffect(() => {
     if (playbook) markVisited(playbook.id);
   }, [playbook, markVisited]);
 
-  // Restore exercise state from progress
+  // Restore exercise state from progress (only on playbookId change)
   useEffect(() => {
     if (progress?.exerciseAttempted) {
       setRevealed(true);
     }
-  }, [progress]);
+  }, [playbookId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleReveal = useCallback(async () => {
     setRevealed(true);
