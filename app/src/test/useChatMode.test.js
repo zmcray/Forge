@@ -74,4 +74,48 @@ describe("useChatMode", () => {
     expect(result.current.mode).toBe(CHAT_MODES.DIRECT);
     getItemSpy.mockRestore();
   });
+
+  describe("cross-tab sync via storage events", () => {
+    function emitStorage({ key, newValue }) {
+      const event = new Event("storage");
+      Object.defineProperty(event, "key", { value: key });
+      Object.defineProperty(event, "newValue", { value: newValue });
+      window.dispatchEvent(event);
+    }
+
+    it("a storage event from another tab updates local mode state", () => {
+      const { result } = renderHook(() => useChatMode());
+      expect(result.current.mode).toBe(CHAT_MODES.DIRECT);
+      act(() => {
+        emitStorage({ key: STORAGE_KEY, newValue: CHAT_MODES.SOCRATIC });
+      });
+      expect(result.current.mode).toBe(CHAT_MODES.SOCRATIC);
+    });
+
+    it("a storage event for a different key is ignored", () => {
+      const { result } = renderHook(() => useChatMode());
+      act(() => {
+        emitStorage({ key: "some-other-key", newValue: "anything" });
+      });
+      expect(result.current.mode).toBe(CHAT_MODES.DIRECT);
+    });
+
+    it("a storage event with an invalid value is ignored", () => {
+      const { result } = renderHook(() => useChatMode());
+      act(() => {
+        emitStorage({ key: STORAGE_KEY, newValue: "examiner" });
+      });
+      expect(result.current.mode).toBe(CHAT_MODES.DIRECT);
+    });
+
+    it("a storage event clearing the key resets to default", () => {
+      localStorage.setItem(STORAGE_KEY, CHAT_MODES.SOCRATIC);
+      const { result } = renderHook(() => useChatMode());
+      expect(result.current.mode).toBe(CHAT_MODES.SOCRATIC);
+      act(() => {
+        emitStorage({ key: STORAGE_KEY, newValue: null });
+      });
+      expect(result.current.mode).toBe(CHAT_MODES.DIRECT);
+    });
+  });
 });

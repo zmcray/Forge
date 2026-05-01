@@ -29,12 +29,18 @@ export default function ChatDrawer({
   const abortRef = useRef(null);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
+  const pendingModeRef = useRef(null);
+
+  // Trim banner + system-prompt trim notification key off role-bearing messages
+  // only. Mode-change dividers are UI-only and never sent to the LLM, so they
+  // must not inflate the perceived turn count.
+  const roleMessageCount = messages.filter(m => m.kind !== "mode-change").length;
 
   const { systemPrompt, suggestedQuestions } = useChatContext({
     subsection,
     completedIds,
     llmResult: chatContext?.llmResult || null,
-    messageCount: messages.length,
+    messageCount: roleMessageCount,
     mode,
   });
 
@@ -65,9 +71,14 @@ export default function ChatDrawer({
     const userMsg = { role: "user", content: text.trim() };
     let updated = [...messages, userMsg];
 
-    // Trim oldest pair if over max turns
-    if (updated.length > MAX_TURNS * 2) {
-      updated = updated.slice(2);
+    // Trim the oldest user/assistant pair if we're over budget. Counting and
+    // slicing must operate on role-bearing messages only — divider rows are
+    // UI-only and counting them inflates the budget. When we trim, dividers
+    // anchored to the dropped prefix go with them, since the context they
+    // referenced is no longer in the conversation.
+    const roleMessages = updated.filter(m => m.kind !== "mode-change");
+    if (roleMessages.length > MAX_TURNS * 2) {
+      updated = roleMessages.slice(2);
     }
 
     setMessages(updated);
@@ -129,7 +140,32 @@ export default function ChatDrawer({
       }
 
       if (fullText) {
-        setMessages(prev => [...prev, { role: "assistant", content: fullText }]);
+        // If the user toggled mode while we were streaming, the divider was
+        // deferred so the visible transcript stays chronologically honest:
+        // the in-flight assistant reply was generated under the OLD prompt,
+        // so it must render BEFORE the divider that announces the new mode.
+        const pending = pendingModeRef.current;
+        pendingModeRef.current = null;
+        setMessages(prev => {
+          const next = [...prev, { role: "assistant", content: fullText }];
+          if (pending) {
+            next.push({
+              role: "assistant",
+              kind: "mode-change",
+              content: `Switched to ${MODE_LABEL[pending]} mode.`,
+            });
+          }
+          return next;
+        });
+      } else if (pendingModeRef.current) {
+        // Stream produced nothing (error or empty). Still flush the divider
+        // so the user sees their toggle took effect.
+        const pending = pendingModeRef.current;
+        pendingModeRef.current = null;
+        setMessages(prev => [
+          ...prev,
+          { role: "assistant", kind: "mode-change", content: `Switched to ${MODE_LABEL[pending]} mode.` },
+        ]);
       }
     } catch (err) {
       if (err.name !== "AbortError") {
@@ -158,6 +194,14 @@ export default function ChatDrawer({
     setMode(next);
     // Only emit a divider if there's existing conversation to mark.
     if (messages.length === 0) return;
+    // While streaming, the in-flight assistant reply was produced under the
+    // OLD prompt. Defer the divider until the stream completes so the visible
+    // transcript stays chronologically honest. Multiple flips during one
+    // stream collapse to the final mode (`pendingModeRef` is overwritten).
+    if (isStreaming) {
+      pendingModeRef.current = next;
+      return;
+    }
     setMessages(prev => [
       ...prev,
       {
@@ -270,7 +314,7 @@ export default function ChatDrawer({
           </div>
         )}
 
-        {messages.length > (MAX_TURNS - 1) * 2 && (
+        {roleMessageCount > (MAX_TURNS - 1) * 2 && (
           <p className="text-xs text-on-surface-variant text-center mb-2">
             Older messages trimmed to keep the conversation focused.
           </p>

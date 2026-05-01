@@ -178,6 +178,134 @@ describe("ChatDrawer — Socratic toggle", () => {
       expect(body.messages.map(m => m.content)).toEqual(["Q1", "A1", "Q2"]);
     });
 
+    it("[Codex P1 #1] mid-stream divider is DEFERRED to land AFTER the in-flight assistant message", async () => {
+      let releaseStream;
+      const streamReady = new Promise(r => { releaseStream = r; });
+
+      const fetchMock = vi.fn().mockImplementation(() => {
+        const encoder = new TextEncoder();
+        const stream = new ReadableStream({
+          async start(controller) {
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: "delta", text: "in-flight reply" })}\n\n`));
+            await streamReady;
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: "done" })}\n\n`));
+            controller.close();
+          },
+        });
+        return Promise.resolve({ ok: true, body: stream });
+      });
+      global.fetch = fetchMock;
+
+      // We capture every setMessages call so we can replay them and observe
+      // the final transcript ordering exactly as the live drawer would.
+      let messages = [{ role: "user", content: "prior" }];
+      const setMessages = vi.fn().mockImplementation(updater => {
+        messages = typeof updater === "function" ? updater(messages) : updater;
+      });
+
+      const { rerender } = render(
+        <ChatDrawer
+          {...defaultProps()}
+          messages={messages}
+          setMessages={setMessages}
+        />
+      );
+
+      const input = screen.getByPlaceholderText("Type a question...");
+      fireEvent.change(input, { target: { value: "Q1" } });
+      await act(async () => {
+        fireEvent.click(screen.getByTitle("Send"));
+        await new Promise(r => setTimeout(r, 5));
+      });
+
+      // Mid-stream, flip to Socratic. The divider must NOT appear yet.
+      await act(async () => {
+        fireEvent.click(screen.getByRole("button", { name: "Socratic" }));
+        await new Promise(r => setTimeout(r, 5));
+      });
+      expect(messages.some(m => m.kind === "mode-change")).toBe(false);
+
+      // Release the stream. Assistant reply lands first, then the divider.
+      await act(async () => {
+        releaseStream();
+        await new Promise(r => setTimeout(r, 20));
+      });
+      // Re-render so the test pumps any remaining state.
+      rerender(<ChatDrawer {...defaultProps()} messages={messages} setMessages={setMessages} />);
+
+      const lastTwo = messages.slice(-2);
+      expect(lastTwo[0]).toMatchObject({ role: "assistant", content: "in-flight reply" });
+      expect(lastTwo[1]).toMatchObject({
+        role: "assistant",
+        kind: "mode-change",
+        content: "Switched to Socratic mode.",
+      });
+    });
+
+    it("[Codex P1 #2] trim drops oldest role pair regardless of dividers; never strands assistant-first history", async () => {
+      const fetchMock = makeStreamingFetch([
+        `data: ${JSON.stringify({ type: "delta", text: "ok" })}\n\n`,
+        `data: ${JSON.stringify({ type: "done" })}\n\n`,
+      ]);
+      global.fetch = fetchMock;
+
+      // Build a history that's at the budget cap (20 role messages) plus one
+      // mode-change divider mixed in. The trim path must drop the OLDEST
+      // user/assistant pair (indices 0+1 in the role-only view), not the
+      // first two raw rows (which would include the divider in some orderings).
+      const history = [];
+      for (let i = 0; i < 10; i++) {
+        history.push({ role: "user", content: `U${i}` });
+        history.push({ role: "assistant", content: `A${i}` });
+      }
+      // Insert a divider in the middle
+      history.splice(7, 0, { role: "assistant", kind: "mode-change", content: "Switched to Socratic mode." });
+
+      let messages = history;
+      const setMessages = vi.fn().mockImplementation(updater => {
+        messages = typeof updater === "function" ? updater(messages) : updater;
+      });
+
+      render(<ChatDrawer {...defaultProps()} messages={messages} setMessages={setMessages} />);
+
+      const input = screen.getByPlaceholderText("Type a question...");
+      fireEvent.change(input, { target: { value: "U10" } });
+      await act(async () => {
+        fireEvent.click(screen.getByTitle("Send"));
+        await new Promise(r => setTimeout(r, 5));
+      });
+
+      // After send + trim, the conversation should NOT lead with an assistant
+      // message. The first message should still be a user role.
+      const firstRoleMessage = messages.find(m => m.kind !== "mode-change");
+      expect(firstRoleMessage.role).toBe("user");
+      // And the dropped pair should be the OLDEST one: U0/A0 should be gone.
+      const contents = messages.filter(m => m.kind !== "mode-change").map(m => m.content);
+      expect(contents).not.toContain("U0");
+      expect(contents).not.toContain("A0");
+      // U1, A1, ..., U10 should all still be present
+      expect(contents).toContain("U1");
+      expect(contents).toContain("U10");
+    });
+
+    it("[Codex P2 #3] trim banner does not trigger when only dividers inflate messages.length", () => {
+      // 17 role messages + 1 divider = messages.length 18, which would have
+      // tripped the old `messages.length > (MAX_TURNS - 1) * 2 = 18` banner
+      // condition (false at 18, true at 19). Add a divider to push raw length
+      // to 19 with only 18 role messages — banner must NOT show.
+      const history = [];
+      for (let i = 0; i < 9; i++) {
+        history.push({ role: "user", content: `U${i}` });
+        history.push({ role: "assistant", content: `A${i}` });
+      }
+      history.push({ role: "assistant", kind: "mode-change", content: "Switched." });
+      // 18 role messages + 1 divider = 19 raw rows. roleMessageCount = 18.
+      // Banner threshold: roleMessageCount > 18 is false, so no banner.
+
+      render(<ChatDrawer {...defaultProps()} messages={history} setMessages={vi.fn()} />);
+      expect(screen.queryByText(/Older messages trimmed/)).not.toBeInTheDocument();
+    });
+
     it("[T1] mid-stream mode flip: in-flight fetch keeps Direct prompt; next message uses Socratic prompt", async () => {
       let releaseStream;
       const streamReady = new Promise(r => { releaseStream = r; });
