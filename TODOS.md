@@ -44,6 +44,9 @@ Deployed to Vercel at https://forge-six-kappa.vercel.app/. SPA rewrite config in
 ### CI/CD Pipeline
 GitHub Actions workflow (.github/workflows/ci.yml) runs tests and build on push to main and PRs. Node 20, npm ci, two jobs: test then build.
 
+### Socratic Mode Toggle for Chat
+Pill toggle in the chat drawer header (`Direct | Socratic`). Mode is a global user preference persisted in localStorage as `forge-chat-mode`. Direct mode keeps the existing concise-tutor prompt; Socratic mode swaps in a prompt that asks 1-2 probing questions per turn instead of giving answers (Khanmigo pattern). Mid-conversation flips insert an inline italic divider. Mid-stream flips let the in-flight response finish under the old prompt; the new mode applies on the next turn. `useChatMode` hook exports a `CHAT_MODES` constant. Per-subsection `socraticSuggestions` seeds were cut from this PR; will be tuned after observing real Socratic-mode usage. Shipped as part of MCR-16.
+
 ---
 
 ## Remaining
@@ -55,10 +58,6 @@ Consider React Context or Zustand if prop drilling becomes unwieldy. Currently m
 ### LLM-Generated Dynamic Scenarios
 Use Claude API to generate novel company profiles and scenario variations on demand. Requires API key setup.
 **Priority:** P3 | **Effort:** L
-
-### Socratic Mode Toggle for Chat
-Add a Direct/Socratic toggle to the chat drawer. Socratic mode asks guiding questions ("What do you think depreciation represents?") instead of giving direct answers. Research shows this produces deeper learning (Khanmigo pattern). Requires careful prompt engineering to avoid frustrating users who just want a quick explanation. Depends on: LLM Chat feature ships first.
-**Priority:** P2 | **Effort:** S
 
 ### Extend Chat to Practice Mode
 Make the chat drawer available on /practice/:companyId pages. Context builder injects full company financials instead of lesson content. Users analyzing a company can ask follow-up questions ("Is 12% customer concentration risky for food distribution?") without leaving Forge. Needs different suggested questions per company and a larger context window (~2000 tokens for full financials). Depends on: LLM Chat feature ships first.
