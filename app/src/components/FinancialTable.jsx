@@ -106,12 +106,12 @@ export default function FinancialTable({ company, view }) {
             <tr className="border-b border-outline-variant"><td className="py-1.5 font-semibold">Net Income</td><td className="text-right font-mono">{formatCurrency(cf.netIncome)}</td></tr>
             <tr><td className="py-1.5 pl-4 text-on-surface-variant">+ Depreciation & Amortization</td><td className="text-right font-mono">{formatCurrency(cf.da)}</td></tr>
             <tr><td className="py-1.5 pl-4 text-on-surface-variant">+/- Change in Working Capital</td><td className={`text-right font-mono ${cf.changeWc < 0 ? "text-red-600" : "text-green-600"}`}>{formatCurrency(cf.changeWc)}</td></tr>
-            <tr className="border-t border-outline-variant bg-blue-50"><td className="py-1.5 font-semibold">Cash from Operations</td><td className="text-right font-mono font-semibold">{formatCurrency(cf.netIncome + cf.da + cf.changeWc)}</td></tr>
-            <tr className="border-t border-outline-variant"><td className="py-1.5 pl-4 text-on-surface-variant">Capital Expenditures</td><td className="text-right font-mono text-red-600">{formatCurrency(cf.capex)}</td></tr>
-            <tr className="border-t border-outline-variant bg-green-50"><td className="py-1.5 font-semibold">Free Cash Flow</td><td className="text-right font-mono font-semibold">{formatCurrency(cf.netIncome + cf.da + cf.changeWc + cf.capex)}</td></tr>
-            <tr className="border-t border-outline-variant"><td className="py-1.5 pl-4 text-on-surface-variant">Debt Payments</td><td className="text-right font-mono text-red-600">{formatCurrency(cf.debtPayments)}</td></tr>
-            <tr><td className="py-1.5 pl-4 text-on-surface-variant">Distributions</td><td className="text-right font-mono text-red-600">{formatCurrency(cf.distributions)}</td></tr>
-            <tr className="border-t-2 border-outline bg-amber-50"><td className="py-1.5 font-bold">Net Cash Flow</td><td className="text-right font-mono font-bold">{formatCurrency(cf.netIncome + cf.da + cf.changeWc + cf.capex + cf.debtPayments + cf.distributions)}</td></tr>
+            <tr className="border-t border-outline-variant bg-secondary-container/40"><td className="py-1.5 font-semibold">Cash from Operations</td><td className="text-right font-mono font-semibold">{formatCurrency(cf.netIncome + cf.da + cf.changeWc)}</td></tr>
+            <tr className="border-t border-outline-variant"><td className="py-1.5 pl-4 text-on-surface-variant">Capital Expenditures</td><td className="text-right font-mono text-red-600 dark:text-red-400">{formatCurrency(cf.capex)}</td></tr>
+            <tr className="border-t border-outline-variant bg-tertiary-container/40"><td className="py-1.5 font-semibold">Free Cash Flow</td><td className="text-right font-mono font-semibold">{formatCurrency(cf.netIncome + cf.da + cf.changeWc + cf.capex)}</td></tr>
+            <tr className="border-t border-outline-variant"><td className="py-1.5 pl-4 text-on-surface-variant">Debt Payments</td><td className="text-right font-mono text-red-600 dark:text-red-400">{formatCurrency(cf.debtPayments)}</td></tr>
+            <tr><td className="py-1.5 pl-4 text-on-surface-variant">Distributions</td><td className="text-right font-mono text-red-600 dark:text-red-400">{formatCurrency(cf.distributions)}</td></tr>
+            <tr className="border-t-2 border-outline bg-amber-100/60 dark:bg-amber-900/30"><td className="py-1.5 font-bold">Net Cash Flow</td><td className="text-right font-mono font-bold">{formatCurrency(cf.netIncome + cf.da + cf.changeWc + cf.capex + cf.debtPayments + cf.distributions)}</td></tr>
           </tbody>
         </table>
       </div>
