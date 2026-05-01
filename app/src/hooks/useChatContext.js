@@ -1,19 +1,41 @@
 import { useMemo } from "react";
 import { COMPANIES } from "../data/companies";
+import { CHAT_MODES } from "./useChatMode";
 
 const MAX_TURNS = 10;
 
-export default function useChatContext({ subsection, completedIds, llmResult, messageCount }) {
+const DIRECT_INTRO_TEMPLATE = (title) =>
+  `You are a PE deal analysis tutor helping a learner understand ${title}.
+Keep responses concise (2-3 paragraphs max). Use Summit Mechanical Services numbers when giving examples. Format with markdown for clarity.`;
+
+const SOCRATIC_INTRO_TEMPLATE = (title) =>
+  `You are a Socratic PE deal analysis tutor helping a learner understand ${title}.
+
+Rules:
+- Do not give direct answers. Lead the learner to the insight by asking 1-2 probing questions per turn.
+- Each turn: ask, do not lecture. Maximum 3 sentences before your question(s).
+- Ground questions in concrete numbers from the lesson when possible (Summit Mechanical Services or other companies referenced below).
+- After about 3 rounds where the learner is clearly stuck, offer one sentence of scaffolding and then ask another question.
+- If the learner asks "just tell me the answer," respond with one focused question that points at the key insight; do not capitulate.
+- Format with markdown for clarity. Bold the question.`;
+
+export default function useChatContext({
+  subsection,
+  completedIds,
+  llmResult,
+  messageCount,
+  mode = CHAT_MODES.DIRECT,
+}) {
   return useMemo(() => {
     if (!subsection) return { systemPrompt: "", suggestedQuestions: [] };
 
-    // Extract only text blocks (exclude exercises, tables, companyData per eng review)
+    const isSocratic = mode === CHAT_MODES.SOCRATIC;
+
     const lessonText = (subsection.blocks || [])
       .filter(b => b.type === "text")
       .map(b => b.content)
       .join("\n\n");
 
-    // Look up company data for any companyData blocks (summary only)
     const companyIds = (subsection.blocks || [])
       .filter(b => b.type === "companyData")
       .map(b => b.companyId);
@@ -26,9 +48,11 @@ export default function useChatContext({ subsection, completedIds, llmResult, me
       .filter(Boolean)
       .join(", ");
 
-    // Build system prompt
-    let prompt = `You are a PE deal analysis tutor helping a learner understand ${subsection.title}.
-Keep responses concise (2-3 paragraphs max). Use Summit Mechanical Services numbers when giving examples. Format with markdown for clarity.
+    const intro = isSocratic
+      ? SOCRATIC_INTRO_TEMPLATE(subsection.title)
+      : DIRECT_INTRO_TEMPLATE(subsection.title);
+
+    let prompt = `${intro}
 
 CURRENT LESSON:
 ${lessonText}
@@ -39,7 +63,6 @@ LEARNER PROGRESS:
 Completed exercises: ${completedIds?.length || 0}
 Current: ${subsection.id} - ${subsection.title}`;
 
-    // Add grading context if post-exercise trigger
     if (llmResult) {
       prompt += `\n\nRECENT EXERCISE RESULT:
 Score: ${llmResult.score}/5
@@ -47,34 +70,41 @@ Gaps identified: ${(llmResult.gaps || []).join(", ")}
 The learner clicked "dig deeper" after this result. Focus your explanations on the gaps above.`;
     }
 
-    // Add trim notification if conversation is getting long (per eng review)
     if (messageCount && messageCount > (MAX_TURNS - 1) * 2) {
       prompt += "\n\nNote: earlier messages in this conversation were trimmed for length. Do not reference information from trimmed messages.";
     }
 
-    // Build suggested questions
     const questions = [];
 
-    // Static questions from subsection data
-    if (subsection.suggestedQuestions) {
-      questions.push(...subsection.suggestedQuestions);
-    }
-
-    // Dynamic questions from LLM grading gaps
-    if (llmResult?.gaps) {
-      for (const gap of llmResult.gaps) {
-        questions.push(`Can you explain "${gap}" in more detail?`);
+    if (isSocratic) {
+      if (llmResult?.gaps) {
+        for (const gap of llmResult.gaps) {
+          questions.push(`Want me to test you on "${gap}"?`);
+        }
+      }
+      if (questions.length === 0) {
+        questions.push(
+          `Test my understanding of ${subsection.title}`,
+          `Walk me through the reasoning behind ${subsection.title}`
+        );
+      }
+    } else {
+      if (subsection.suggestedQuestions) {
+        questions.push(...subsection.suggestedQuestions);
+      }
+      if (llmResult?.gaps) {
+        for (const gap of llmResult.gaps) {
+          questions.push(`Can you explain "${gap}" in more detail?`);
+        }
+      }
+      if (questions.length === 0) {
+        questions.push(
+          `What's the most important concept in ${subsection.title}?`,
+          "Can you give me a real-world example?"
+        );
       }
     }
 
-    // Default questions if none defined
-    if (questions.length === 0) {
-      questions.push(
-        `What's the most important concept in ${subsection.title}?`,
-        "Can you give me a real-world example?"
-      );
-    }
-
     return { systemPrompt: prompt, suggestedQuestions: questions };
-  }, [subsection, completedIds, llmResult, messageCount]);
+  }, [subsection, completedIds, llmResult, messageCount, mode]);
 }

@@ -11,6 +11,18 @@ export default function ChatMessage({
   setNoteText,
 }) {
   const [saved, setSaved] = useState(false);
+
+  // Mode-change dividers render as inline italic text, not chat bubbles.
+  // Checked before role-based render so a future avatar/header change to the
+  // assistant bubble cannot leak into the divider.
+  if (message.kind === "mode-change") {
+    return (
+      <div className="text-xs text-on-surface-variant text-center my-2 italic">
+        {message.content}
+      </div>
+    );
+  }
+
   const isUser = message.role === "user";
 
   const handleSave = () => {

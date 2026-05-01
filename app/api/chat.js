@@ -47,6 +47,9 @@ export async function POST(request) {
     if (!msg.role || !msg.content || typeof msg.content !== "string") {
       return Response.json({ error: "Invalid message format" }, { status: 400 });
     }
+    if (msg.role !== "user" && msg.role !== "assistant") {
+      return Response.json({ error: "Invalid message role" }, { status: 400 });
+    }
     if (msg.content.length > MAX_MESSAGE_LENGTH) {
       return Response.json({ error: "Message too long" }, { status: 400 });
     }
