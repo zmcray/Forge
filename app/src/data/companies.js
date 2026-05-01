@@ -43,24 +43,28 @@ export const COMPANIES = [
     greenFlags: ["35% recurring revenue from service contracts", "Low customer concentration at 12%", "Strong revenue growth at 15.7%", "Healthy gross margins for HVAC services"],
     questions: [
       {
+        id: "summit-hvac-q1",
         q: "What is Summit's adjusted EBITDA margin, and how does it compare to typical HVAC service companies (12-18%)?",
         hint: "Add back owner comp above market (~$800K excess), one-time expenses, and above-market rent to EBITDA",
         answer: "Adjusted EBITDA margin is ~16.9% ($5.5M on $32.5M revenue), which is solidly in the upper range for HVAC services. This suggests good operational efficiency.",
         type: "metric"
       },
       {
+        id: "summit-hvac-q2",
         q: "The owner takes $2M in compensation plus $400K in perks. If you replaced them with a GM at $250K, what would adjusted EBITDA look like?",
         hint: "Current owner cost: $2.4M. Replacement cost: $250K. Delta: $2.15M. Add to reported EBITDA.",
         answer: "Adjusted EBITDA with normalized management would be ~$6.35M ($4.6M + $2.15M owner adjustment + $0.3M one-time + $0.2M rent), yielding a 19.5% margin. This is the number a PE buyer would use for valuation.",
         type: "adjustment"
       },
       {
+        id: "summit-hvac-q3",
         q: "At a 6x adjusted EBITDA multiple (typical for HVAC services), what's the enterprise value? What does the equity value look like?",
         hint: "EV = EBITDA x multiple. Equity = EV - net debt. Net debt = total debt - cash.",
         answer: "EV = $5.5M x 6 = $33M. Net debt = ($0.5M + $2.8M) - $1.8M = $1.5M. Equity value ~ $31.5M. With the more aggressive $6.35M adjusted EBITDA: EV = $38.1M, equity ~ $36.6M.",
         type: "valuation"
       },
       {
+        id: "summit-hvac-q4",
         q: "What's the biggest risk you see in this business, and what would you investigate in due diligence?",
         hint: "Think about key-person risk, customer concentration, revenue quality, and the growth trajectory",
         answer: "Key-person risk is the #1 concern -- the founder IS the business and owner comp is $2.4M. Key DD questions: How dependent are customer relationships on the owner? Is the management team capable of operating independently? Are the service contracts transferable? Also worth investigating: is the 15.7% revenue growth organic or from new contracts that may not repeat?",
@@ -111,6 +115,7 @@ export const COMPANIES = [
     greenFlags: ["60% recurring revenue from contracted accounts", "Revenue per employee of $567K is decent for distribution", "Steady top-line growth", "Asset-light potential if warehouses are leased"],
     questions: [
       {
+        id: "coastal-foods-q1",
         q: "Revenue grew 5.2% but net income dropped 78%. What's happening here and where would you dig in?",
         hint: "Look at gross margin (flat), SGA growth rate vs revenue growth rate, and the add-backs",
         answer: "Gross profit was flat ($9.2M both years) despite $2.4M more revenue -- meaning ALL the revenue growth was eaten by COGS increases. SGA also grew 8.6% vs 5.2% revenue growth. The $0.8M in one-time expenses also hit hard. This screams margin compression from input costs (likely transportation + product costs) that aren't being passed through to customers. First DD question: what are the contract terms with major customers? Can they reprice?",
@@ -118,18 +123,21 @@ export const COMPANIES = [
         keywords: ["gross margin", "margin compression", "COGS", "input costs", "SGA growth", "contract terms", "repricing"]
       },
       {
+        id: "coastal-foods-q2",
         q: "The business has $6.8M in AR on $48.2M revenue. What's the DSO and is it concerning?",
         hint: "DSO = (AR / Revenue) x 365. Compare to industry standard of 30-45 days for food distribution.",
         answer: "DSO = ($6.8M / $48.2M) x 365 = 51.5 days. This is above the industry standard of 30-45 days. Could indicate collection issues, customer payment terms that are too generous, or a concentration of AR with a few slow-paying customers. In DD, you'd want an AR aging schedule and to understand if that 22% customer concentration is also the slow payer.",
         type: "metric"
       },
       {
+        id: "coastal-foods-q3",
         q: "If a PE firm acquired this at 5x adjusted EBITDA and believed they could improve gross margin by 200 bps through pricing and procurement, what would the value creation look like?",
         hint: "200 bps on $48.2M revenue = incremental gross profit. Flow that through to EBITDA assuming fixed SGA.",
         answer: "200 bps improvement = $48.2M x 0.02 = $964K incremental gross profit. If SGA stays flat, that flows straight to EBITDA: $3.9M + $0.96M = $4.86M adjusted EBITDA. At the same 5x multiple, EV goes from $19.5M to $24.3M -- a $4.8M value creation from margin improvement alone. This is the classic PE playbook for distribution businesses.",
         type: "valuation"
       },
       {
+        id: "coastal-foods-q4",
         q: "Would you pursue this deal? What's your 30-second investment thesis -- or why would you pass?",
         hint: "Consider: margin profile, growth potential, risks, and what a PE firm could actually improve",
         answer: "It's a qualified yes with a clear thesis: recurring revenue base + fixable margin problem = classic PE value creation opportunity. The thesis is: (1) reprice contracts to pass through input cost increases, (2) optimize procurement/logistics to recover 200-400 bps of gross margin, (3) reduce customer concentration, (4) potentially bolt-on smaller regional distributors. The risk is that the margin compression may be structural (competitive dynamics) rather than fixable. DD focus: contract terms, competitive landscape, and whether that top customer has alternatives.",
@@ -180,6 +188,7 @@ export const COMPANIES = [
     greenFlags: ["43% gross margins are exceptional for manufacturing", "ISO 13485 + AS9100 certifications are significant barriers to entry", "32.4% adjusted EBITDA margin is elite", "14.3% organic revenue growth"],
     questions: [
       {
+        id: "precision-manufacturing-q1",
         q: "Precision's gross margin is 43% -- almost unheard of in manufacturing. What explains this, and is it sustainable?",
         hint: "Think about what drives margins in contract manufacturing: certifications, complexity, competition, customer switching costs",
         answer: "The 43% gross margin reflects extreme specialization: aerospace and medical device machining requires expensive certifications (AS9100, ISO 13485), tight tolerances, and validated processes. Customers can't easily switch vendors because re-qualification takes months. This creates pricing power. It's sustainable as long as: (1) certifications are maintained, (2) technical talent stays, and (3) they don't commoditize by chasing lower-margin work to fill capacity.",
@@ -187,12 +196,14 @@ export const COMPANIES = [
         keywords: ["certifications", "switching costs", "pricing power", "specialization", "barriers to entry", "talent retention"]
       },
       {
+        id: "precision-manufacturing-q2",
         q: "CapEx is 9.4% of revenue ($1.2M). Is this maintenance CapEx or growth CapEx? Why does it matter for valuation?",
         hint: "Compare CapEx to depreciation. If CapEx >> depreciation, some is growth. This affects free cash flow and EBITDA-based valuations.",
         answer: "Depreciation is $0.7M vs CapEx of $1.2M, suggesting ~$0.7M is maintenance and ~$0.5M is growth CapEx (new machines to add capacity). This matters because buyers often value on EBITDA but need to haircut for maintenance CapEx to get true free cash flow. True unlevered FCF is closer to $3.45M ($4.15M adjusted EBITDA - $0.7M maintenance CapEx). A buyer paying 6-7x EBITDA should be thinking about the CapEx intensity ongoing.",
         type: "adjustment"
       },
       {
+        id: "precision-manufacturing-q3",
         q: "The 28% customer concentration is a red flag. How would you structure deal protections around this?",
         hint: "Think about escrows, earnouts, customer contract terms, and what happens if that customer leaves",
         answer: "Several options: (1) Earnout tied to retention of that customer post-close, (2) Escrow holdback that releases over 12-24 months if revenue from that customer stays above a threshold, (3) Require the owner to stay on for a transition period and actively relationship-manage that account, (4) In DD, verify the length and terms of the supply agreement -- is it a long-term contract or purchase-order-based? A 28% customer who buys on POs with no contract is very different from one locked into a 3-year supply agreement.",
@@ -200,6 +211,7 @@ export const COMPANIES = [
         keywords: ["earnout", "escrow", "customer retention", "contract terms", "transition period", "purchase orders"]
       },
       {
+        id: "precision-manufacturing-q4",
         q: "If you were pitching this deal to investors, what's your 60-second thesis and how do you address the key-person risk?",
         hint: "Focus on the moat (certifications), growth opportunity, and a realistic plan for de-risking the owner dependency",
         answer: "Thesis: Precision CNC is a high-margin, certification-moated manufacturer with 14% organic growth, operating at capacity. The play is: (1) invest in facility expansion to unlock pent-up demand, (2) hire a technical director and COO to de-risk the owner dependency over 18 months, (3) diversify the customer base by targeting adjacent regulated industries (defense, energy), (4) potential add-on acquisitions of smaller shops for their customer books and machinists. Address key-person risk head-on: owner rolls equity and stays for 2-3 years in a technical advisory role while we build the management layer. Target: 2.5-3x MOIC in 4-5 years through a combination of EBITDA growth and multiple expansion.",
@@ -250,6 +262,7 @@ export const COMPANIES = [
     greenFlags: ["55% gross margins typical of high-quality dental", "70% recurring patient revenue", "3% customer concentration -- highly diversified patient base", "Non-clinical founder model is scalable", "Dental is recession-resistant"],
     questions: [
       {
+        id: "bright-dental-q1",
         q: "Revenue grew 32.4% but how much is organic vs. acquisition-driven? Why does this distinction matter enormously for valuation?",
         hint: "Think about what a buyer is really paying for. Organic growth compounds; acquired growth costs money to buy.",
         answer: "This is critical. If they acquired a practice mid-year that contributes $1.5M annually, same-store organic growth might only be ~12%. A buyer valuing this at 8-10x EBITDA (typical for dental roll-ups at scale) needs to know: am I paying for a growth machine or for purchased revenue? Organic growth = higher quality and commands a higher multiple. In DD, you'd want same-store revenue growth by location and a waterfall showing what revenue each acquisition contributed and when.",
@@ -257,12 +270,14 @@ export const COMPANIES = [
         keywords: ["organic growth", "same-store growth", "acquisition-driven", "inorganic", "growth quality", "revenue waterfall"]
       },
       {
+        id: "bright-dental-q2",
         q: "They want to add back $500K in 'one-time expenses.' What's your skepticism level and what would you ask?",
         hint: "In a roll-up model, 'one-time' acquisition costs may actually be recurring if the growth strategy depends on continued acquisitions",
         answer: "High skepticism. In a company whose strategy IS acquisitions, deal costs, integration costs, and transition expenses are arguably part of the recurring cost structure, not one-time. If they plan to keep acquiring, these costs will keep appearing. You'd ask: (1) Break out the $500K -- what exactly is it? (2) How many acquisitions are planned in the next 2 years? (3) What were 'one-time' costs in 2024? If the answer is also $300-500K, it's not one-time -- it's the cost of doing business.",
         type: "adjustment"
       },
       {
+        id: "bright-dental-q3",
         q: "With $5M in debt and $2.5M adjusted EBITDA, leverage is 2.0x. For a dental roll-up seeking PE capital to accelerate growth, is this comfortable?",
         hint: "Healthcare services can typically support 3-4x leverage. But consider the growth stage and cash flow stability.",
         answer: "2.0x leverage is actually conservative for a dental roll-up with 70% recurring revenue. Dental practices are famously predictable cash flow businesses -- patients come back every 6 months. Most PE-backed dental platforms operate at 3-4x leverage comfortably. The question is whether adding leverage to fund acquisitions makes sense given the 25.5% EBITDA margin and cash flow profile. With $2.5M EBITDA and a target of 3.5x, they could support ~$8.75M in debt -- an additional $3.75M of acquisition firepower.",
@@ -270,6 +285,7 @@ export const COMPANIES = [
         keywords: ["leverage capacity", "recurring revenue", "cash flow stability", "acquisition firepower", "debt service coverage", "roll-up leverage"]
       },
       {
+        id: "bright-dental-q4",
         q: "A PE firm offers to invest $10M for 60% of the company at an implied 8x adjusted EBITDA valuation ($20M EV). Is the founder getting a good deal?",
         hint: "Work backwards: What's the founder's pre-money equity? What does post-money look like? What's the founder giving up vs getting?",
         answer: "At $20M EV with $5M net debt, equity value = $15M. The PE firm puts in $10M for 60%, implying post-money equity of $16.67M. Founder keeps 40% = $6.67M in equity value. But pre-money, the founder's equity was $15M - $5M debt = $10M. So the founder is going from 100% of $10M to 40% of... potentially much more. The bet is: if they use the $10M to grow to $6-8M EBITDA in 3-4 years and exit at 10-12x (platform premium), the company is worth $60-96M. Founder's 40% = $24-38M. Classic 'smaller slice of a much bigger pie' play. It's a good deal IF the growth thesis works.",
@@ -319,6 +335,7 @@ export const COMPANIES = [
     greenFlags: ["White-glove last-mile is harder to displace than standard delivery", "Working capital improved (positive $0.8M change) -- getting paid faster", "Infrastructure (fleet, routes, driver network) is a real asset", "Four metro markets provide geographic diversification"],
     questions: [
       {
+        id: "apex-logistics-q1",
         q: "Revenue declined 8.6% while SGA grew 4.8%. What does this tell you about the business's cost structure, and what would you model going forward?",
         hint: "Think about operating leverage -- in logistics, fixed costs are high. What happens to margins if revenue keeps declining?",
         answer: "This is negative operating leverage in action. Logistics has high fixed costs (fleet leases, facility costs, base staff) that don't shrink with revenue. SGA growing while revenue falls means margins are getting squeezed from both sides. If revenue drops another 10%, EBITDA could get cut in half because the fixed cost base stays. You'd want to model: (1) a stabilization case where revenue flatlines, (2) a continued decline case at -5-10%/year, and (3) understand which costs are truly variable vs. fixed. The key question: is this a COVID normalization (one-time reset) or a structural shift?",
@@ -326,6 +343,7 @@ export const COMPANIES = [
         keywords: ["operating leverage", "fixed costs", "margin compression", "cost structure", "variable vs fixed", "COVID normalization"]
       },
       {
+        id: "apex-logistics-q2",
         q: "35% customer concentration with a single e-commerce retailer. How does this change your valuation approach?",
         hint: "Think about risk-adjusted multiples, scenario analysis, and what protections you'd need",
         answer: "This is a deal-breaker for many buyers and at minimum requires a significant discount. 35% concentration means: if that customer leaves, EBITDA goes from $4.55M to potentially negative (given the fixed cost base). Approach: (1) Apply a lower multiple (maybe 4x vs 5-6x for diversified logistics), (2) Structure a significant earnout tied to customer retention, (3) In DD, get the contract terms -- is it a 3-year MSA or at-will? (4) Run a 'customer leaves' scenario: can the business survive on the remaining 65% of revenue? At 27% gross margins with this fixed cost structure, the answer is probably no in the short term.",
@@ -333,12 +351,14 @@ export const COMPANIES = [
         keywords: ["risk-adjusted multiple", "earnout", "contract terms", "scenario analysis", "customer leaves", "valuation discount"]
       },
       {
+        id: "apex-logistics-q3",
         q: "Free cash flow: Net income $0.6M + D&A $2.0M + WC improvement $0.8M - CapEx $2.5M = $0.9M. Is this business actually generating cash?",
         hint: "Compare FCF to EBITDA. Look at the conversion ratio and what's eating the cash.",
         answer: "Barely. $0.9M FCF on $4.55M adjusted EBITDA is only 20% cash conversion -- terrible. The culprits: $2.5M in CapEx (trucks wear out and need replacing) and $1.2M in debt service. After distributions ($0.3M), there's almost nothing left. This is a capital-intensive business masquerading as a service business. The EBITDA looks decent but it doesn't translate to cash you can actually extract. A buyer needs to understand: is the $2.5M CapEx maintenance or growth? If it's mostly maintenance, true free cash flow to equity is minimal.",
         type: "metric"
       },
       {
+        id: "apex-logistics-q4",
         q: "Given everything you see, would you invest? At what price? Or would you walk away?",
         hint: "Balance the infrastructure value against the declining revenue, customer concentration, and capital intensity",
         answer: "I'd walk away or require a steep discount. Here's why: (1) declining revenue with no clear floor, (2) 35% customer concentration with high fixed costs, (3) poor FCF conversion means EBITDA is misleading, (4) the IC contractor model is a regulatory time bomb. If I HAD to make an offer, it would be 3-3.5x adjusted EBITDA ($13.7-15.9M EV) with a heavy earnout component. But honestly, the risk/reward doesn't work -- there are better deals in this space. This is a good example of a business that screens well on top-line metrics but falls apart when you dig into the cash flow and risk profile.",
@@ -389,24 +409,28 @@ export const COMPANIES = [
     greenFlags: ["92% recurring revenue on annual contracts. Very high revenue visibility", "Net revenue retention of ~115%. Existing customers are expanding", "78% gross margins typical of best-in-class SaaS", "Low customer concentration at 8%. No single customer dependency", "Large and growing TAM. Compliance spending is non-discretionary"],
     questions: [
       {
+        id: "truenorth-saas-q1",
         q: "TrueNorth's gross margin is 78%. What makes up COGS in a SaaS business and is this margin sustainable at scale?",
         hint: "SaaS COGS includes hosting/infrastructure, customer support, and implementation costs. Think about economies of scale.",
         answer: "COGS of $3.1M on $14.2M revenue likely includes: cloud hosting (~$1.2M), customer success/support team (~$1.4M), and third-party data/API costs (~$0.5M). The 78% gross margin is solid for B2B SaaS (benchmarks: 70-85%). At scale, hosting costs grow sub-linearly with revenue (cloud economics), and support can be leveraged with better tooling. Gross margin should improve to 80-82% as the company scales, which is a positive signal. The key risk is if they're underinvesting in customer success, which would show up as higher churn later.",
         type: "metric"
       },
       {
+        id: "truenorth-saas-q2",
         q: "The company capitalizes $3.2M in software development costs. If you expensed 50% of that, how would it change EBITDA and your view of profitability?",
         hint: "Capitalized software is an accounting choice that boosts current-period EBITDA. Expensing it gives a truer picture of ongoing R&D investment.",
         answer: "If 50% of the $3.2M cumulative capitalized amount represents current-year capitalization (~$1.6M annually), expensing it would reduce EBITDA from $2.6M to $1.0M, dropping the EBITDA margin from 18.3% to ~7%. This is a common SaaS accounting issue. The adjusted EBITDA of $3.0M already looks reasonable, but a buyer should normalize for capitalization policy. Many PE firms use a 'cash EBITDA' metric that treats all R&D as an expense. The company may be less profitable than it appears. In DD, you'd want the capitalization policy, useful life assumptions, and comparison to peers.",
         type: "adjustment"
       },
       {
+        id: "truenorth-saas-q3",
         q: "A typical B2B SaaS company at this scale trades at 4-6x ARR or 12-18x EBITDA. What valuation range makes sense and what drives the wide spread?",
         hint: "Consider growth rate, retention, gross margin, and Rule of 40 (growth rate + EBITDA margin).",
         answer: "ARR is ~$13.1M (92% of $14.2M). At 4-6x ARR: $52.4-78.6M. At 12-18x adjusted EBITDA ($3.0M): $36-54M. The wide range exists because: Rule of 40 score = 28% growth + 18% EBITDA margin = 46, which is above the 40 threshold and suggests premium valuation. However, negative FCF and the need for continued investment temper the multiple. A fair range is probably 5x ARR ($65.5M) for a growth equity deal where founders retain majority. Net debt = ($0.3M + $1.2M) - $2.8M = -$1.3M (net cash), so equity value ~ $66.8M. The key driver of the multiple is whether the 28% growth rate is sustainable or decelerating.",
         type: "valuation"
       },
       {
+        id: "truenorth-saas-q4",
         q: "The CAC payback period is 20 months, well above the SaaS benchmark of 12 months. How concerning is this and what would you investigate?",
         hint: "CAC payback affects capital efficiency and cash burn. But also consider LTV/CAC ratio and whether payback improves as the product matures.",
         answer: "A 20-month payback is concerning but not fatal, depending on context. Key investigation areas: (1) What is the fully-loaded CAC? Is it inflated by early-stage brand building that will normalize? (2) What is the LTV/CAC ratio? With ~115% NRR and low churn, LTV could be 5-6x CAC, which is healthy despite the long payback. (3) Is payback improving quarter over quarter? If it was 24 months a year ago, the trend is positive. (4) What are the unit economics by customer segment? Enterprise customers may have longer payback but higher LTV. (5) Is the sales cycle lengthening due to market saturation or competitive pressure? The 20-month payback combined with negative FCF means this company needs capital to grow, which gives the PE investor leverage in negotiations.",
@@ -414,6 +438,7 @@ export const COMPANIES = [
         keywords: ["CAC payback", "LTV/CAC ratio", "unit economics", "capital efficiency", "sales cycle", "customer acquisition cost"]
       },
       {
+        id: "truenorth-saas-q5",
         q: "92% recurring revenue with 115% NRR sounds great, but what are the risks hiding beneath those headline metrics?",
         hint: "Think about cohort analysis, gross vs. net retention, logo churn, and whether expansion revenue is masking underlying churn.",
         answer: "Several risks can hide behind strong headline metrics: (1) High NRR can mask high gross churn. If 15% of customers leave but the remaining 85% expand by 35%, NRR is 115% but you're losing logos fast. Need gross retention (should be >85%). (2) Expansion revenue may be driven by price increases, not true product adoption. Price-driven NRR is less sustainable. (3) Cohort analysis might show declining retention in newer cohorts, meaning the best customers were acquired early. (4) Annual contracts can mask churn. If contracts auto-renew with 90-day notice, true at-risk revenue might be higher than it appears. (5) The 8% top customer is likely on a custom enterprise deal. Losing that one customer would hurt disproportionately. In DD, you need a full cohort retention analysis, not just the blended NRR number.",
@@ -421,6 +446,7 @@ export const COMPANIES = [
         keywords: ["gross retention", "logo churn", "cohort analysis", "expansion revenue", "price increases", "contract terms", "NRR"]
       },
       {
+        id: "truenorth-saas-q6",
         q: "Would you invest in TrueNorth? What's your thesis, and what's the biggest thing that could go wrong?",
         hint: "Balance the high-quality revenue model against the capital intensity of growth and competitive dynamics in cybersecurity SaaS.",
         answer: "Yes, with conviction. Thesis: TrueNorth has a capital-efficient, high-retention business in a regulatory-driven market where compliance spend is non-discretionary. The play is: (1) invest $10-15M in growth equity to fuel sales expansion and reduce CAC payback through better go-to-market efficiency, (2) push gross margins toward 82%+ through infrastructure optimization, (3) layer in channel partnerships (MSPs, consultancies) to supplement direct sales, (4) target Rule of 40 score of 55+ within 3 years. Exit at 6-8x ARR once the company reaches $25-30M ARR. Biggest risk: a major cybersecurity platform (CrowdStrike, Palo Alto) launches a 'good enough' compliance module bundled with their core product, compressing TrueNorth's TAM and pricing power. This is a real threat in SaaS, and the moat here is product depth, not distribution. You need to believe the compliance workflow is complex enough that a bolt-on won't satisfy serious buyers.",
@@ -471,24 +497,28 @@ export const COMPANIES = [
     greenFlags: ["$68M backlog provides 15+ months of revenue visibility", "40% government contract mix provides payment certainty and counter-cyclical stability", "Experienced estimating team with <2% average cost overrun rate on completed projects", "Low leverage. Only $3.4M total debt on $5.25M adjusted EBITDA = 0.6x", "185 employees with low turnover (12% annually) in a tight labor market"],
     questions: [
       {
+        id: "ironclad-construction-q1",
         q: "Ironclad's gross margin is 18% and EBITDA margin is 8.7%. How do these compare to commercial GC benchmarks, and what's the risk of margin erosion?",
         hint: "GC industry margins are typically 15-22% gross and 5-10% EBITDA. Think about what can compress these already thin margins.",
         answer: "Ironclad's 18% gross margin is mid-range for commercial GCs (benchmarks: 15-22%). The 8.7% EBITDA margin is also reasonable (industry: 5-10%). The concern is how thin these margins are in absolute terms. A single project cost overrun of $1M (very possible on a $20M+ project) would wipe out 22% of annual EBITDA. Margin risks include: (1) rising materials costs (steel, concrete, lumber), (2) labor cost inflation in a tight market, (3) project delays causing overhead absorption issues, (4) competitive bidding pressure on new work. In DD, you'd want the project-level P&L for the last 3 years to see margin variability by project. The standard deviation matters more than the average.",
         type: "metric"
       },
       {
+        id: "ironclad-construction-q2",
         q: "The owner takes $900K in comp plus $300K in perks. There is also $200K in one-time legal fees and $150K in above-market rent on a company-owned property. Walk through the full EBITDA bridge.",
         hint: "Start with net income, add back interest, taxes (assume pass-through), D&A, then add-backs. Be precise.",
         answer: "EBITDA bridge: Net Income $3.4M + Depreciation $0.8M + Interest $0.4M = EBITDA of $4.6M. Add-backs: $0.3M owner perks + $0.2M one-time legal + $0.15M above-market rent = $0.65M. Adjusted EBITDA = $4.6M + $0.65M = $5.25M. If you also normalize owner comp (replace $0.9M with a $250K GM), that adds another $650K, bringing normalized EBITDA to ~$5.9M or an 11.2% margin. For a GC business, that is strong.",
         type: "adjustment"
       },
       {
+        id: "ironclad-construction-q3",
         q: "With a $68M backlog and $52.8M in annual revenue, what does the backlog-to-revenue ratio tell you? How would you use this in your valuation framework?",
         hint: "Backlog is the GC equivalent of a SaaS pipeline. It provides revenue visibility but isn't guaranteed. Think about burn rate and backlog quality.",
         answer: "Backlog-to-revenue ratio is 1.29x ($68M / $52.8M), meaning roughly 15 months of current revenue is in the pipeline. This is solid for a GC. 40% of backlog is government work, which is highly reliable (government projects rarely cancel). However, backlog is not revenue. Key questions: (1) What's the average margin in the backlog vs. historical? If they bid aggressively to fill backlog, margins could decline. (2) How much of the backlog is contracted vs. LOI/awarded but unsigned? (3) What's the typical conversion rate from backlog to revenue? For valuation, a strong backlog supports a higher multiple (maybe 5-6x adjusted EBITDA vs. 4-5x for a GC with weak visibility). At 5.5x adjusted EBITDA ($5.25M), EV would be ~$28.9M. The backlog provides downside protection that justifies the premium.",
         type: "valuation"
       },
       {
+        id: "ironclad-construction-q4",
         q: "Construction is inherently project-based with no recurring revenue. How does this affect your risk assessment and what would you do post-acquisition to improve revenue predictability?",
         hint: "Think about how PE firms create recurring revenue in project-based businesses: service contracts, maintenance programs, preferred vendor agreements.",
         answer: "Project-based revenue is the Achilles' heel of construction investing. Every year starts at zero, and you're only as good as your next bid. Risk factors: (1) Revenue can swing 20-30% year over year based on project timing, (2) Fixed overhead doesn't flex with project volume, (3) A recession can freeze project starts overnight. Post-acquisition revenue predictability plays: (1) Build a maintenance/facilities management division offering annual contracts to past clients (target 30%+ recurring within 3 years), (2) Pursue multi-year MSAs with health systems and school districts for ongoing renovation work, (3) Develop a preferred vendor program with repeat clients that provides right of first refusal on new projects, (4) Acquire a specialty subcontractor with maintenance contracts. The goal is to shift from 15% to 40%+ recurring revenue, which also supports a higher exit multiple.",
@@ -496,6 +526,7 @@ export const COMPANIES = [
         keywords: ["project-based revenue", "recurring revenue", "maintenance contracts", "revenue predictability", "MSA", "preferred vendor", "facilities management"]
       },
       {
+        id: "ironclad-construction-q5",
         q: "The estimating team has a <2% cost overrun rate. Why is this metric so critical in construction, and how would you protect it post-acquisition?",
         hint: "In a thin-margin business, estimating accuracy is the difference between profit and loss. Think about what happens when key estimators leave.",
         answer: "In a business with 18% gross margins, a 2% cost overrun on a $20M project ($400K) represents nearly 10% of annual EBITDA. The estimating team IS the competitive advantage. Most GCs run 5-8% average overruns, so <2% is exceptional. This creates two risks and one opportunity: Risks: (1) Key-person risk on the estimating team. If the lead estimator leaves, accuracy could drop significantly. Need to understand the team depth and how knowledge is transferred. (2) The low overrun rate might be because they bid conservatively and leave money on the table. Opportunity: This accuracy supports bidding on larger, more complex projects where competitors struggle. Post-acquisition protection: (1) Retention bonuses and equity incentives for key estimators, (2) Document and systematize the estimating process (proprietary database of costs by project type), (3) Invest in estimating software to reduce dependency on individual judgment.",
@@ -503,6 +534,7 @@ export const COMPANIES = [
         keywords: ["estimating accuracy", "cost overruns", "key-person risk", "competitive advantage", "margin protection", "process documentation"]
       },
       {
+        id: "ironclad-construction-q6",
         q: "Would you invest in Ironclad? What is your thesis and how do you get to a 3x MOIC in a low-growth, thin-margin business?",
         hint: "Construction is typically a 'pass' for PE. What would make this one different? Think about the value creation levers beyond organic growth.",
         answer: "Cautious yes, but only at the right price and with a clear operational playbook. Thesis: Ironclad is a well-run GC with a certification/bonding moat, excellent estimating, and government relationships that are hard to replicate. The 3x MOIC path: (1) Increase bonding capacity from $25M to $50M+ per project by adding PE-backed financial strength. This unlocks a larger addressable market immediately. (2) Build recurring revenue through a facilities management division (target $8-10M within 3 years). (3) Margin expansion by investing in project management technology and prefab capabilities (push EBITDA margin from 10% to 13%). (4) Selective bolt-on acquisitions of specialty subcontractors to vertically integrate and capture subcontractor margin. (5) Entry price matters enormously. At 4.5x adjusted EBITDA ($23.6M EV), a 3x MOIC requires growing EBITDA to ~$8M and exiting at 5.5x in 4-5 years. Achievable but requires disciplined execution. Would not pay more than 5x.",
@@ -553,24 +585,28 @@ export const COMPANIES = [
     greenFlags: ["65% recurring revenue from wellness plans and routine care. Very sticky", "62% gross margins are strong for veterinary and improving", "2% customer concentration. Extremely diversified patient base", "Pet healthcare spending is recession-resistant and growing with humanization trend", "Demographic tailwinds: pet ownership at all-time highs, spending per pet increasing 8-10% annually", "Founder is an operator, not just a clinician. Scalable leadership model"],
     questions: [
       {
+        id: "vitality-vet-q1",
         q: "Revenue per veterinarian is $1.2M ($8.4M / 7 vets). How does this compare to industry benchmarks and what does it tell you about productivity and growth capacity?",
         hint: "Industry average is $800K-1.2M per vet. Think about what drives revenue per vet: visit volume, average transaction value, ancillary services.",
         answer: "At $1.2M per vet, Vitality is at the top of the industry range ($800K-$1.2M). This could mean: (1) Vets are fully booked with limited appointment availability, meaning organic growth is capacity-constrained without adding vets. (2) Average transaction value is high, possibly driven by wellness plans that bundle services. (3) Good ancillary revenue (dental, surgery, diagnostics) supplementing primary care. The implication for growth: organic revenue growth requires either adding vets (hard in a shortage) or increasing revenue per visit (limited upside if already at the top). This reinforces that acquisitions are the primary growth lever. In DD, you'd want visit volume trends, average ticket size by service, and vet utilization rates by clinic.",
         type: "metric"
       },
       {
+        id: "vitality-vet-q2",
         q: "The company has $300K in one-time expenses (likely acquisition costs) and the owner takes $500K + $150K in perks. Normalize EBITDA for a PE buyer and flag what you'd challenge.",
         hint: "In a roll-up, are acquisition costs really one-time? And is $500K owner comp above or below market for a vet practice CEO?",
         answer: "Starting EBITDA: $1.7M. Add-backs: $150K owner perks + $300K one-time expenses + $0 above-market rent = $450K. Adjusted EBITDA = $2.15M. But I'd challenge two things: (1) The $300K 'one-time' acquisition costs will recur if the strategy is to acquire 3-4 more clinics. This is recurring cost of doing business, not truly one-time. Removing this add-back drops adjusted EBITDA to $1.85M. (2) Owner comp of $500K is arguably below market for a multi-location practice CEO. A PE-installed operator might cost $350-400K, so there's actually a $100-150K add-back available from normalizing the owner comp DOWN. Net adjusted EBITDA with these corrections: ~$1.95-2.0M. The difference between $2.15M and $1.95M is ~10%, which matters at 8-10x multiples.",
         type: "adjustment"
       },
       {
+        id: "vitality-vet-q3",
         q: "Vet roll-ups have traded at 10-14x EBITDA at scale. Vitality is at $8.4M revenue with 3 locations. What multiple is appropriate now, and how does the 'platform premium' work?",
         hint: "Think about the multiple arbitrage in roll-ups: buy individual practices at 4-6x, build a platform valued at 10-14x. But you need scale to get there.",
         answer: "At 3 locations and $8.4M revenue, Vitality is too small for platform multiples. Current fair value: 6-8x adjusted EBITDA ($2.15M) = $12.9-17.2M EV. The platform premium works like this: individual vet practices trade at 4-6x EBITDA. A PE-backed platform at 15+ locations and $30M+ revenue trades at 10-14x because of (1) diversification, (2) professional management, (3) growth predictability, and (4) strategic acquirer interest. The arbitrage: buy clinics at 5x, integrate them into the platform, and the whole entity re-rates to 10-12x at exit. If Vitality grows to $25M revenue and $5M EBITDA through acquisitions and organic growth, exit at 11x = $55M. That is 3-4x the entry investment. But you need $15-20M of acquisition capital to get there, and execution risk is real.",
         type: "valuation"
       },
       {
+        id: "vitality-vet-q4",
         q: "There are only ~120,000 veterinarians in the US and demand far outstrips supply. How does the vet shortage affect your risk assessment of this deal?",
         hint: "Think about both the risk (losing vets) and the opportunity (barrier to new competition). Consider retention strategies.",
         answer: "The vet shortage is both the biggest risk and the biggest opportunity: Risk: (1) Losing even 1 vet at a 3-clinic operation means ~15% revenue loss. (2) Recruiting costs are high ($30-50K per vet placement). (3) Remaining vets face burnout from overwork, creating a turnover spiral. (4) Salary inflation is 5-8% annually, compressing margins. Opportunity: (1) The shortage is a massive barrier to entry. No one can open competing clinics without vets. (2) Clinics with strong culture and modern equipment attract talent. (3) Consolidation platforms can offer vets career paths, mentorship, and better work-life balance than solo practices. Mitigation: (1) Retention bonuses and equity incentives for vets. (2) Invest in support staff (vet techs) to leverage vet time. (3) Competitive benefits including student loan repayment. (4) Maintain manageable caseloads. In DD, you need vet employment agreements, tenure data, and non-compete enforceability by state.",
@@ -578,6 +614,7 @@ export const COMPANIES = [
         keywords: ["vet shortage", "talent retention", "burnout", "salary inflation", "barrier to entry", "recruitment", "non-compete", "equity incentives"]
       },
       {
+        id: "vitality-vet-q5",
         q: "21.7% revenue growth is a blend of organic and acquired growth. How would you decompose this and why does it matter for the investment thesis?",
         hint: "Acquired growth requires capital and carries integration risk. Organic growth is higher quality. Separating them tells you what you are really buying.",
         answer: "Decomposition approach: If Vitality acquired one clinic mid-year that generates $1.0M annually (contributing ~$0.5M in the partial year), organic growth would be: ($8.4M - $0.5M acquired - $6.9M prior year) / $6.9M = ~14.5% organic growth. This distinction is critical because: (1) 14.5% organic growth is very strong for vet clinics (industry average is 5-8%), validating the wellness plan model. (2) Acquired growth of ~7% cost money to purchase, meaning actual cash returns from acquisitions depend on the purchase multiple. (3) If organic growth is only 5-6% and the rest is acquired, the business is dependent on M&A to hit growth targets, which is riskier and more capital-intensive. For the thesis, you want to see 10%+ organic growth proving the model works, with acquisitions layered on top for acceleration. If organic growth is weak, you are just buying revenue, not a platform.",
@@ -585,6 +622,7 @@ export const COMPANIES = [
         keywords: ["organic growth", "acquired growth", "same-store growth", "wellness plans", "integration risk", "capital intensity", "revenue quality"]
       },
       {
+        id: "vitality-vet-q6",
         q: "Would you invest in Vitality despite it being below the $10M revenue threshold? What is your thesis and what must be true for it to work?",
         hint: "Below $10M is unusual for PE. What justifies the exception? Think about unit economics, growth trajectory, and the path to scale.",
         answer: "Yes, but as a growth equity bet with specific milestones. Thesis: Vitality is a sub-scale platform with proven unit economics, a differentiated wellness plan model driving 65% recurring revenue, and a founder who is an operator, not just a clinician. The play: invest $8-10M to acquire 4-5 clinics over 18 months, reaching $18-20M revenue and $4-5M EBITDA. Exit at 10-12x EBITDA ($40-60M) in 4-5 years. What must be true: (1) Same-store organic growth stays above 10%, proving the wellness model works across locations. (2) Vet retention rate stays above 85%, which means the culture and compensation model are scalable. (3) Acquired clinics can be integrated within 6 months and brought to platform-level margins. (4) The founder can manage 7-8 locations without burning out or the team can hire a COO. (5) Acquisition multiples for individual practices stay at 4-6x, preserving the arbitrage. If any of these fail, the thesis breaks. It is a higher-risk, higher-reward bet than a $20M platform, but the sub-$10M entry point means a lower purchase price and more upside.",
@@ -635,24 +673,28 @@ export const COMPANIES = [
     greenFlags: ["3 warehouse locations provide geographic coverage and redundancy (NJ, TX, NV)", "Automation investments ($1.1M in other LT assets) reducing cost per order over time", "Long-term contracts (3-year avg) with growing DTC brands provide stable base", "12% revenue growth outpacing the broader 3PL industry growth of 8%", "Returns processing capability is a high-margin, differentiated service", "No inventory on balance sheet. True asset-light service model"],
     questions: [
       {
+        id: "meridian-fulfillment-q1",
         q: "Meridian's cost per order is a critical metric. With $20.1M in COGS and an estimated 2.5M orders processed, what's the unit economics story?",
         hint: "COGS / orders = cost per order. Then think about average revenue per order and contribution margin. What drives cost per order down?",
         answer: "Cost per order = $20.1M / 2.5M orders = $8.04. If average revenue per order is $11.80 ($29.5M / 2.5M), gross profit per order is $3.76, or a 31.9% contribution margin. This is decent but not great for 3PL (leaders achieve $4-5 per order). What drives improvement: (1) Automation reduces labor per order (currently ~60% of COGS). Each $500K automation investment should drop cost per order by $0.30-0.50. (2) Order density: more orders per warehouse = lower fixed cost allocation. (3) Shipping rate negotiation with carriers improves with volume. (4) Returns processing at $3-5 per return is higher margin than outbound fulfillment. A PE buyer should model cost per order declining 5-8% annually through automation, which flows straight to EBITDA.",
         type: "metric"
       },
       {
+        id: "meridian-fulfillment-q2",
         q: "Net income was flat at $2.1M despite 12% revenue growth. Walk through where the incremental revenue went and whether this is a problem.",
         hint: "Revenue grew $3.2M. Trace it through COGS, SGA, depreciation, and interest. Which line items absorbed the growth?",
         answer: "Revenue grew $3.2M ($26.3M to $29.5M). Where it went: COGS increased $2.2M (proportional, so gross margins held). SGA increased $0.6M (14% growth vs. 12% revenue growth, slightly outpacing). D&A increased $0.2M (higher depreciation from automation investments). Interest increased $0.1M (more debt). Owner comp increased $0.1M. Total cost increases: $3.2M, exactly matching revenue growth. This means the business is scaling but not generating operating leverage. The question is whether the automation investments (driving higher D&A) will eventually reduce labor costs enough to create margin expansion. If not, this is a scale-but-not-profit story, which is less attractive for PE. You need to see a credible path to 16-18% EBITDA margins within 2-3 years for the deal to work.",
         type: "adjustment"
       },
       {
+        id: "meridian-fulfillment-q3",
         q: "3PL businesses typically trade at 6-8x EBITDA. What drives the multiple range, and where does Meridian fall?",
         hint: "Think about what makes a 3PL worth 8x vs. 6x: contract quality, technology, customer diversification, and growth profile.",
         answer: "Multiple drivers in 3PL: Higher end (8x+): high contracted revenue percentage, strong technology/automation, diversified customer base, double-digit growth, and returns/value-added services. Lower end (6x): transactional revenue, commodity services, customer concentration, and low barriers to entry. Meridian falls in the middle. Positives: 12% growth, 3 facilities, automation investments, returns processing capability. Negatives: only 40% contracted (below the 60%+ threshold for premium multiples), 18% concentration, flat margins. Fair range: 6.5-7.5x adjusted EBITDA ($4.65M) = $30.2-34.9M EV. Net debt = ($1.5M + $3.8M) - $1.4M = $3.9M. Equity value: $26.3-31.0M. To command 8x+, Meridian needs to get contracted revenue above 60% and demonstrate margin expansion from automation investments.",
         type: "valuation"
       },
       {
+        id: "meridian-fulfillment-q4",
         q: "60% of Meridian's revenue is transactional (no contract, 30-day notice). How does this change your risk assessment compared to the 40% that is contracted?",
         hint: "Transactional revenue in 3PL means customers can leave for Amazon FBA, ShipBob, or any competitor with minimal switching costs. What protects Meridian?",
         answer: "The 60% transactional revenue is a significant risk. In practical terms: (1) $17.7M in revenue could theoretically walk out the door with 30 days notice. (2) Amazon FBA offers a 'good enough' alternative for many brands with no setup cost. (3) Newer competitors (ShipBob, ShipMonk) are aggressively pricing to win share. However, switching costs are higher than they appear: (1) Integration work (connecting to the brand's e-commerce platform, ERP, returns portal) creates friction. (2) Brands have to re-train their operations team on new systems. (3) Mid-peak-season switching is nearly impossible. Mitigation: (1) Convert transactional customers to 1-2 year contracts with volume commitments and pricing incentives. (2) Deepen integrations to increase switching costs. (3) Offer value-added services (kitting, subscription box assembly, returns processing) that commoditized 3PLs don't provide. Target: move from 40% to 65% contracted within 2 years post-acquisition.",
@@ -660,6 +702,7 @@ export const COMPANIES = [
         keywords: ["transactional revenue", "switching costs", "Amazon FBA", "contract conversion", "customer retention", "integration", "value-added services"]
       },
       {
+        id: "meridian-fulfillment-q5",
         q: "Meridian processes ~2.5M orders across 3 warehouses. What does warehouse utilization look like, and why does peak season capacity matter so much in 3PL?",
         hint: "Think about average daily throughput vs. peak throughput. A 3PL that's 85% utilized on average may be 120% at peak, meaning they have to turn away business.",
         answer: "At 2.5M orders across 3 warehouses, average throughput is ~833K orders per facility per year, or ~3,200 orders per day. But if Q4 is 35-40% of volume, peak daily throughput could hit 5,000-6,000 orders per facility. This creates several issues: (1) If warehouses are 80% utilized on average, they're 110-120% at peak, requiring expensive temp labor, overtime, and potential service level failures. (2) Brands evaluate 3PLs based on peak performance. One blown peak season and a customer is gone. (3) Building capacity for peak means excess capacity for 8 months of the year, killing utilization economics. (4) The 4th warehouse they want to build addresses peak capacity but adds fixed costs year-round. In DD, ask for monthly order volume by warehouse for the last 3 years, peak season SLA performance, and the staffing model (how many temps vs. permanent at peak). The ideal is 70% average utilization with the flexibility to surge to 100% at peak through automation and flex labor.",
@@ -667,6 +710,7 @@ export const COMPANIES = [
         keywords: ["warehouse utilization", "peak season", "throughput", "capacity planning", "temp labor", "service levels", "seasonal volatility"]
       },
       {
+        id: "meridian-fulfillment-q6",
         q: "Would you invest in Meridian? What is your thesis and how do you win against Amazon FBA?",
         hint: "You cannot beat Amazon on scale or price. Think about where a mid-market 3PL can differentiate and build a defensible position.",
         answer: "Yes, with a focused differentiation strategy. You cannot beat Amazon on price or scale, so don't try. Thesis: Meridian targets the underserved mid-market DTC brand ($5-50M revenue) that has outgrown Amazon FBA but is too small for enterprise 3PLs (XPO, Radial). The play: (1) Invest $5-8M in the 4th warehouse and automation to reduce cost per order by 15% over 3 years. (2) Build a technology layer (real-time analytics, inventory optimization, branded tracking) that creates switching costs. (3) Expand returns processing and value-added services (kitting, subscription assembly) to drive higher margin per order. (4) Convert transactional customers to contracts through volume incentives and custom integration work. (5) Selectively acquire 1-2 smaller 3PLs for their customer books and geographic coverage. Target: grow from $29.5M to $45M revenue and improve EBITDA margin from 16% to 19% in 4 years, then exit at 7-8x EBITDA ($8.5M x 7.5 = $63.8M). The Amazon risk is real but manageable if you stay focused on the mid-market niche where FBA's limitations (no custom branding, limited returns flexibility, no kitting) matter most to customers.",

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { loadData, saveData, updateStreak } from "./useScoring";
+import { loadData, saveData, updateStreak, migrateV1ToV2, SCHEMA_VERSION, STORAGE_KEY, V1_BACKUP_KEY } from "./useScoring";
 
 // Mock localStorage
 const localStorageMock = (() => {
@@ -23,21 +23,26 @@ describe("loadData", () => {
   it("returns default data when localStorage is empty", () => {
     const data = loadData();
     expect(data).toEqual({
+      version: 2,
       sessions: [],
       streak: { current: 0, lastDate: null },
     });
   });
 
-  it("parses stored JSON data", () => {
+  it("parses stored v2 JSON data without re-migrating", () => {
     const stored = {
+      version: 2,
       sessions: [{ date: "2026-03-18", companyId: "test", duration: 10, questions: [] }],
       streak: { current: 3, lastDate: "2026-03-18" },
     };
     localStorageMock.setItem("forge-data", JSON.stringify(stored));
 
     const data = loadData();
+    expect(data.version).toBe(2);
     expect(data.sessions).toHaveLength(1);
     expect(data.streak.current).toBe(3);
+    // Migration shouldn't run on already-v2 data → no v1 backup written
+    expect(localStorageMock.getItem("forge-data-v1-backup")).toBeNull();
   });
 
   it("returns default data on invalid JSON", () => {
@@ -45,6 +50,7 @@ describe("loadData", () => {
 
     const data = loadData();
     expect(data).toEqual({
+      version: 2,
       sessions: [],
       streak: { current: 0, lastDate: null },
     });
@@ -68,6 +74,148 @@ describe("saveData", () => {
     });
 
     expect(() => saveData({ sessions: [], streak: { current: 0, lastDate: null } })).not.toThrow();
+  });
+});
+
+describe("migrateV1ToV2", () => {
+  it("upgrades v1-shape data to v2 with null atom/feedback fields on every question", () => {
+    const v1 = {
+      sessions: [
+        {
+          date: "2026-04-01",
+          companyId: "summit-hvac",
+          duration: 120,
+          questions: [
+            { type: "metric", score: 4, delta: -0.3, unit: "%" },
+            { type: "risk", score: 3, delta: null, unit: null },
+          ],
+        },
+      ],
+      streak: { current: 5, lastDate: "2026-04-01" },
+    };
+
+    const v2 = migrateV1ToV2(v1);
+
+    expect(v2.version).toBe(2);
+    expect(v2.streak).toEqual(v1.streak);
+    expect(v2.sessions).toHaveLength(1);
+    expect(v2.sessions[0].questions).toHaveLength(2);
+
+    const [q1, q2] = v2.sessions[0].questions;
+    // Original fields preserved
+    expect(q1.type).toBe("metric");
+    expect(q1.score).toBe(4);
+    expect(q1.delta).toBe(-0.3);
+    expect(q1.unit).toBe("%");
+    // New fields default to null
+    expect(q1.atomId).toBeNull();
+    expect(q1.atomType).toBeNull();
+    expect(q1.feedback).toBeNull();
+    expect(q1.timestamp).toBeNull();
+
+    expect(q2.type).toBe("risk");
+    expect(q2.atomId).toBeNull();
+    expect(q2.feedback).toBeNull();
+  });
+
+  it("preserves any v2 fields that already exist (idempotent on re-run)", () => {
+    const partiallyV2 = {
+      version: 2,
+      sessions: [
+        {
+          date: "2026-04-02",
+          companyId: "coastal-foods",
+          duration: 0,
+          questions: [
+            {
+              type: "diagnostic",
+              score: 5,
+              delta: null,
+              unit: null,
+              atomId: "coastal-foods-q1",
+              atomType: "company-question",
+              feedback: { strengths: ["s"], gaps: [], suggestion: "go deeper" },
+              timestamp: "2026-04-02T10:00:00.000Z",
+            },
+          ],
+        },
+      ],
+      streak: { current: 1, lastDate: "2026-04-02" },
+    };
+
+    const result = migrateV1ToV2(partiallyV2);
+    const q = result.sessions[0].questions[0];
+    expect(q.atomId).toBe("coastal-foods-q1");
+    expect(q.atomType).toBe("company-question");
+    expect(q.feedback.suggestion).toBe("go deeper");
+    expect(q.timestamp).toBe("2026-04-02T10:00:00.000Z");
+  });
+
+  it("backs up the existing v1 raw JSON to V1_BACKUP_KEY before overwriting", () => {
+    const v1 = {
+      sessions: [{ date: "2026-04-03", companyId: "x", duration: 0, questions: [] }],
+      streak: { current: 0, lastDate: null },
+    };
+    localStorageMock.setItem(STORAGE_KEY, JSON.stringify(v1));
+
+    migrateV1ToV2(v1);
+
+    const backup = localStorageMock.getItem(V1_BACKUP_KEY);
+    expect(backup).toBeTruthy();
+    expect(JSON.parse(backup)).toEqual(v1);
+  });
+});
+
+describe("loadData migration integration", () => {
+  it("migrates a v1 payload from localStorage on first read", () => {
+    const v1 = {
+      sessions: [
+        {
+          date: "2026-04-04",
+          companyId: "precision-manufacturing",
+          duration: 90,
+          questions: [{ type: "valuation", score: 3, delta: 1.2, unit: "x" }],
+        },
+      ],
+      streak: { current: 2, lastDate: "2026-04-04" },
+    };
+    localStorageMock.setItem(STORAGE_KEY, JSON.stringify(v1));
+
+    const data = loadData();
+
+    expect(data.version).toBe(SCHEMA_VERSION);
+    expect(data.sessions[0].questions[0].atomId).toBeNull();
+    expect(data.sessions[0].questions[0].score).toBe(3);
+    // Backup written
+    expect(localStorageMock.getItem(V1_BACKUP_KEY)).toBeTruthy();
+    // Migrated shape persisted back to main key
+    const persisted = JSON.parse(localStorageMock.getItem(STORAGE_KEY));
+    expect(persisted.version).toBe(SCHEMA_VERSION);
+  });
+
+  it("does not re-migrate or re-backup when data is already v2", () => {
+    const v2 = {
+      version: 2,
+      sessions: [],
+      streak: { current: 0, lastDate: null },
+    };
+    localStorageMock.setItem(STORAGE_KEY, JSON.stringify(v2));
+
+    loadData();
+
+    expect(localStorageMock.getItem(V1_BACKUP_KEY)).toBeNull();
+  });
+
+  it("preserves the streak value through migration", () => {
+    const v1 = {
+      sessions: [],
+      streak: { current: 12, lastDate: "2026-04-05" },
+    };
+    localStorageMock.setItem(STORAGE_KEY, JSON.stringify(v1));
+
+    const data = loadData();
+
+    expect(data.streak).toEqual({ current: 12, lastDate: "2026-04-05" });
   });
 });
 

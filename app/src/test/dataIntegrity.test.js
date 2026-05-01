@@ -467,4 +467,52 @@ describe("Data Integrity", () => {
       }
     });
   });
+
+  describe("Company question IDs (atom-level schema)", () => {
+    it("every company question has an id", () => {
+      for (const company of COMPANIES) {
+        expect(Array.isArray(company.questions), `${company.id} missing questions`).toBe(true);
+        for (let i = 0; i < company.questions.length; i++) {
+          const q = company.questions[i];
+          expect(
+            typeof q.id === "string" && q.id.length > 0,
+            `Company "${company.id}" question[${i}] missing id`
+          ).toBe(true);
+        }
+      }
+    });
+
+    it("question IDs are well-formed kebab-case ending in -qN", () => {
+      const pattern = /^[a-z0-9-]+-q\d+$/;
+      for (const company of COMPANIES) {
+        for (const q of company.questions) {
+          expect(
+            pattern.test(q.id),
+            `Question id "${q.id}" in company "${company.id}" doesn't match ${pattern}`
+          ).toBe(true);
+        }
+      }
+    });
+
+    it("question IDs are globally unique across all companies", () => {
+      const seen = new Set();
+      for (const company of COMPANIES) {
+        for (const q of company.questions) {
+          expect(seen.has(q.id), `Duplicate question id: ${q.id}`).toBe(false);
+          seen.add(q.id);
+        }
+      }
+    });
+
+    it("question IDs are prefixed with their parent company id", () => {
+      for (const company of COMPANIES) {
+        for (const q of company.questions) {
+          expect(
+            q.id.startsWith(`${company.id}-q`),
+            `Question id "${q.id}" should start with "${company.id}-q"`
+          ).toBe(true);
+        }
+      }
+    });
+  });
 });

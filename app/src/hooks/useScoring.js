@@ -1,7 +1,74 @@
 import { useState, useCallback } from "react";
 
 const STORAGE_KEY = "forge-data";
-const DEFAULT_STATE = { sessions: [], streak: { current: 0, lastDate: null } };
+const V1_BACKUP_KEY = "forge-data-v1-backup";
+const SCHEMA_VERSION = 2;
+
+/**
+ * Schema v2 (current):
+ * {
+ *   version: 2,
+ *   sessions: [{
+ *     date: "YYYY-MM-DD",
+ *     companyId: string,
+ *     duration: number,
+ *     questions: [{
+ *       type: string,                 // questionType (metric/adjustment/valuation/risk/diagnostic/thesis)
+ *       score: number,                // 1-5
+ *       delta: number | null,         // quantitative delta vs model answer
+ *       unit: string | null,          // "$M" | "%" | "x" | etc
+ *       atomId: string | null,        // stable ID of the learnable atom (e.g., "summit-q3", "ebitda-add-backs")
+ *       atomType: string | null,      // "company-question" | "concept" | "lever" | "bridge" | "playbook" | null
+ *       feedback: { strengths, gaps, suggestion } | null,  // full LLM feedback when qualitative
+ *       timestamp: string | null,     // ISO8601 of when scored
+ *     }]
+ *   }],
+ *   streak: { current: number, lastDate: string | null }
+ * }
+ *
+ * Schema v1 (legacy, auto-migrated on first read):
+ * Same shape but no `version` field and questions only have `{type, score, delta, unit}`.
+ */
+const DEFAULT_STATE = {
+  version: SCHEMA_VERSION,
+  sessions: [],
+  streak: { current: 0, lastDate: null },
+};
+
+/**
+ * Migrate a v1-shape parsed object to v2 in place.
+ * Adds `version: 2` at root and `{atomId, atomType, feedback, timestamp}` (all null) to every question entry.
+ * Pre-existing v1 data isn't lost; it just lacks the new signal.
+ */
+function migrateV1ToV2(parsed) {
+  // Backup v1 to a separate key before overwriting. Best-effort; failure shouldn't block the migration.
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) localStorage.setItem(V1_BACKUP_KEY, raw);
+  } catch {
+    // localStorage write failures (quota, disabled) shouldn't crash the app.
+  }
+
+  const sessions = (parsed.sessions || []).map(session => ({
+    ...session,
+    questions: (session.questions || []).map(q => ({
+      type: q.type,
+      score: q.score,
+      delta: q.delta ?? null,
+      unit: q.unit ?? null,
+      atomId: q.atomId ?? null,
+      atomType: q.atomType ?? null,
+      feedback: q.feedback ?? null,
+      timestamp: q.timestamp ?? null,
+    })),
+  }));
+
+  return {
+    version: SCHEMA_VERSION,
+    sessions,
+    streak: parsed.streak,
+  };
+}
 
 function loadData() {
   try {
@@ -16,6 +83,15 @@ function loadData() {
       console.warn(`[Forge] Invalid shape in ${STORAGE_KEY}, resetting`);
       return DEFAULT_STATE;
     }
+
+    // Migrate v1 (no version field) to v2.
+    if (parsed.version !== SCHEMA_VERSION) {
+      const migrated = migrateV1ToV2(parsed);
+      // Persist migrated shape immediately so subsequent reads are fast and consistent.
+      saveData(migrated);
+      return migrated;
+    }
+
     return parsed;
   } catch (err) {
     console.warn(`[Forge] Corrupt data in ${STORAGE_KEY}, resetting:`, err.message);
@@ -38,33 +114,51 @@ function saveData(data) {
 export default function useScoring() {
   const [data, setData] = useState(loadData);
 
+  /**
+   * Persist a question score entry.
+   *
+   * @param {Object} entry
+   * @param {string} entry.companyId
+   * @param {string} entry.questionType            metric | adjustment | valuation | risk | diagnostic | thesis
+   * @param {number} entry.score                   1-5
+   * @param {number|null} [entry.delta]            quantitative delta vs model answer
+   * @param {string|null} [entry.unit]
+   * @param {string|null} [entry.atomId]           stable ID of the learnable atom (e.g., "summit-q3")
+   * @param {string|null} [entry.atomType]         "company-question" | "concept" | "lever" | "bridge" | "playbook"
+   * @param {{strengths: string[], gaps: string[], suggestion: string}|null} [entry.feedback]   full LLM feedback (qualitative only)
+   * @param {string} [entry.timestamp]             ISO8601; defaults to now
+   */
   const addScore = useCallback((entry) => {
-    // entry: { companyId, questionType, score, delta, unit, timestamp }
     setData(prev => {
       const today = new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD
+      const question = {
+        type: entry.questionType,
+        score: entry.score,
+        delta: entry.delta ?? null,
+        unit: entry.unit ?? null,
+        atomId: entry.atomId ?? null,
+        atomType: entry.atomType ?? null,
+        feedback: entry.feedback ?? null,
+        timestamp: entry.timestamp ?? new Date().toISOString(),
+      };
+
       let session = prev.sessions.find(
         s => s.date === today && s.companyId === entry.companyId
       );
       if (!session) {
-        session = { date: today, companyId: entry.companyId, duration: 0, questions: [] };
-        prev = { ...prev, sessions: [...prev.sessions, session] };
-      } else {
-        prev = {
+        session = { date: today, companyId: entry.companyId, duration: 0, questions: [question] };
+        const next = {
           ...prev,
-          sessions: prev.sessions.map(s =>
-            s.date === today && s.companyId === entry.companyId
-              ? { ...s, questions: [...s.questions, { type: entry.questionType, score: entry.score, delta: entry.delta, unit: entry.unit }] }
-              : s
-          ),
+          sessions: [...prev.sessions, session],
+          streak: updateStreak(prev.streak, today),
         };
-        const next = { ...prev, streak: updateStreak(prev.streak, today) };
         saveData(next);
         return next;
       }
-      // Add the question to the new session
+
       const sessions = prev.sessions.map(s =>
         s.date === today && s.companyId === entry.companyId
-          ? { ...s, questions: [...s.questions, { type: entry.questionType, score: entry.score, delta: entry.delta, unit: entry.unit }] }
+          ? { ...s, questions: [...s.questions, question] }
           : s
       );
       const next = { ...prev, sessions, streak: updateStreak(prev.streak, today) };
@@ -156,4 +250,4 @@ function updateStreak(streak, today) {
 }
 
 // Exported for testing
-export { loadData, saveData, updateStreak };
+export { loadData, saveData, updateStreak, migrateV1ToV2, SCHEMA_VERSION, STORAGE_KEY, V1_BACKUP_KEY };

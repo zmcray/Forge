@@ -28,6 +28,8 @@ focus: open-ended
 ## Ranked Ideas
 
 ### 1. Persist LLM Feedback (Gaps, Strengths, Suggestions)
+**Status:** ✅ **Shipped 2026-04-30** — MCR-103 Phase 0. Schema v2 now persists `{strengths, gaps, suggestion}` alongside every qualitative entry, plus `atomId`/`atomType`/`timestamp` for atom-level back-references. Pattern: `docs/solutions/patterns/localstorage-schema-migration-with-atom-tagging.md`. Surfacing aggregate gap patterns in ProgressDashboard remains downstream work (the persisted data is ready).
+
 **Description:** The LLM evaluation returns `{ score, strengths, gaps, suggestion }` but only `aiScore` is saved to localStorage via `addScore`. The diagnostic text is discarded on component unmount. Persist the full feedback object alongside scores in the `forge-data` schema. Surface aggregate gap patterns in ProgressDashboard (e.g., "You consistently miss leverage calculation in valuation questions").
 **Rationale:** Every ideation sub-agent flagged this independently (5 of 6). It is the highest-leverage single change: the LLM is already doing expensive diagnostic work on every qualitative answer, and the output is thrown away. Persisting it unlocks spaced repetition, gap pattern analysis, coach voice, and deal memo synthesis downstream.
 **Downsides:** localStorage grows faster. Each qualitative answer adds ~500 bytes of feedback text. At 10 questions/day for a year, that is ~1.8MB. Manageable but may eventually need a retention policy.
@@ -44,6 +46,8 @@ focus: open-ended
 **Status:** Unexplored
 
 ### 3. Answer Text Persistence + Retrospective Review
+**Status:** 🟡 **Schema ready, not yet wired** — MCR-103 Phase 0 (2026-04-30) shipped the v2 `forge-data` schema with nullable-additive evolution, so adding a `committedText` field per question is a small follow-on. The user's answer text itself is still ephemeral in QuestionCard local state. Not yet a Linear issue.
+
 **Description:** `committedText` lives in QuestionCard local state and vanishes on unmount. Store answer text in localStorage alongside scores. Enable a "Review Past Sessions" view where users re-read their reasoning against model answers and LLM feedback with fresh eyes. This is the foundation for deal memo export, Obsidian integration, and progress journaling.
 **Rationale:** Without answer text, the progress dashboard measures frequency and score trends but cannot reveal whether thinking is actually changing. The highest-value PE learning loop is reading your past reasoning with fresh eyes. A score of 3/5 from 2 weeks ago is meaningless without the text that generated it.
 **Downsides:** localStorage grows significantly. Needs a retention policy (e.g., keep last 30 days of answer text, archive scores only for older sessions). Adds ~200 bytes per answer.
@@ -60,9 +64,11 @@ focus: open-ended
 **Status:** Unexplored
 
 ### 5. Spaced Repetition Queue from Weak Spots
+**Status:** 🚧 **Tracked as MCR-102** (Backlog). Phase 0 prerequisites — atom-level IDs on company questions and persisted LLM feedback — both shipped in MCR-103 on 2026-04-30. Next: SRS algorithm (SM-2 or Leitner) and passive review-queue surfaces.
+
 **Description:** `getWeakSpots()` already identifies question types averaging below 3.5 across 2+ attempts. But the home screen only shows this passively in `WeakSpotCard`. Add a "Focus Session" button that pre-selects the worst company + question type combination and surfaces it as "Today's Recommended Drill." Uses existing scoring timestamps + a simple decay function (due after 3 days if score < 3, after 7 days if score 3-4, never if score 5).
 **Rationale:** Transforms the app from "pick what you feel like" to "the app tells you where to spend the next 45 minutes." No new data collection; all signal already exists in localStorage. Combined with idea #1 (LLM gap persistence), the decay function can factor in which concepts the user keeps missing, not just numeric scores.
-**Downsides:** Requires adding stable `id` fields to each question in `companies.js` (~54 questions across 9 companies). The decay function needs tuning. Risk of over-rotation toward weaknesses at the expense of maintaining strengths.
+**Downsides:** ~~Requires adding stable `id` fields to each question in `companies.js` (~54 questions across 9 companies).~~ ✅ Done in MCR-103 Phase 0 (2026-04-30) — 44 stable IDs (`{companyId}-q{N}` pattern) shipped. The decay function still needs tuning. Risk of over-rotation toward weaknesses at the expense of maintaining strengths.
 **Confidence:** 75%
 **Complexity:** Medium
 **Status:** Unexplored
