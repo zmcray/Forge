@@ -97,9 +97,10 @@ export default function App() {
       score,
       delta: meta?.delta ?? null,
       unit: meta?.unit ?? null,
-      selfScore: meta?.selfScore ?? null,
-      aiScore: meta?.aiScore ?? null,
-      timestamp: Date.now(),
+      atomId: meta?.atomId ?? null,
+      atomType: meta?.atomType ?? null,
+      feedback: meta?.feedback ?? null,
+      // timestamp defaults to now() inside addScore (ISO8601)
     });
     setSessionQuestions(prev => [...prev, { type, score, delta: meta?.delta ?? null, unit: meta?.unit ?? null, selfScore: meta?.selfScore ?? null, aiScore: meta?.aiScore ?? null }]);
   }, [selectedCompany, addScore]);

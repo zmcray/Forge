@@ -59,6 +59,13 @@ export default function QuestionCard({ question, index, onScore, companyContext 
             delta: null,
             unit: null,
             aiScore: data.score,
+            atomId: question.id ?? null,
+            atomType: question.id ? "company-question" : null,
+            feedback: {
+              strengths: data.strengths ?? [],
+              gaps: data.gaps ?? [],
+              suggestion: data.suggestion ?? "",
+            },
           });
         })
         .catch((err) => {
@@ -81,6 +88,9 @@ export default function QuestionCard({ question, index, onScore, companyContext 
           ? committedNumeric - modelExtracted.value
           : null,
       unit: modelExtracted?.unit || null,
+      atomId: question.id ?? null,
+      atomType: question.id ? "company-question" : null,
+      feedback: null,
     });
   };
 
