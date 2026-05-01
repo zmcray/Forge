@@ -1,9 +1,15 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import ChatMessage from "./ChatMessage";
 import useChatContext from "../../hooks/useChatContext";
+import useChatMode, { CHAT_MODES } from "../../hooks/useChatMode";
 
 const MAX_TURNS = 10;
 const MAX_MESSAGE_LENGTH = 2000;
+
+const MODE_LABEL = {
+  [CHAT_MODES.DIRECT]: "Direct",
+  [CHAT_MODES.SOCRATIC]: "Socratic",
+};
 
 export default function ChatDrawer({
   subsection,
@@ -19,6 +25,7 @@ export default function ChatDrawer({
   const [isStreaming, setIsStreaming] = useState(false);
   const [streamingText, setStreamingText] = useState("");
   const [error, setError] = useState(null);
+  const { mode, setMode } = useChatMode();
   const abortRef = useRef(null);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
@@ -28,6 +35,7 @@ export default function ChatDrawer({
     completedIds,
     llmResult: chatContext?.llmResult || null,
     messageCount: messages.length,
+    mode,
   });
 
   // Derive noteId from subsection's notes block
@@ -70,6 +78,14 @@ export default function ChatDrawer({
     const ac = new AbortController();
     abortRef.current = ac;
 
+    // Mode-change dividers are UI-only; strip them from the API payload so the
+    // LLM sees a clean role/content history. systemPrompt was captured above
+    // and reflects the mode at the time send was clicked (D8 — in-flight uses
+    // old prompt; mode flips during stream apply on next turn).
+    const apiMessages = updated
+      .filter(m => m.kind !== "mode-change")
+      .map(m => ({ role: m.role, content: m.content }));
+
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
@@ -77,7 +93,7 @@ export default function ChatDrawer({
           "Content-Type": "application/json",
           "x-forge-token": import.meta.env.VITE_FORGE_AUTH_TOKEN || "",
         },
-        body: JSON.stringify({ messages: updated, systemPrompt }),
+        body: JSON.stringify({ messages: apiMessages, systemPrompt }),
         signal: ac.signal,
       });
 
@@ -137,6 +153,21 @@ export default function ChatDrawer({
     sendMessage(question);
   };
 
+  const handleModeChange = (next) => {
+    if (next === mode) return;
+    setMode(next);
+    // Only emit a divider if there's existing conversation to mark.
+    if (messages.length === 0) return;
+    setMessages(prev => [
+      ...prev,
+      {
+        role: "assistant",
+        kind: "mode-change",
+        content: `Switched to ${MODE_LABEL[next]} mode.`,
+      },
+    ]);
+  };
+
   const charCount = input.length;
   const showCharWarning = charCount > 1500;
 
@@ -149,13 +180,37 @@ export default function ChatDrawer({
       />
 
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-outline-variant/30 bg-surface-container-low">
-        <h3 className="text-sm font-semibold text-on-surface truncate">
+      <div className="flex items-center gap-2 px-4 py-3 border-b border-outline-variant/30 bg-surface-container-low">
+        <h3 className="text-sm font-semibold text-on-surface truncate flex-1 min-w-0">
           Chat: {subsection?.title || ""}
         </h3>
+        <div
+          role="group"
+          aria-label="Chat mode"
+          className="flex items-center gap-0.5 rounded-full bg-surface-container p-0.5 flex-shrink-0"
+        >
+          {[CHAT_MODES.DIRECT, CHAT_MODES.SOCRATIC].map(m => {
+            const active = mode === m;
+            return (
+              <button
+                key={m}
+                type="button"
+                onClick={() => handleModeChange(m)}
+                aria-pressed={active}
+                className={`text-xs px-2.5 py-0.5 rounded-full transition-colors ${
+                  active
+                    ? "bg-primary text-on-primary"
+                    : "text-on-surface-variant hover:opacity-80"
+                }`}
+              >
+                {MODE_LABEL[m]}
+              </button>
+            );
+          })}
+        </div>
         <button
           onClick={onClose}
-          className="p-1 rounded-lg hover:bg-surface-container transition-colors"
+          className="p-1 rounded-lg hover:bg-surface-container transition-colors flex-shrink-0"
           title="Close chat"
         >
           <span className="material-symbols-outlined text-on-surface-variant text-xl">close</span>
@@ -182,7 +237,9 @@ export default function ChatDrawer({
       <div className="flex-1 overflow-y-auto px-3 py-3 min-h-0">
         {messages.length === 0 && !isStreaming && (
           <p className="text-sm text-on-surface-variant text-center mt-8">
-            Ask a question about {subsection?.title || "this concept"}
+            {mode === CHAT_MODES.SOCRATIC
+              ? `I'll guide you with questions. Ask me to test you on ${subsection?.title || "this concept"}.`
+              : `Ask a question about ${subsection?.title || "this concept"}`}
           </p>
         )}
 
