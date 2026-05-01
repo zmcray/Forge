@@ -460,7 +460,7 @@ The serverless function's OPTIONS handler (or just the cold start) warms the ins
 - LearnExercise module (drag-and-drop exercises) - different surface, binary completion
 - Quantitative question evaluation - delta bands work well already
 - Multi-user auth (Clerk, Auth0) - single-user app
-- Evaluation history persistence - future enhancement (but data shape supports it)
+- ~~Evaluation history persistence - future enhancement (but data shape supports it)~~ ✅ Shipped 2026-04-30 in MCR-103 Phase 0. The v2 `forge-data` schema persists full `{strengths, gaps, suggestion}` per question, plus atom-level back-references and timestamps. Pattern: `docs/solutions/patterns/localstorage-schema-migration-with-atom-tagging.md`. Downstream consumers (MCR-101 Socratic toggle, MCR-102 SRS engine) now have the data they need.
 - Streaming responses - evaluation is short enough that non-streaming is fine
 - Rate limiting - acceptable risk for single-user; Anthropic spending limit is sufficient
 

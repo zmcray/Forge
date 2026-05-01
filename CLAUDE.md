@@ -205,8 +205,12 @@ Users must enter an answer before revealing the model answer:
 - Auth: optional `FORGE_AUTH_TOKEN` header check (skipped in dev)
 
 ### Scoring & Persistence
-- All scores in `localStorage` under key `forge-data`
-- Schema: `{ sessions: [{date, companyId, duration, questions: [{type, score, delta, unit}]}], streak: {current, lastDate} }`
+- All scores in `localStorage` under key `forge-data`. Backup of pre-v2 data at `forge-data-v1-backup` after first migration.
+- Schema v2: `{ version: 2, sessions: [{date, companyId, duration, questions: [{type, score, delta, unit, atomId, atomType, feedback, timestamp}]}], streak: {current, lastDate} }`
+  - `atomId` / `atomType` back-reference the specific learnable atom (`"company-question"`, `"concept"`, `"lever"`, `"bridge"`, `"playbook"`); both nullable for legacy entries
+  - `feedback: { strengths, gaps, suggestion } | null` — full LLM evaluation persisted on qualitative answers
+  - `timestamp: ISO8601` — set automatically by `addScore` if not provided
+- v1 → v2 migration runs silently on first read of v1-shape data; pattern documented at `docs/solutions/patterns/localstorage-schema-migration-with-atom-tagging.md`
 - Streak tracks consecutive practice days
 - Weak spots surface when avg score < 3.5 with 2+ attempts
 
@@ -265,6 +269,11 @@ Summit Mechanical Services (HVAC, $32.5M), Coastal Fresh Foods (food distributio
 - [2026-04-14] pattern: Default-state data is a separate audit surface from edge-case input. Reviewers focused on slider abuse missed that dental-rollup's plan case shipped with `debtPaydown: -2` rendering as a positive bar. First-paint review catches what input-fuzz review will not. (Source: bridge Phase 2)
 - [2026-04-14] process: When a reviewer flags a class of bug, walk the entire codebase for it before declaring the fix done. The P3 localStorage shape-validation patch was top-level only; `{"scenarios":{"id":null}}` still bricked BridgeList because the inner values were also untrusted. Ask: where else does this class apply? (Source: bridge Phase 2)
 - [2026-04-14] process: Cross-check confident race-condition or "infinite loop" claims against actual JS semantics before acting. A reviewer claimed `Array.find()` returns a new reference each call; it does not (returns the actual element from the array). Rejecting the false claim saved a useMemo rewrite. (Source: bridge Phase 2)
+- [2026-04-30] pattern: Stamp an explicit `version` field at schema introduction time, even when only v1 exists. Detecting absence-of-version is fragile and tangles with first-run/empty-state logic; explicit version mismatch is precise. Migration runs on first read, persists v2 immediately, never re-runs. Full pattern: `docs/solutions/patterns/localstorage-schema-migration-with-atom-tagging.md`. (Source: MCR-103 Phase 0)
+- [2026-04-30] pattern: Backup raw bytes of the prior schema version under a separate localStorage key BEFORE writing the migrated shape. The raw string preserves fields the migrator didn't know about, gives a recovery path if the migrator has a bug, and costs nothing in disk. Test the backup contract explicitly. (Source: MCR-103 Phase 0)
+- [2026-04-30] pattern: When extending a persisted schema, add new fields as nullable so legacy and new entries coexist in the same array. Then audit every consumer (`getWeakSpots`, `getAllScores`, dashboards, exports) for null-tolerance — a mixed-shape array is a new failure surface. (Source: MCR-103 Phase 0)
+- [2026-04-30] tooling: For bulk data edits across many similar objects (44 question objects in `companies.js` needing IDs), prefer a one-shot Node script over manual edits. Make it idempotent — early-return on entries that already have the new field — so re-running is safe and reports `Injected 0`. Saves time and eliminates drift between near-identical edits. (Source: MCR-103 Phase 0)
+- [2026-04-30] testing: Default-state shape assertions are load-bearing. The 2 pre-existing `useScoring.test.js` tests that asserted the canonical default state caught the v2 schema change immediately on first test run. Update those assertions deliberately when shape changes; never silence them. (Source: MCR-103 Phase 0)
 
 ## Do NOT
 
