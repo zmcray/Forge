@@ -61,11 +61,11 @@ export default function SessionSummary({ company, questions, elapsedMinutes, onC
             <p className="text-xs text-on-surface-variant">Minutes</p>
           </div>
           <div className="text-center bg-surface-container-low rounded-lg p-3">
-            <p className="text-2xl font-bold text-blue-600">{avgScore}</p>
+            <p className="text-2xl font-bold text-primary">{avgScore}</p>
             <p className="text-xs text-on-surface-variant">Avg Score</p>
           </div>
           <div className="text-center bg-surface-container-low rounded-lg p-3">
-            <p className="text-2xl font-bold text-green-600">{questions.filter(q => q.score >= 4).length}</p>
+            <p className="text-2xl font-bold text-on-tertiary-container">{questions.filter(q => q.score >= 4).length}</p>
             <p className="text-xs text-on-surface-variant">Strong (4-5)</p>
           </div>
         </div>
@@ -85,13 +85,13 @@ export default function SessionSummary({ company, questions, elapsedMinutes, onC
         <div className="flex gap-2 mt-5">
           <button
             onClick={handleCopy}
-            className="flex-1 px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="flex-1 px-4 py-2 text-sm font-medium bg-primary text-on-primary rounded-lg hover:opacity-90 transition-opacity"
           >
             {copied ? "Copied!" : "Copy Summary"}
           </button>
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-2 text-sm font-medium bg-surface-container-lowest border border-outline-variant rounded-lg hover:bg-gray-50 transition-colors"
+            className="flex-1 px-4 py-2 text-sm font-medium bg-surface-container-lowest border border-outline-variant rounded-lg hover:bg-surface-container transition-colors"
           >
             Done
           </button>

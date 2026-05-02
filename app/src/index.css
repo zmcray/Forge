@@ -10,6 +10,7 @@
   --color-surface: #f7f9fb;
   --color-surface-container-lowest: #ffffff;
   --color-surface-container-low: #f2f4f6;
+  --color-surface-container: #eceef0;
   --color-surface-container-high: #e6e8ea;
 
   --color-on-surface: #191c1e;
@@ -51,6 +52,7 @@
   --color-surface: #111418;
   --color-surface-container-lowest: #0c0e12;
   --color-surface-container-low: #191c20;
+  --color-surface-container: #1f2228;
   --color-surface-container-high: #252830;
 
   --color-on-surface: #e2e3e5;

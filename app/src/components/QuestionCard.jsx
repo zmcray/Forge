@@ -115,19 +115,19 @@ export default function QuestionCard({ question, index, onScore, companyContext 
     <div
       className={`grid ${isQuantitative ? "grid-cols-1" : "grid-cols-2"} gap-3 mb-4`}
     >
-      <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm">
-        <span className="font-semibold text-gray-500 text-xs uppercase">
+      <div className="bg-surface-container-low border border-outline-variant/30 rounded-lg p-3 text-sm">
+        <span className="font-semibold text-on-surface-variant text-xs uppercase">
           Your Answer
         </span>
         {isQuantitative && committedNumeric !== null && (
-          <p className="mt-1 font-mono font-semibold text-gray-900">
+          <p className="mt-1 font-mono font-semibold text-on-surface">
             {committedNumeric}
           </p>
         )}
-        {committedText && <p className="mt-1 text-gray-700">{committedText}</p>}
+        {committedText && <p className="mt-1 text-on-surface-variant">{committedText}</p>}
       </div>
-      <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-sm text-green-900">
-        <span className="font-semibold text-green-700 text-xs uppercase">
+      <div className="bg-tertiary-container/40 border border-tertiary-container rounded-lg p-3 text-sm text-on-surface">
+        <span className="font-semibold text-on-tertiary-container text-xs uppercase">
           Model Answer
         </span>
         <p className="mt-1">{question.answer}</p>
@@ -136,8 +136,8 @@ export default function QuestionCard({ question, index, onScore, companyContext 
   );
 
   return (
-    <div className="border border-gray-200 rounded-lg overflow-hidden mb-4">
-      <div className="bg-gray-50 px-4 py-3 flex items-center justify-between">
+    <div className="bg-surface-container border border-outline-variant/30 rounded-lg overflow-hidden mb-4">
+      <div className="bg-surface-container-low px-4 py-3 flex items-center justify-between border-b border-outline-variant/30">
         <div className="flex items-center gap-2">
           <span className="text-lg">{typeInfo.icon}</span>
           <span
@@ -145,7 +145,7 @@ export default function QuestionCard({ question, index, onScore, companyContext 
           >
             {typeInfo.label}
           </span>
-          <span className="text-sm font-medium text-gray-700">
+          <span className="text-sm font-medium text-on-surface-variant">
             Question {index + 1}
           </span>
         </div>
@@ -158,7 +158,7 @@ export default function QuestionCard({ question, index, onScore, companyContext 
         )}
       </div>
       <div className="p-4">
-        <p className="text-gray-900 font-medium mb-3">{question.q}</p>
+        <p className="text-on-surface font-medium mb-3">{question.q}</p>
 
         {/* COMMIT phase */}
         {phase === "commit" && (
@@ -174,14 +174,14 @@ export default function QuestionCard({ question, index, onScore, companyContext 
             <div className="flex gap-2 mt-3">
               <button
                 onClick={() => setPhase("hint")}
-                className="px-3 py-1.5 text-sm bg-amber-50 text-amber-700 border border-amber-200 rounded-lg hover:bg-amber-100 transition-colors"
+                className="px-3 py-1.5 text-sm bg-amber-100 text-amber-900 border border-amber-200 rounded-lg hover:bg-amber-200 transition-colors"
               >
                 Show Hint
               </button>
               <button
                 onClick={handleReveal}
                 disabled={!hasValidInput}
-                className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${hasValidInput ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-200 text-gray-400 cursor-not-allowed"}`}
+                className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${hasValidInput ? "bg-primary text-on-primary hover:opacity-90" : "bg-surface-container text-on-surface-variant/40 cursor-not-allowed"}`}
               >
                 Reveal Answer
               </button>
@@ -192,7 +192,7 @@ export default function QuestionCard({ question, index, onScore, companyContext 
         {/* HINT phase */}
         {phase === "hint" && (
           <div>
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-3 text-sm text-amber-800">
+            <div className="bg-amber-100 border border-amber-200 rounded-lg p-3 mb-3 text-sm text-amber-900">
               <span className="font-semibold">Hint:</span> {question.hint}
             </div>
             <CommitInput
@@ -207,7 +207,7 @@ export default function QuestionCard({ question, index, onScore, companyContext 
               <button
                 onClick={handleReveal}
                 disabled={!hasValidInput}
-                className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${hasValidInput ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-200 text-gray-400 cursor-not-allowed"}`}
+                className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${hasValidInput ? "bg-primary text-on-primary hover:opacity-90" : "bg-surface-container text-on-surface-variant/40 cursor-not-allowed"}`}
               >
                 Reveal Answer
               </button>
@@ -251,7 +251,7 @@ export default function QuestionCard({ question, index, onScore, companyContext 
             {/* Self-score: quantitative always, qualitative only if LLM failed */}
             {(isQuantitative || (!isQuantitative && llmError)) && (
               <div>
-                <p className="text-sm font-medium text-gray-700 mb-2">
+                <p className="text-sm font-medium text-on-surface-variant mb-2">
                   How close was your analysis? Rate yourself:
                 </p>
                 <div className="flex gap-2">
@@ -259,13 +259,13 @@ export default function QuestionCard({ question, index, onScore, companyContext 
                     <button
                       key={n}
                       onClick={() => handleSelfScore(n)}
-                      className="w-10 h-10 rounded-lg border-2 border-gray-300 hover:border-blue-500 hover:bg-blue-50 font-semibold text-gray-700 transition-all"
+                      className="w-10 h-10 rounded-lg border-2 border-outline-variant hover:border-primary hover:bg-primary/10 font-semibold text-on-surface-variant transition-all"
                     >
                       {n}
                     </button>
                   ))}
                 </div>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-on-surface-variant/60 mt-1">
                   1 = completely off &nbsp; 3 = right direction &nbsp; 5 = nailed
                   it
                 </p>
@@ -308,7 +308,7 @@ export default function QuestionCard({ question, index, onScore, companyContext 
 
             <button
               onClick={handleRetry}
-              className="px-3 py-1.5 text-sm font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
+              className="px-3 py-1.5 text-sm font-medium text-on-secondary-container bg-secondary-container border border-outline-variant/30 rounded-lg hover:opacity-90 transition-colors"
             >
               Try Again
             </button>
@@ -324,8 +324,8 @@ function KeywordFeedback({ text, keywords }) {
   const found = keywords.filter((k) => lower.includes(k.toLowerCase()));
 
   return (
-    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3 text-sm">
-      <p className="font-semibold text-blue-800 mb-1">
+    <div className="bg-secondary-container/50 border border-outline-variant/30 rounded-lg p-3 mb-3 text-sm">
+      <p className="font-semibold text-on-secondary-container mb-1">
         Key Factors: {found.length}/{keywords.length} identified
       </p>
       <div className="flex flex-wrap gap-1.5 mt-1">
