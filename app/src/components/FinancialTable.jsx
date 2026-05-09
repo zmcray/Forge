@@ -1,4 +1,4 @@
-import { formatCurrency } from "../utils/format";
+import { formatCurrency, formatCurrencyK } from "../utils/format";
 
 export default function FinancialTable({ company, view }) {
   const income = company.incomeStatement;
@@ -132,7 +132,7 @@ export default function FinancialTable({ company, view }) {
         ["Revenue Growth", `${km.revenueGrowth > 0 ? "+" : ""}${km.revenueGrowth.toFixed(1)}%`],
         ["Revenue", formatCurrency(company.revenue)],
         ["Employees", km.employeeCount.toString()],
-        ["Rev / Employee", formatCurrency(km.avgRevenuePerEmployee, 0)],
+        ["Rev / Employee", formatCurrencyK(km.avgRevenuePerEmployee)],
       ]},
       { title: "Quality Indicators", items: [
         ["Recurring Revenue", `${km.recurringRevenuePct}%`],

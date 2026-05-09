@@ -56,9 +56,10 @@ export const COMPANIES = [
       },
       {
         q: "At a 6x adjusted EBITDA multiple (typical for HVAC services), what's the enterprise value? What does the equity value look like?",
-        hint: "EV = EBITDA x multiple. Equity = EV - net debt. Net debt = total debt - cash.",
-        answer: "EV = $5.5M x 6 = $33M. Net debt = ($0.5M + $2.8M) - $1.8M = $1.5M. Equity value ~ $31.5M. With the more aggressive $6.35M adjusted EBITDA: EV = $38.1M, equity ~ $36.6M.",
-        type: "valuation"
+        hint: "EV = EBITDA x multiple. Equity = EV - net debt. Net debt = total debt - cash. Show your work for both.",
+        answer: "EV = $5.5M adjusted EBITDA x 6 = $33M. Net debt = total debt - cash = ($0.5M current debt + $2.8M long-term debt) - $1.8M cash = $1.5M. Equity value = EV - net debt = $33M - $1.5M = $31.5M. If you used the more aggressive $6.35M adjusted EBITDA (with full owner-comp normalization to a $250K GM replacement), EV = $38.1M and equity = ~$36.6M. The takeaway: the choice of EBITDA matters as much as the multiple, so always state which EBITDA you are using.",
+        type: "diagnostic",
+        keywords: ["EV", "enterprise value", "equity value", "adjusted EBITDA", "net debt", "multiple", "$33M", "$31.5M"]
       },
       {
         q: "What's the biggest risk you see in this business, and what would you investigate in due diligence?",

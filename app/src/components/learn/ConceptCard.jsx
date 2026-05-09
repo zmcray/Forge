@@ -3,17 +3,12 @@ import { useParams, useNavigate } from "react-router-dom";
 import { CONCEPT_CARDS } from "../../data/conceptCards";
 import { COMPANIES } from "../../data/companies";
 import { resolveDataPath } from "../../utils/resolveDataPath";
+import { formatDataPoint } from "../../utils/format";
 import useConceptProgress from "../../hooks/useConceptProgress";
 import useNotes from "../../hooks/useNotes";
 import CommitInput from "../CommitInput";
 import { LLMGrading, LLMFeedbackSkeleton } from "../LLMFeedback";
 import { evaluateAnswer } from "../../utils/evaluateAnswer";
-
-function formatValue(value) {
-  if (value == null) return "N/A";
-  if (Array.isArray(value)) return value[value.length - 1];
-  return value;
-}
 
 export default function ConceptCard() {
   const { cardId } = useParams();
@@ -195,7 +190,7 @@ export default function ConceptCard() {
                       <div key={dp.label} className="flex justify-between items-center">
                         <span className="text-xs text-on-surface-variant">{dp.label}</span>
                         <span className="text-sm font-semibold text-on-surface font-mono">
-                          {formatValue(value)}
+                          {formatDataPoint(value, dp.path)}
                         </span>
                       </div>
                     );

@@ -3,6 +3,19 @@ export function formatCurrency(val, decimals = 1) {
   return `$${val.toFixed(decimals)}M`;
 }
 
+export function formatCurrencyK(valInMillions, decimals = 0) {
+  if (valInMillions == null || isNaN(valInMillions)) return "$--";
+  const k = valInMillions * 1000;
+  return `$${k.toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}K`;
+}
+
+export function formatDataPoint(value, path) {
+  if (value == null) return "N/A";
+  if (Array.isArray(value)) value = value[value.length - 1];
+  if (path === "keyMetrics.avgRevenuePerEmployee") return formatCurrencyK(value);
+  return value;
+}
+
 export function extractNumericValue(text) {
   // Matches optional negative sign or parenthetical negatives, optional $, commas, decimals
   const pctMatch = text.match(/[(-]?\s*\$?\s*([\d,]*\.?\d+)\s*%\s*\)?/);
