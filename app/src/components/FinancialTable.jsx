@@ -1,5 +1,18 @@
 import { formatCurrency } from "../utils/format";
 
+const ADDBACK_LABELS = {
+  ownerPerks: "Owner Perks",
+  oneTimeExpenses: "One-Time Expenses",
+  aboveMarketRent: "Above-Market Rent",
+};
+
+function formatAddBackLabel(key) {
+  if (ADDBACK_LABELS[key]) return ADDBACK_LABELS[key];
+  // Title-case fallback for any future keys: "fooBarBaz" -> "Foo Bar Baz"
+  const spaced = key.replace(/([A-Z])/g, " $1").trim();
+  return spaced.charAt(0).toUpperCase() + spaced.slice(1);
+}
+
 export default function FinancialTable({ company, view }) {
   const income = company.incomeStatement;
   const bs = company.balanceSheet;
@@ -51,7 +64,7 @@ export default function FinancialTable({ company, view }) {
           <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wide mb-1">Reported Add-Backs</p>
           <div className="flex gap-4 text-xs text-on-surface-variant">
             {Object.entries(income.addBacks).map(([k, v]) => (
-              <span key={k}>{k.replace(/([A-Z])/g, " $1").trim()}: {formatCurrency(v)}</span>
+              <span key={k}>{formatAddBackLabel(k)}: {formatCurrency(v)}</span>
             ))}
           </div>
         </div>
@@ -120,6 +133,8 @@ export default function FinancialTable({ company, view }) {
 
   if (view === "metrics") {
     const km = company.keyMetrics;
+    const totalDebt = company.balanceSheet.currentDebt + company.balanceSheet.ltDebt;
+    const netDebt = totalDebt - company.balanceSheet.cash;
     const sections = [
       { title: "Profitability", items: [
         ["EBITDA", formatCurrency(km.ebitda)],
@@ -137,8 +152,8 @@ export default function FinancialTable({ company, view }) {
       { title: "Quality Indicators", items: [
         ["Recurring Revenue", `${km.recurringRevenuePct}%`],
         ["Customer Concentration", `${km.customerConcentration}%`],
-        ["Net Debt", formatCurrency((company.balanceSheet.currentDebt + company.balanceSheet.ltDebt) - company.balanceSheet.cash)],
-        ["Leverage (Debt/EBITDA)", `${(((company.balanceSheet.currentDebt + company.balanceSheet.ltDebt) ) / km.adjustedEbitda).toFixed(1)}x`],
+        ["Total Debt", formatCurrency(totalDebt)],
+        ["Net Debt", formatCurrency(netDebt)],
       ]},
     ];
     return (

@@ -433,19 +433,33 @@ export const LEARN_CONTENT = [
         title: "3B. EBITDA Quality",
         objectives: [
           "Rank add-backs from most to least defensible",
+          "Compare add-back profiles across Summit and Precision",
           "Evaluate BrightSmile's $500K one-time claim",
           "Spot recurring costs disguised as adjustable",
         ],
-        skillTags: ["EBITDA Quality", "Add-backs", "BrightSmile"],
-        timeEstimate: 10,
+        skillTags: ["EBITDA Quality", "Add-backs", "Summit HVAC", "Precision CNC", "BrightSmile"],
+        timeEstimate: 12,
         suggestedQuestions: [
           "How can EBITDA be high but 'low quality'?",
           "What are the red flags in Summit's EBITDA?",
+          "When does an add-back cross the line from legitimate to aggressive?",
         ],
         blocks: [
           {
             type: "text",
             content: "EBITDA quality analysis asks: are the add-backs legitimate, and does EBITDA translate into real cash? In LMM deals, sellers and brokers often inflate adjusted EBITDA through aggressive add-backs. Your job is to distinguish between genuine one-time costs and recurring expenses being disguised as adjustable."
+          },
+          {
+            type: "text",
+            content: "Why it matters: add-backs directly bridge reported EBITDA and the run-rate earnings a PE buyer underwrites. They also drive enterprise value mechanically. A $500K add-back at a 6x multiple creates $3M of EV. Aggressive or unsupported add-backs are the #1 source of post-close disputes in LMM deals."
+          },
+          {
+            type: "text",
+            content: "How to spot the suspect ones: owner compensation above market rate (common in founder-led businesses), 'one-time' expenses that recur suspiciously often, related-party transactions (rent or consulting fees to family members), and pro forma adjustments with no historical basis."
+          },
+          {
+            type: "text",
+            content: "Red flags at the portfolio level: add-backs exceed 30% of reported EBITDA. More than 3 categories of adjustments. No documentation or third-party validation. 'One-time' costs that appeared in prior years too."
           },
           {
             type: "text",
@@ -465,7 +479,29 @@ export const LEARN_CONTENT = [
           },
           {
             type: "text",
-            content: "BrightSmile Dental wants to add back $500K in 'one-time expenses.' Let's examine their income statement and decide if this is legitimate."
+            content: "Two contrasting profiles. Summit HVAC is heavy on owner-related add-backs, Precision CNC is light. Look at each before tackling the BrightSmile case."
+          },
+          {
+            type: "companyData",
+            companyId: "summit-hvac",
+            view: "income"
+          },
+          {
+            type: "text",
+            content: "Summit's owner takes $2.0M in compensation plus $400K in perks, with $300K in one-time expenses and $200K in above-market rent. The clean add-backs total $900K, pushing EBITDA from $4.6M to $5.5M adjusted. If you also normalize owner comp to a $250K GM replacement, adjusted EBITDA could reach $6.35M. Owner comp is almost always negotiated separately."
+          },
+          {
+            type: "companyData",
+            companyId: "precision-manufacturing",
+            view: "income"
+          },
+          {
+            type: "text",
+            content: "Precision has $300K in owner perks, $100K in one-time expenses, and $150K in above-market rent. These add-backs are modest relative to EBITDA ($3.6M to $4.15M), which is a positive signal. The owner's technical expertise is the bigger concern here, not the add-back quality."
+          },
+          {
+            type: "text",
+            content: "BrightSmile Dental wants to add back $500K, which the seller's CIM labels as 'one-time integration and deal costs from 2025 acquisitions.' Let's examine their income statement and decide if that label holds up."
           },
           {
             type: "companyData",
@@ -475,9 +511,13 @@ export const LEARN_CONTENT = [
           {
             type: "exercise",
             id: "ex-3b-1",
-            q: "BrightSmile is a dental roll-up that grew 32% last year, partly through acquisition. They want to add back $500K as 'one-time expenses.' Should you accept this add-back at face value? What questions would you ask?",
+            q: "BrightSmile is a dental roll-up that grew 32% last year, partly through acquisition. The seller presents $500K as 'one-time integration and deal costs from 2025 acquisitions' and wants it added back to EBITDA. Should you accept this add-back at face value? What questions would you ask?",
             inputMode: "qualitative",
-            answer: "You should NOT accept it at face value. BrightSmile's entire growth strategy is acquisitions. If the $500K is deal costs, legal fees, and integration expenses related to acquisitions, and they plan to keep acquiring, then these costs will recur every year. They are the cost of executing the strategy, not a one-time anomaly. Questions to ask: (1) What exactly is in the $500K? Break it out line by line. (2) What were 'one-time' costs in 2024? If they were $300-500K then, the pattern proves they are recurring. (3) How many acquisitions are planned in the next 2 years? (4) What is the expected cost per acquisition? A reasonable approach: accept maybe 50% of the add-back (for truly non-recurring items like a specific legal matter) and treat the rest as ongoing costs."
+            answer: "You should NOT accept it at face value. BrightSmile's entire growth strategy is acquisitions, so deal costs, legal fees, and integration expenses are the cost of executing that strategy, not a one-time anomaly. If they keep acquiring, these costs will recur every year. Questions to ask: (1) What exactly is in the $500K? Break it out line by line. (2) What were 'one-time' costs in 2024? If they were $300-500K then, the pattern proves they are recurring. (3) How many acquisitions are planned in the next 2 years? (4) What is the expected cost per acquisition? A reasonable approach: accept maybe 50% of the add-back (for truly non-recurring items like a specific legal matter) and treat the rest as ongoing costs."
+          },
+          {
+            type: "notes",
+            id: "notes-3b"
           }
         ]
       },
@@ -527,7 +567,7 @@ export const LEARN_CONTENT = [
             type: "exercise",
             id: "ex-3c-1",
             q: "If you were acquiring Coastal Fresh Foods and set the NWC peg at $3.5M (based on trailing average), but at close NWC came in at $4.2M because AR spiked to $7.5M, what happens to the purchase price? And what would concern you about that AR spike?",
-            inputMode: "quantitative",
+            inputMode: "qualitative",
             answer: "NWC at close ($4.2M) minus peg ($3.5M) = $700K excess. The buyer pays $700K more than the base purchase price. But you should be very concerned about why AR spiked. Possible explanations: (1) The seller stuffed the channel, shipping orders early to inflate revenue before close. (2) A major customer is not paying, so AR is growing but may not be collectible. (3) Seasonal timing (legitimate). In DD, you would demand an AR aging schedule to see if the spike is in current receivables (fine) or aging receivables (bad). You might also negotiate a holdback or escrow tied to collection of the excess AR within 90 days post-close."
           }
         ]
@@ -580,7 +620,7 @@ export const LEARN_CONTENT = [
             id: "ex-3d-1",
             q: "Calculate the leverage ratio for both Precision CNC and Apex Logistics. If you were acquiring each business, how much additional debt could you put on, and what would concern you about leveraging each one?",
             inputMode: "qualitative",
-            answer: "Precision CNC: Total debt $2.1M ($0.3M current + $1.8M LT) / $4.15M Adj. EBITDA = 0.5x leverage. Extremely conservative. You could add $10-12M of additional debt to reach 3.0x, giving significant acquisition firepower. Precision's 32.4% EBITDA margins and 43% gross margins mean strong debt service coverage. Risk: customer concentration at 28% means a customer loss could impair the ability to service debt. Apex: Total debt $8.6M ($2.1M + $6.5M) / $4.55M Adj. EBITDA = 1.9x leverage. Already moderate. Theoretical capacity to 3.5x = $15.9M total, so ~$7.3M more. But you should NOT lever up Apex further. Revenue is declining 8.6%, FCF conversion is only 20%, and 35% customer concentration means EBITDA could collapse. Adding more debt to a declining-revenue, capital-intensive business with a concentrated customer base is a recipe for distress."
+            answer: "Precision CNC: Total debt $2.1M ($0.3M current + $1.8M LT) / $4.15M Adj. EBITDA = 0.5x leverage. Extremely conservative. You could add $10-12M of additional debt to reach 3.0x, giving significant acquisition firepower. Precision's 32.4% EBITDA margins and 43% gross margins mean strong debt service coverage. Risk: customer concentration at 28% means a customer loss could impair the ability to service debt. Apex: Total debt $8.6M ($2.1M + $6.5M) / $4.55M Adj. EBITDA = 1.9x leverage. Already moderate. Theoretical capacity to 3.5x = $15.9M total, so ~$7.3M more. But you should NOT lever up Apex further. Revenue is declining 8.6%, and FCF conversion is weak: Cash from Operations of $3.4M (NI $0.6M + D&A $2.0M + ΔWC $0.8M) less CapEx of $2.5M leaves only $0.9M of FCF, or roughly 20% of $4.55M Adj. EBITDA. Combine that with 35% customer concentration and EBITDA could collapse. Adding more debt to a declining-revenue, capital-intensive business with a concentrated customer base is a recipe for distress."
           }
         ]
       }
@@ -593,77 +633,16 @@ export const LEARN_CONTENT = [
     title: "4. Key Concepts",
     subsections: [
       {
-        id: "s4a",
-        title: "4A. EBITDA Add-backs",
-        objectives: [
-          "Rank add-back categories by defensibility",
-          "Analyze Summit's and Precision's add-back profiles",
-          "Challenge BrightSmile's roll-up add-back claims",
-        ],
-        skillTags: ["Add-backs", "EBITDA", "Summit HVAC", "Precision CNC"],
-        timeEstimate: 10,
-        suggestedQuestions: [
-          "When does an add-back cross the line from legitimate to aggressive?",
-          "How would you challenge a seller's add-back presentation?",
-        ],
-        blocks: [
-          {
-            type: "text",
-            content: "EBITDA add-backs are adjustments that normalize earnings to reflect true operating performance under new ownership. They directly impact enterprise value: a $500K add-back at 6x multiple creates $3M of value. Aggressive or unsupported add-backs are the #1 source of post-close disputes in LMM deals."
-          },
-          {
-            type: "text",
-            content: "Why it matters: Add-backs bridge the gap between reported EBITDA and what a PE buyer considers the true run-rate earnings of the business. Getting this number right is the foundation of every deal."
-          },
-          {
-            type: "text",
-            content: "How to spot it: Look for owner compensation above market rate (common in founder-led businesses), one-time expenses that recur suspiciously often, related-party transactions (rent, consulting fees to family members), and pro forma adjustments with no historical basis."
-          },
-          {
-            type: "text",
-            content: "Red flags: Add-backs exceed 30% of reported EBITDA. More than 3 categories of adjustments. No documentation or third-party validation. 'One-time' costs that appeared in prior years too."
-          },
-          {
-            type: "companyData",
-            companyId: "summit-hvac",
-            view: "income"
-          },
-          {
-            type: "text",
-            content: "Summit's owner takes $2.0M in compensation plus $400K in perks, with $300K in one-time expenses and $200K in above-market rent. The add-backs total $900K, pushing EBITDA from $4.6M to $5.5M adjusted. If you also normalize owner comp to a $250K GM replacement, adjusted EBITDA could reach $6.35M."
-          },
-          {
-            type: "companyData",
-            companyId: "precision-manufacturing",
-            view: "income"
-          },
-          {
-            type: "text",
-            content: "Precision has $300K in owner perks, $100K in one-time expenses, and $150K in above-market rent. These add-backs are modest relative to EBITDA ($3.6M to $4.15M), which is a positive signal. The owner's technical expertise is the bigger concern here, not the add-back quality."
-          },
-          {
-            type: "exercise",
-            id: "ex-4a-1",
-            q: "BrightSmile Dental wants to add back $500K in 'one-time expenses,' but their entire growth strategy is acquisitions. Should you accept this add-back? Walk through your reasoning and what questions you would ask in diligence.",
-            inputMode: "qualitative",
-            answer: "You should NOT accept it at face value. If the $500K is deal costs, legal fees, and integration expenses related to acquisitions, and BrightSmile plans to keep acquiring, then these costs will recur every year. They are the cost of executing the growth strategy, not a one-time anomaly. Questions: (1) Break out the $500K line by line. (2) What were 'one-time' costs in the prior year? If $300-500K then too, the pattern proves recurrence. (3) How many acquisitions are planned in the next 2 years? (4) What is the expected cost per acquisition? A reasonable approach: accept maybe 50% (for truly non-recurring items like a specific legal settlement) and treat the rest as ongoing costs."
-          },
-          {
-            type: "notes",
-            id: "notes-4a"
-          }
-        ]
-      },
-      {
         id: "s4b",
-        title: "4B. LBO Economics",
+        title: "4A. LBO Economics",
         objectives: [
           "Understand the three value creation levers in PE",
           "Evaluate LBO viability for TrueNorth vs Ironclad",
-          "Calculate MOIC on a TrueNorth acquisition",
+          "Build Exit EV and MOIC step by step on a guided TrueNorth deal",
+          "Run the same model against Vitality Pet Wellness on your own",
         ],
-        skillTags: ["LBO", "MOIC", "Leverage", "TrueNorth SaaS"],
-        timeEstimate: 12,
+        skillTags: ["LBO", "MOIC", "Exit EV", "Leverage", "TrueNorth SaaS", "Vitality"],
+        timeEstimate: 18,
         suggestedQuestions: [
           "How does leverage amplify returns in an LBO?",
           "What happens to returns if EBITDA grows slower than expected?",
@@ -704,11 +683,94 @@ export const LEARN_CONTENT = [
             content: "Ironclad is a tougher LBO: 18% gross margins leave thin room for debt service. Revenue is project-based (15% recurring), and working capital is volatile. Leverage capacity exists (only 0.7x currently), but the risk of a bad project quarter makes high leverage dangerous."
           },
           {
+            type: "text",
+            content: "Now let's walk the math end-to-end. Scenario: you acquire TrueNorth today at 6x adjusted EBITDA ($3.0M Year 0 EBITDA × 6 = $18M EV) financed 60/40 ... $10.8M of debt and $7.2M of equity. Over a 4-year hold, EBITDA compounds at 20% per year and you pay down $2M of debt every year using free cash flow. At exit, the market is paying 8x for clean recurring-revenue businesses."
+          },
+          {
+            type: "text",
+            content: "Step 1 ... compound the growth. Year 4 EBITDA = $3.0M × (1.20)⁴ = $6.22M. Drag the exit multiple and Year 4 EBITDA into the formula to compute Exit EV."
+          },
+          {
+            type: "calculationExercise",
+            id: "ex-4b-exit-ev",
+            layout: "multiplication",
+            pnlLines: [],
+            paletteTitle: "TrueNorth ... Exit Inputs",
+            instruction: "Build Exit Enterprise Value: drop the Exit Multiple on the left and Year 4 EBITDA on the right.",
+            resultLabel: "Exit Enterprise Value",
+            resultValue: "$49.8M",
+            explanation: "Exit EV = 8x × $6.22M = $49.8M. Two value-creation levers are already at work: EBITDA roughly doubled (the operator's job) and the exit multiple expanded from 6x to 8x (the buyer's narrative + market environment). The third lever ... debt paydown ... shows up in the next step.",
+            zones: [
+              { id: "left", correctIds: ["exit-multiple"], hint: "Exit multiple" },
+              { id: "right", correctIds: ["year4-ebitda"], hint: "Year 4 EBITDA" }
+            ],
+            draggables: [
+              { id: "exit-multiple", label: "Exit Multiple", value: "8x" },
+              { id: "year4-ebitda", label: "Year 4 EBITDA", value: "$6.22M" },
+              { id: "year0-ebitda", label: "Year 0 EBITDA", value: "$3.0M", rejectMessage: "Year 0 EBITDA is what you bought against, not what you exit on. Use Year 4 EBITDA after four years of compounded growth ($3.0M × 1.2⁴ = $6.22M)." },
+              { id: "entry-multiple", label: "Entry Multiple", value: "6x", rejectMessage: "6x is what you paid at entry. The exit market pays 8x for clean recurring-revenue businesses ... that's the multiple expansion lever." }
+            ],
+            supplementalItems: [
+              { id: "exit-multiple", label: "Exit Multiple", value: "8x", note: "What buyers pay today for high-quality recurring SaaS." },
+              { id: "year4-ebitda", label: "Year 4 EBITDA", value: "$6.22M", note: "$3.0M × 1.2⁴. Four years of 20% compound growth." },
+              { id: "year0-ebitda", label: "Year 0 EBITDA", value: "$3.0M", note: "Reference only ... what you bought against." },
+              { id: "entry-multiple", label: "Entry Multiple", value: "6x", note: "Reference only ... what you paid at entry." }
+            ]
+          },
+          {
+            type: "text",
+            content: "Step 2 ... bridge from Exit EV to Exit Equity Value. You inherited $10.8M of debt at entry and paid down $2M each year for 4 years, leaving $2.8M outstanding. Exit Equity = Exit EV − Remaining Debt = $49.8M − $2.8M = $47.0M. (We're skipping cash on the balance sheet for simplicity ... in a real model you'd also subtract net debt, not gross.)"
+          },
+          {
+            type: "text",
+            content: "Step 3 ... compute MOIC. Multiple on Invested Capital = Exit Equity Value ÷ Initial Equity Invested. Drop the right values into the slots."
+          },
+          {
+            type: "calculationExercise",
+            id: "ex-4b-moic",
+            layout: "division",
+            pnlLines: [],
+            paletteTitle: "TrueNorth ... MOIC Inputs",
+            instruction: "Build MOIC: drop Exit Equity Value over Initial Equity.",
+            resultLabel: "MOIC",
+            resultValue: "6.5x",
+            explanation: "MOIC = $47.0M / $7.2M ≈ 6.5x. A $7.2M check became $47M of exit proceeds in 4 years. Decompose the drivers: roughly 2.0x came from EBITDA growth, 1.33x came from multiple expansion (8/6), and the rest came from debt paydown shrinking the slice owed to lenders. If the multiple stayed flat at 6x, exit equity would be $37.3M − $2.8M = $34.5M and MOIC would be ~4.8x. Still strong, but you can see how multiple expansion supercharges returns.",
+            zones: [
+              { id: "numerator", correctIds: ["exit-equity"], hint: "Exit Equity Value" },
+              { id: "denominator", correctIds: ["initial-equity"], hint: "Initial Equity" }
+            ],
+            draggables: [
+              { id: "exit-equity", label: "Exit Equity", value: "$47.0M" },
+              { id: "initial-equity", label: "Initial Equity", value: "$7.2M" },
+              { id: "exit-ev", label: "Exit EV", value: "$49.8M", rejectMessage: "Exit EV includes the value owed to lenders. MOIC measures the equity investor's return, so the numerator is Exit Equity Value, after the remaining debt is paid off." },
+              { id: "purchase-price", label: "Total Purchase Price", value: "$18.0M", rejectMessage: "Purchase price ($18M EV) includes the debt portion. The PE fund only wrote a check for the equity slice ($7.2M) ... that's what MOIC measures the return on." }
+            ],
+            supplementalItems: [
+              { id: "exit-equity", label: "Exit Equity", value: "$47.0M", note: "Exit EV $49.8M − $2.8M remaining debt." },
+              { id: "initial-equity", label: "Initial Equity", value: "$7.2M", note: "40% of the $18M purchase price." },
+              { id: "exit-ev", label: "Exit EV", value: "$49.8M", note: "Reference only." },
+              { id: "purchase-price", label: "Total Purchase Price", value: "$18.0M", note: "Reference only." }
+            ]
+          },
+          {
+            type: "text",
+            content: "The three levers, summarized: EBITDA growth (operator value), multiple expansion (story + market), debt paydown (cash flow doing the work). All three compound together. A deal where you only get one lever working is a single ... not a home run."
+          },
+          {
+            type: "text",
+            content: "Your turn. Vitality Pet Wellness is a vet rollup with strong unit economics, $2.15M of adjusted EBITDA, and demographic tailwinds. Use the metrics below to model the LBO and compute your own MOIC."
+          },
+          {
+            type: "companyData",
+            companyId: "vitality-vet",
+            view: "metrics"
+          },
+          {
             type: "exercise",
-            id: "ex-4b-1",
-            q: "You are acquiring TrueNorth at 6x adjusted EBITDA ($18M EV) with 60% debt ($10.8M) and 40% equity ($7.2M). If EBITDA grows 20% per year for 4 years and you exit at 8x, what is the equity value at exit and the approximate MOIC? Assume $2M of debt is paid down annually.",
+            id: "ex-4b-vitality",
+            q: "You acquire Vitality Pet Wellness at 7x adjusted EBITDA, financed 60% debt and 40% equity. Over a 4-year hold, EBITDA grows at 20% annually and you pay down $1.5M of debt per year. At exit, the market pays 9x for vet rollups at scale. Walk through: (1) Entry EV and the equity check, (2) Year 4 EBITDA, (3) Exit EV, (4) Exit Equity Value, (5) MOIC. Then say which of the three value-creation levers contributed the most.",
             inputMode: "qualitative",
-            answer: "Year 0 EBITDA: $3.0M. Year 4 EBITDA at 20% annual growth: $3.0M x 1.2^4 = $6.22M. Exit at 8x: EV = $49.8M. Remaining debt: $10.8M - ($2M x 4) = $2.8M. Exit equity value: $49.8M - $2.8M = $47.0M. MOIC: $47.0M / $7.2M = ~6.5x. This illustrates the power of LBO economics: the combination of EBITDA growth (2x), multiple expansion (6x to 8x), and debt paydown ($8M) transforms a $7.2M equity check into $47M. Even without multiple expansion (exit at 6x), equity would be $34.5M or ~4.8x MOIC."
+            answer: "(1) Entry EV = 7 × $2.15M = $15.05M. Debt = 60% × $15.05M = $9.03M. Equity check = 40% × $15.05M = $6.02M. (2) Year 4 EBITDA = $2.15M × 1.2⁴ = $4.46M. (3) Exit EV = 9 × $4.46M = $40.1M. (4) Remaining debt = $9.03M − ($1.5M × 4) = $3.03M. Exit Equity = $40.1M − $3.03M = $37.1M. (5) MOIC = $37.1M / $6.02M ≈ 6.2x. Driver decomposition: EBITDA grew 2.07x (operator), multiple expanded 9/7 = 1.29x (market), debt paydown shrank the lender's claim by $6M. EBITDA growth is the biggest contributor here, which is healthy ... it's the lever you actually control. Multiple expansion from 7 to 9 is plausible but depends on the buyer pool's appetite for vet rollups in Year 4. Caveat: $8.4M revenue is below the $10M threshold many funds require, so your exit buyer pool may be narrower than implied. Worth pressure-testing the 9x assumption against the actual buyer universe (other PE rollups, strategics like NVA/Mars, public vet platforms)."
           },
           {
             type: "notes",
@@ -718,7 +780,7 @@ export const LEARN_CONTENT = [
       },
       {
         id: "s4c",
-        title: "4C. Margin Drivers",
+        title: "4B. Margin Drivers",
         objectives: [
           "Analyze Coastal's margin compression problem",
           "Contrast with BrightSmile's labor leverage model",
@@ -768,9 +830,9 @@ export const LEARN_CONTENT = [
           {
             type: "exercise",
             id: "ex-4c-1",
-            q: "Coastal's gross margin was flat at 19.1% despite 5.2% revenue growth. If you could improve gross margin by 200 bps through pricing and procurement, what is the EBITDA and enterprise value impact at a 5x multiple?",
+            q: "Coastal's gross margin compressed from 20.1% in 2024 to 19.1% in 2025 (gross profit flat at $9.2M while revenue grew 5.2%). Input costs are running ahead of customer pricing. If you could recover 200 bps of gross margin through repricing and procurement, what is the EBITDA and enterprise value impact at a 5x multiple?",
             inputMode: "qualitative",
-            answer: "200 bps improvement on $48.2M revenue = $48.2M x 0.02 = $964K incremental gross profit. If SGA stays flat, that flows straight to EBITDA: $3.9M + $964K = $4.86M adjusted EBITDA. At 5x multiple, EV goes from $19.5M to $24.3M, a $4.8M value creation from margin improvement alone. This is the classic PE playbook for distribution businesses: fix the pricing, optimize procurement, and let the margin improvement compound through the multiple."
+            answer: "200 bps recovery on $48.2M revenue = $48.2M × 0.02 = $964K incremental gross profit. If SGA stays flat, that flows straight to EBITDA: $3.9M + $964K = $4.86M adjusted EBITDA. At 5x multiple, EV goes from $19.5M to $24.3M, a $4.8M value creation from margin recovery alone. Worth noting: the first ~100 bps just restores Coastal to its 2024 baseline of 20.1%; the next 100 bps is genuine improvement. So 200 bps is realistic but takes execution, not a freebie. This is the classic PE playbook for distribution businesses: fix the pricing, optimize procurement, and let the margin improvement compound through the multiple."
           },
           {
             type: "notes",
@@ -780,13 +842,13 @@ export const LEARN_CONTENT = [
       },
       {
         id: "s4d",
-        title: "4D. Cash Conversion",
+        title: "4C. Cash Conversion",
         objectives: [
-          "Calculate FCF and cash conversion for Meridian and TrueNorth",
+          "Calculate FCF and cash conversion for Meridian, TrueNorth, and Apex",
           "Understand why high EBITDA can produce low cash",
           "Explain Apex's 20% conversion gap to an investment committee",
         ],
-        skillTags: ["Cash Conversion", "FCF", "Meridian", "TrueNorth SaaS"],
+        skillTags: ["Cash Conversion", "FCF", "Meridian", "TrueNorth SaaS", "Apex"],
         timeEstimate: 10,
         suggestedQuestions: [
           "Why can a profitable company still run out of cash?",
@@ -803,7 +865,7 @@ export const LEARN_CONTENT = [
           },
           {
             type: "text",
-            content: "How to calculate: Free Cash Flow = Net Income + D&A + Working Capital Change - CapEx. Cash conversion = FCF / EBITDA. Strong: above 70%. Acceptable: 50-70%. Weak: below 50%."
+            content: "How to calculate: Free Cash Flow = Net Income + D&A (Depreciation & Amortization, the non-cash expenses you stripped out for EBITDA) + Working Capital Change - CapEx. Cash conversion = FCF / EBITDA. Strong: above 70%. Acceptable: 50-70%. Weak: below 50%."
           },
           {
             type: "text",
@@ -828,11 +890,20 @@ export const LEARN_CONTENT = [
             content: "TrueNorth: FCF = $2.4M + $0.8M + (-$0.6M) + (-$0.4M) = $2.2M. Cash conversion = $2.2M / $2.6M EBITDA = 85%. SaaS businesses typically have excellent cash conversion because of minimal capex and prepaid annual contracts that create negative working capital. This is why SaaS commands premium multiples."
           },
           {
+            type: "text",
+            content: "Now look at the third profile: Apex Last-Mile Logistics. Asset-heavy, capital-intensive, debt-laden. Same EBITDA exercise, very different cash story."
+          },
+          {
+            type: "companyData",
+            companyId: "apex-logistics",
+            view: "metrics"
+          },
+          {
             type: "exercise",
             id: "ex-4d-1",
             q: "Apex Logistics has $4.55M adjusted EBITDA but only $0.9M in free cash flow (20% conversion). If you were presenting this deal to an investment committee, how would you explain the gap and what would need to change for the deal to work?",
             inputMode: "qualitative",
-            answer: "The gap is driven by three factors: (1) $2.5M in capex (trucks wear out and need replacing, making this a capital-intensive business disguised as a service company). (2) $1.2M in debt service payments. (3) After $0.3M in distributions, virtually nothing is left. To make the deal work, you would need to: separate maintenance capex (~$1.5M to keep the fleet running) from growth capex (~$1.0M for new trucks/routes). True free cash flow to equity is minimal. You would either need to (a) significantly reduce capex by leasing vs. buying trucks, (b) restructure the debt at a lower rate, or (c) accept that this is a growth equity play where you reinvest all cash into fleet expansion and bet on revenue growth to eventually improve the economics."
+            answer: "Walk through the formula on Apex's numbers: Net Income $0.6M + D&A $2.0M + ΔWC $0.8M - CapEx $2.5M = $0.9M FCF. The gap from $4.55M Adj. EBITDA to $0.9M FCF has two drivers, both inside the formula: (1) the wedge between EBITDA and Net Income, which is mostly interest expense ($0.8M) and cash taxes — Apex is leveraged and thin enough that interest alone eats ~18% of EBITDA. (2) CapEx of $2.5M, which more than absorbs the D&A add-back. Trucks wear out, so most of that capex is maintenance, not growth. Below the FCF line, debt service ($1.2M of principal payments) and distributions ($0.3M) consume what little cash is left, but those are uses of FCF, not part of FCF itself. To make the deal work: (a) separate maintenance capex (~$1.5M to keep the fleet running) from growth capex (~$1.0M) so the IC sees true sustainable FCF; (b) explore truck leasing to convert capex into operating cost and free up the balance sheet; (c) restructure the debt at a lower rate to recover the interest wedge; or (d) accept this is a growth equity play where you reinvest every dollar of FCF into fleet expansion and bet on revenue scaling to fix the economics."
           },
           {
             type: "notes",
@@ -842,7 +913,7 @@ export const LEARN_CONTENT = [
       },
       {
         id: "s4e",
-        title: "4E. Customer Concentration",
+        title: "4D. Customer Concentration",
         objectives: [
           "Learn the 20%/35% concentration thresholds",
           "Compare concentration risk across three companies",
@@ -904,7 +975,7 @@ export const LEARN_CONTENT = [
       },
       {
         id: "s4f",
-        title: "4F. Key-Person Risk",
+        title: "4E. Key-Person Risk",
         objectives: [
           "Assess founder dependency in Summit and Precision",
           "Design a 3-year founder transition plan",
@@ -966,7 +1037,7 @@ export const LEARN_CONTENT = [
       },
       {
         id: "s4g",
-        title: "4G. Valuation Multiples",
+        title: "4F. Valuation Multiples",
         objectives: [
           "Know typical LMM multiples by sector",
           "Understand what drives multiples up or down",
@@ -1037,7 +1108,7 @@ export const LEARN_CONTENT = [
       },
       {
         id: "s4h",
-        title: "4H. Investment Thesis Structure",
+        title: "4G. Investment Thesis Structure",
         objectives: [
           "Learn the five components of a strong thesis",
           "Evaluate the BrightSmile roll-up thesis",

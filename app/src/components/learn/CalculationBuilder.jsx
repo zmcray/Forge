@@ -59,6 +59,39 @@ export default function CalculationBuilder({
     );
   }
 
+  if (layout === "multiplication") {
+    const [leftZone, rightZone] = zones;
+
+    return (
+      <div>
+        <p className="text-sm text-on-surface-variant mb-4">{instruction}</p>
+        <div className="flex items-center gap-3 flex-wrap">
+          <DropZone
+            zone={leftZone}
+            filledItem={getFilledItem(leftZone)}
+            isIncorrect={incorrectFlash === leftZone.id}
+            onDrop={onDrop}
+          />
+          <span className="text-xl text-outline-variant">&times;</span>
+          <DropZone
+            zone={rightZone}
+            filledItem={getFilledItem(rightZone)}
+            isIncorrect={incorrectFlash === rightZone.id}
+            onDrop={onDrop}
+          />
+          <span className="text-xl text-outline-variant">=</span>
+          <div className={`text-2xl font-bold transition-opacity duration-300 ${isRevealed ? "opacity-100 text-on-tertiary-container" : "opacity-30 text-outline-variant"}`}>
+            {resultValue}
+          </div>
+          {isRevealed && resultLabel && (
+            <span className="text-sm text-on-tertiary-container">{resultLabel}</span>
+          )}
+        </div>
+        {revealedExplanation}
+      </div>
+    );
+  }
+
   // Addition layout
   const baseZone = zones[0];
   const addZones = zones.slice(1);

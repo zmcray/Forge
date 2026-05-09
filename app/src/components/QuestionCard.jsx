@@ -126,11 +126,11 @@ export default function QuestionCard({ question, index, onScore, companyContext 
         )}
         {committedText && <p className="mt-1 text-on-surface-variant">{committedText}</p>}
       </div>
-      <div className="bg-tertiary-container/40 border border-tertiary-container rounded-lg p-3 text-sm text-on-surface">
-        <span className="font-semibold text-on-tertiary-container text-xs uppercase">
+      <div className="bg-secondary-container rounded-lg p-3 text-sm">
+        <span className="font-semibold text-on-secondary-container text-xs uppercase tracking-wide">
           Model Answer
         </span>
-        <p className="mt-1">{question.answer}</p>
+        <p className="mt-1 text-on-surface">{question.answer}</p>
       </div>
     </div>
   );

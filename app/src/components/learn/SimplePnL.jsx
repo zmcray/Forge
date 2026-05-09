@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const PNL_LINES = [
+const DEFAULT_PNL_LINES = [
   { id: "revenue", label: "Revenue", value: "$32.5M" },
   { id: "cogs", label: "COGS", value: "($20.8M)" },
   { id: "gross-profit", label: "Gross Profit", value: "$11.7M", isSummary: true },
@@ -53,20 +53,29 @@ function SgaBreakdownRow({ item, isDraggable, isPlaced, draggableMap }) {
   );
 }
 
-export default function SimplePnL({ draggables, supplementalItems = [], placedItemIds, sgaBreakdown = [] }) {
+export default function SimplePnL({
+  draggables,
+  supplementalItems = [],
+  placedItemIds,
+  sgaBreakdown = [],
+  pnlLines = DEFAULT_PNL_LINES,
+  title = "Summit Mechanical Services (2025)",
+}) {
   const [sgaExpanded, setSgaExpanded] = useState(false);
   const draggableIds = new Set(draggables.map(d => d.id));
   const draggableMap = Object.fromEntries(draggables.map(d => [d.id, d]));
   const hasSgaBreakdown = sgaBreakdown.length > 0;
+  const hasPnl = pnlLines.length > 0;
 
   return (
     <div className="sticky top-4">
       <div className="bg-surface-container-lowest border border-outline-variant/30 rounded-lg overflow-hidden">
         <div className="bg-inverse-surface text-inverse-on-surface px-4 py-2 text-sm font-semibold">
-          Summit Mechanical Services (2025)
+          {title}
         </div>
+        {hasPnl && (
         <div className="divide-y divide-outline-variant/20">
-          {PNL_LINES.map(line => {
+          {pnlLines.map(line => {
             const isDraggable = draggableIds.has(line.id);
             const isPlaced = placedItemIds.has(line.id);
             const isSgaExpandable = line.id === "sga" && hasSgaBreakdown;
@@ -120,6 +129,7 @@ export default function SimplePnL({ draggables, supplementalItems = [], placedIt
             );
           })}
         </div>
+        )}
 
         {supplementalItems.length > 0 && (
           <div className="border-t-2 border-outline-variant">
