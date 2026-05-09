@@ -1,5 +1,7 @@
 # CLAUDE.md — Forge
 
+**Latest PRD:** [Forge backfill PRD v1](docs/strategy/2026-04-29-forge-backfill-prd.md) (shipped 2026-04-29, council mode: Selective Expansion)
+
 ## Identity
 
 Builder: Zack McRay — founder of McRay Group. Not an engineer, learns fast.
