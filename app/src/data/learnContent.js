@@ -1058,7 +1058,7 @@ export const LEARN_CONTENT = [
         ]
       },
       {
-        id: "s4g",
+        id: "s4-qual",
         title: "4G. Qualitative Due Diligence",
         objectives: [
           "Apply the 5-dimension qualitative framework: moats, process maturity, growth quality, scalability, customer transferability",
@@ -1139,7 +1139,7 @@ export const LEARN_CONTENT = [
         ]
       },
       {
-        id: "s4h",
+        id: "s4g",
         title: "4H. Valuation Multiples",
         objectives: [
           "Know typical LMM multiples by sector",
@@ -1214,7 +1214,7 @@ export const LEARN_CONTENT = [
         ]
       },
       {
-        id: "s4i",
+        id: "s4-rtn",
         title: "4I. Return Analysis",
         objectives: [
           "Calculate MOIC, IRR, and cash-on-cash for a PE deal",
@@ -1288,7 +1288,7 @@ export const LEARN_CONTENT = [
         ]
       },
       {
-        id: "s4j",
+        id: "s4h",
         title: "4J. Investment Thesis Structure",
         objectives: [
           "Learn the five components of a strong thesis",

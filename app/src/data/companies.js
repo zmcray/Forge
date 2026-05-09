@@ -127,8 +127,9 @@ export const COMPANIES = [
       {
         q: "If a PE firm acquired this at 5x adjusted EBITDA and believed they could improve gross margin by 200 bps through pricing and procurement, what would the value creation look like?",
         hint: "200 bps on $48.2M revenue = incremental gross profit. Flow that through to EBITDA assuming fixed SGA.",
-        answer: "200 bps improvement = $48.2M x 0.02 = $964K incremental gross profit. If SGA stays flat, that flows straight to EBITDA: $3.9M + $0.96M = $4.86M adjusted EBITDA. At the same 5x multiple, EV goes from $19.5M to $24.3M -- a $4.8M value creation from margin improvement alone. This is the classic PE playbook for distribution businesses.",
-        type: "valuation"
+        answer: "200 bps improvement = $48.2M x 0.02 = $964K incremental gross profit. If SGA stays flat, that flows straight to EBITDA: $3.9M + $0.96M = $4.86M adjusted EBITDA. At the same 5x multiple, EV goes from $19.5M to $24.3M, a $4.8M value creation from margin improvement alone. This is the classic PE playbook for distribution businesses.",
+        type: "diagnostic",
+        keywords: ["200 bps", "incremental gross profit", "$964K", "$4.86M", "EV", "$24.3M", "value creation", "margin improvement"]
       },
       {
         q: "Would you pursue this deal? What's your 30-second investment thesis -- or why would you pass?",
@@ -273,8 +274,9 @@ export const COMPANIES = [
       {
         q: "A PE firm offers to invest $10M for 60% of the company at an implied 8x adjusted EBITDA valuation ($20M EV). Is the founder getting a good deal?",
         hint: "Work backwards: What's the founder's pre-money equity? What does post-money look like? What's the founder giving up vs getting?",
-        answer: "At $20M EV with $5M net debt, equity value = $15M. The PE firm puts in $10M for 60%, implying post-money equity of $16.67M. Founder keeps 40% = $6.67M in equity value. But pre-money, the founder's equity was $15M - $5M debt = $10M. So the founder is going from 100% of $10M to 40% of... potentially much more. The bet is: if they use the $10M to grow to $6-8M EBITDA in 3-4 years and exit at 10-12x (platform premium), the company is worth $60-96M. Founder's 40% = $24-38M. Classic 'smaller slice of a much bigger pie' play. It's a good deal IF the growth thesis works.",
-        type: "valuation"
+        answer: "At $20M EV with $5M net debt, equity value = $15M. The PE firm puts in $10M for 60%, implying post-money equity of $16.67M. Founder keeps 40% = $6.67M in equity value. But pre-money, the founder's equity was $15M - $5M debt = $10M. So the founder is going from 100% of $10M to 40% of potentially much more. The bet is: if they use the $10M to grow to $6-8M EBITDA in 3-4 years and exit at 10-12x (platform premium), the company is worth $60-96M. Founder's 40% = $24-38M. Classic 'smaller slice of a much bigger pie' play. It is a good deal IF the growth thesis works.",
+        type: "diagnostic",
+        keywords: ["pre-money", "post-money", "equity value", "60%", "40%", "platform premium", "multiple expansion", "$15M", "$24-38M"]
       }
     ]
   },
@@ -404,8 +406,9 @@ export const COMPANIES = [
       {
         q: "A typical B2B SaaS company at this scale trades at 4-6x ARR or 12-18x EBITDA. What valuation range makes sense and what drives the wide spread?",
         hint: "Consider growth rate, retention, gross margin, and Rule of 40 (growth rate + EBITDA margin).",
-        answer: "ARR is ~$13.1M (92% of $14.2M). At 4-6x ARR: $52.4-78.6M. At 12-18x adjusted EBITDA ($3.0M): $36-54M. The wide range exists because: Rule of 40 score = 28% growth + 18% EBITDA margin = 46, which is above the 40 threshold and suggests premium valuation. However, negative FCF and the need for continued investment temper the multiple. A fair range is probably 5x ARR ($65.5M) for a growth equity deal where founders retain majority. Net debt = ($0.3M + $1.2M) - $2.8M = -$1.3M (net cash), so equity value ~ $66.8M. The key driver of the multiple is whether the 28% growth rate is sustainable or decelerating.",
-        type: "valuation"
+        answer: "ARR is ~$13.1M (92% of $14.2M). At 4-6x ARR: $52.4-78.6M. At 12-18x adjusted EBITDA ($3.0M): $36-54M. The wide range exists because Rule of 40 score = 28% growth + 18% EBITDA margin = 46, which is above the 40 threshold and suggests premium valuation. However, negative FCF and the need for continued investment temper the multiple. A fair range is probably 5x ARR ($65.5M) for a growth equity deal where founders retain majority. Net debt = ($0.3M + $1.2M) - $2.8M = -$1.3M (net cash), so equity value ~ $66.8M. The key driver of the multiple is whether the 28% growth rate is sustainable or decelerating.",
+        type: "diagnostic",
+        keywords: ["ARR", "4-6x ARR", "12-18x EBITDA", "Rule of 40", "premium valuation", "negative FCF", "growth equity", "$65.5M", "$66.8M"]
       },
       {
         q: "The CAC payback period is 20 months, well above the SaaS benchmark of 12 months. How concerning is this and what would you investigate?",
@@ -486,8 +489,9 @@ export const COMPANIES = [
       {
         q: "With a $68M backlog and $52.8M in annual revenue, what does the backlog-to-revenue ratio tell you? How would you use this in your valuation framework?",
         hint: "Backlog is the GC equivalent of a SaaS pipeline. It provides revenue visibility but isn't guaranteed. Think about burn rate and backlog quality.",
-        answer: "Backlog-to-revenue ratio is 1.29x ($68M / $52.8M), meaning roughly 15 months of current revenue is in the pipeline. This is solid for a GC. 40% of backlog is government work, which is highly reliable (government projects rarely cancel). However, backlog is not revenue. Key questions: (1) What's the average margin in the backlog vs. historical? If they bid aggressively to fill backlog, margins could decline. (2) How much of the backlog is contracted vs. LOI/awarded but unsigned? (3) What's the typical conversion rate from backlog to revenue? For valuation, a strong backlog supports a higher multiple (maybe 5-6x adjusted EBITDA vs. 4-5x for a GC with weak visibility). At 5.5x adjusted EBITDA ($5.25M), EV would be ~$28.9M. The backlog provides downside protection that justifies the premium.",
-        type: "valuation"
+        answer: "Backlog-to-revenue ratio is 1.29x ($68M / $52.8M), meaning roughly 15 months of current revenue is in the pipeline. This is solid for a GC. 40% of backlog is government work, which is highly reliable (government projects rarely cancel). However, backlog is not revenue. Key questions: (1) What is the average margin in the backlog vs. historical? If they bid aggressively to fill backlog, margins could decline. (2) How much of the backlog is contracted vs. LOI / awarded but unsigned? (3) What is the typical conversion rate from backlog to revenue? For valuation, a strong backlog supports a higher multiple (maybe 5-6x adjusted EBITDA vs. 4-5x for a GC with weak visibility). At 5.5x adjusted EBITDA ($5.25M), EV would be ~$28.9M. The backlog provides downside protection that justifies the premium.",
+        type: "diagnostic",
+        keywords: ["backlog", "1.29x", "15 months", "government", "5-6x", "$28.9M", "downside protection", "backlog quality", "conversion rate"]
       },
       {
         q: "Construction is inherently project-based with no recurring revenue. How does this affect your risk assessment and what would you do post-acquisition to improve revenue predictability?",
@@ -569,7 +573,8 @@ export const COMPANIES = [
         q: "Vet roll-ups have traded at 10-14x EBITDA at scale. Vitality is at $8.4M revenue with 3 locations. What multiple is appropriate now, and how does the 'platform premium' work?",
         hint: "Think about the multiple arbitrage in roll-ups: buy individual practices at 4-6x, build a platform valued at 10-14x. But you need scale to get there.",
         answer: "At 3 locations and $8.4M revenue, Vitality is too small for platform multiples. Current fair value: 6-8x adjusted EBITDA ($2.15M) = $12.9-17.2M EV. The platform premium works like this: individual vet practices trade at 4-6x EBITDA. A PE-backed platform at 15+ locations and $30M+ revenue trades at 10-14x because of (1) diversification, (2) professional management, (3) growth predictability, and (4) strategic acquirer interest. The arbitrage: buy clinics at 5x, integrate them into the platform, and the whole entity re-rates to 10-12x at exit. If Vitality grows to $25M revenue and $5M EBITDA through acquisitions and organic growth, exit at 11x = $55M. That is 3-4x the entry investment. But you need $15-20M of acquisition capital to get there, and execution risk is real.",
-        type: "valuation"
+        type: "diagnostic",
+        keywords: ["platform premium", "6-8x", "10-14x", "multiple arbitrage", "$12.9-17.2M", "scale", "$55M exit", "execution risk", "roll-up"]
       },
       {
         q: "There are only ~120,000 veterinarians in the US and demand far outstrips supply. How does the vet shortage affect your risk assessment of this deal?",
@@ -650,8 +655,9 @@ export const COMPANIES = [
       {
         q: "3PL businesses typically trade at 6-8x EBITDA. What drives the multiple range, and where does Meridian fall?",
         hint: "Think about what makes a 3PL worth 8x vs. 6x: contract quality, technology, customer diversification, and growth profile.",
-        answer: "Multiple drivers in 3PL: Higher end (8x+): high contracted revenue percentage, strong technology/automation, diversified customer base, double-digit growth, and returns/value-added services. Lower end (6x): transactional revenue, commodity services, customer concentration, and low barriers to entry. Meridian falls in the middle. Positives: 12% growth, 3 facilities, automation investments, returns processing capability. Negatives: only 40% contracted (below the 60%+ threshold for premium multiples), 18% concentration, flat margins. Fair range: 6.5-7.5x adjusted EBITDA ($4.65M) = $30.2-34.9M EV. Net debt = ($1.5M + $3.8M) - $1.4M = $3.9M. Equity value: $26.3-31.0M. To command 8x+, Meridian needs to get contracted revenue above 60% and demonstrate margin expansion from automation investments.",
-        type: "valuation"
+        answer: "Multiple drivers in 3PL. Higher end (8x+): high contracted revenue percentage, strong technology / automation, diversified customer base, double-digit growth, and returns / value-added services. Lower end (6x): transactional revenue, commodity services, customer concentration, and low barriers to entry. Meridian falls in the middle. Positives: 12% growth, 3 facilities, automation investments, returns processing capability. Negatives: only 40% contracted (below the 60%+ threshold for premium multiples), 18% concentration, flat margins. Fair range: 6.5-7.5x adjusted EBITDA ($4.65M) = $30.2-34.9M EV. Net debt = ($1.5M + $3.8M) - $1.4M = $3.9M. Equity value: $26.3-31.0M. To command 8x+, Meridian needs to get contracted revenue above 60% and demonstrate margin expansion from automation investments.",
+        type: "diagnostic",
+        keywords: ["6.5-7.5x", "$30.2-34.9M", "contracted revenue", "60% threshold", "18% concentration", "automation", "value-added services", "$26.3-31.0M equity"]
       },
       {
         q: "60% of Meridian's revenue is transactional (no contract, 30-day notice). How does this change your risk assessment compared to the 40% that is contracted?",
