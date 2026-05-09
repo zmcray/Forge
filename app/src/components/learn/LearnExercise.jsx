@@ -3,7 +3,12 @@ import CommitInput from "../CommitInput";
 import DeltaDisplay from "../DeltaDisplay";
 import { LLMGrading, LLMFeedbackSkeleton } from "../LLMFeedback";
 import { evaluateAnswer } from "../../utils/evaluateAnswer";
-import { extractNumericValue } from "../../utils/format";
+import {
+  extractNumericValue,
+  getDeltaBand,
+  BAND_LABELS,
+  BAND_CHIP_COLORS,
+} from "../../utils/format";
 
 export default function LearnExercise({ exercise, isComplete, onComplete, onOpenChat }) {
   const [phase, setPhase] = useState(isComplete ? "done" : "commit"); // commit, reveal, done
@@ -65,18 +70,23 @@ export default function LearnExercise({ exercise, isComplete, onComplete, onOpen
 
   const modelExtracted = isQuantitative ? extractNumericValue(exercise.answer) : null;
 
+  const band =
+    isQuantitative && committedNumeric != null && modelExtracted
+      ? getDeltaBand(committedNumeric - modelExtracted.value, modelExtracted.unit)
+      : null;
+
   // Collapsed completed state
   if (!expanded && isComplete) {
     return (
       <div
-        className="border border-on-tertiary-container/30 bg-tertiary-container rounded-lg p-3 my-3 flex items-center justify-between cursor-pointer hover:opacity-90 transition-colors"
+        className="border border-outline-variant/30 bg-surface-container-low rounded-lg p-3 my-3 flex items-center justify-between cursor-pointer hover:bg-surface-container transition-colors"
         onClick={() => setExpanded(true)}
       >
         <div className="flex items-center gap-2">
-          <span className="text-on-tertiary-container text-lg">&#10003;</span>
-          <span className="text-sm font-medium text-on-tertiary-container">{exercise.q}</span>
+          <span className="text-xs font-medium text-on-surface-variant uppercase tracking-wide">Reviewed</span>
+          <span className="text-sm font-medium text-on-surface">{exercise.q}</span>
         </div>
-        <span className="text-xs text-on-tertiary-container">Click to review</span>
+        <span className="text-xs text-on-surface-variant">Click to review</span>
       </div>
     );
   }
@@ -86,11 +96,18 @@ export default function LearnExercise({ exercise, isComplete, onComplete, onOpen
       <div className="bg-secondary-container px-4 py-2 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="text-sm font-semibold text-on-surface">Exercise</span>
-          {(phase === "done" || isComplete) && <span className="text-on-tertiary-container">&#10003;</span>}
-          {llmResult && (
+          {band && (
+            <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${BAND_CHIP_COLORS[band]}`}>
+              {BAND_LABELS[band]}
+            </span>
+          )}
+          {!band && llmResult && (
             <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${llmResult.score >= 4 ? "bg-green-100 text-green-800" : llmResult.score >= 3 ? "bg-amber-100 text-amber-800" : "bg-red-100 text-red-800"}`}>
               {llmResult.score}/5 AI
             </span>
+          )}
+          {!band && !llmResult && !llmLoading && (phase === "done" || isComplete) && (
+            <span className="text-xs font-medium text-on-surface-variant uppercase tracking-wide">Reviewed</span>
           )}
         </div>
         {isComplete && phase === "done" && (
@@ -154,9 +171,9 @@ export default function LearnExercise({ exercise, isComplete, onComplete, onOpen
               </button>
             )}
 
-            <div className="bg-tertiary-container border border-on-tertiary-container/30 rounded-lg p-3 text-sm text-on-tertiary-container">
-              <span className="font-semibold text-on-tertiary-container text-xs uppercase">Model Answer</span>
-              <p className="mt-1">{exercise.answer}</p>
+            <div className="bg-secondary-container rounded-lg p-3 text-sm">
+              <span className="font-semibold text-on-secondary-container text-xs uppercase tracking-wide">Model Answer</span>
+              <p className="mt-1 text-on-surface">{exercise.answer}</p>
             </div>
           </div>
         )}

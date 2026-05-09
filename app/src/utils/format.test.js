@@ -89,6 +89,25 @@ describe("extractNumericValue", () => {
   it("extracts negative dollar values with dash", () => {
     expect(extractNumericValue("-$5M")).toEqual({ value: -5, unit: "$M" });
   });
+
+  it("extracts days from working-capital answers, ignoring $M inside the formula", () => {
+    expect(
+      extractNumericValue(
+        "DSO = ($6.8M / $48.2M) x 365 = 51.5 days. Above the 45-day benchmark, meaning slow-paying customers."
+      )
+    ).toEqual({ value: 51.5, unit: "days" });
+  });
+
+  it("extracts days for whole-number answers", () => {
+    expect(extractNumericValue("CCC = 51.5 + 30.0 - 47.7 = 33.8 days.")).toEqual({
+      value: 33.8,
+      unit: "days",
+    });
+  });
+
+  it("does not match hyphenated 'day' phrases", () => {
+    expect(extractNumericValue("Above the 45-day benchmark.")).toBeNull();
+  });
 });
 
 describe("formatUnit", () => {
@@ -102,6 +121,10 @@ describe("formatUnit", () => {
 
   it("formats multiple unit", () => {
     expect(formatUnit("x")).toBe("x");
+  });
+
+  it("formats days unit with leading space", () => {
+    expect(formatUnit("days")).toBe(" days");
   });
 
   it("returns empty string for unknown", () => {
@@ -136,6 +159,14 @@ describe("formatDelta", () => {
 
   it("formats large negative dollar-M delta", () => {
     expect(formatDelta(1.0, 10.0, "$M")).toBe("-$9.0M");
+  });
+
+  it("formats positive days delta", () => {
+    expect(formatDelta(55.0, 51.5, "days")).toBe("+3.5 days");
+  });
+
+  it("formats negative days delta", () => {
+    expect(formatDelta(10.8, 51.5, "days")).toBe("-40.7 days");
   });
 });
 
@@ -196,6 +227,24 @@ describe("getDeltaBand", () => {
 
     it("returns way_off for > 3M", () => {
       expect(getDeltaBand(5.0, "$M")).toBe("way_off");
+    });
+  });
+
+  describe("days thresholds", () => {
+    it("returns exact for < 2 days", () => {
+      expect(getDeltaBand(1.5, "days")).toBe("exact");
+    });
+
+    it("returns close for 2-5 days", () => {
+      expect(getDeltaBand(3.5, "days")).toBe("close");
+    });
+
+    it("returns off for 5-15 days", () => {
+      expect(getDeltaBand(10, "days")).toBe("off");
+    });
+
+    it("returns way_off for > 15 days", () => {
+      expect(getDeltaBand(40.7, "days")).toBe("way_off");
     });
   });
 });

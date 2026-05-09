@@ -81,42 +81,62 @@ export default function CalculationExercise({ exercise, isComplete, onComplete }
         {isRevealed && <span className="text-on-tertiary-container">&#10003;</span>}
       </div>
       <div className="p-4">
-        <div className="flex gap-6">
-          <div className="w-2/5 flex-shrink-0">
+        {(() => {
+          const usesPnl = exercise.pnlLines === undefined || (exercise.pnlLines && exercise.pnlLines.length > 0);
+          const palette = (
             <SimplePnL
               draggables={exercise.draggables}
               supplementalItems={exercise.supplementalItems || []}
               placedItemIds={placedItemIds}
               sgaBreakdown={exercise.sgaBreakdown || []}
+              pnlLines={exercise.pnlLines}
+              title={exercise.paletteTitle}
             />
-          </div>
-          <div className="w-3/5">
-            <CalculationBuilder
-              layout={exercise.layout}
-              zones={exercise.zones}
-              filledZones={filledZones}
-              draggables={exercise.draggables}
-              incorrectFlash={incorrectFlash}
-              isRevealed={isRevealed}
-              resultLabel={exercise.resultLabel}
-              resultValue={exercise.resultValue}
-              instruction={exercise.instruction}
-              explanation={exercise.explanation}
-              onDrop={handleDrop}
-            />
-            {rejectFeedback && (
-              <div className="mt-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-300 dark:border-amber-700 rounded-lg p-3 text-sm text-amber-900 dark:text-amber-200">
-                <div className="flex items-start gap-2">
-                  <span className="text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0">&#9888;</span>
-                  <div>
-                    <span className="font-semibold text-xs uppercase tracking-wide text-amber-700 dark:text-amber-400">Not so fast</span>
-                    <p className="mt-1 leading-relaxed">{rejectFeedback}</p>
+          );
+          const builder = (
+            <>
+              <CalculationBuilder
+                layout={exercise.layout}
+                zones={exercise.zones}
+                filledZones={filledZones}
+                draggables={exercise.draggables}
+                incorrectFlash={incorrectFlash}
+                isRevealed={isRevealed}
+                resultLabel={exercise.resultLabel}
+                resultValue={exercise.resultValue}
+                instruction={exercise.instruction}
+                explanation={exercise.explanation}
+                onDrop={handleDrop}
+              />
+              {rejectFeedback && (
+                <div className="mt-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-300 dark:border-amber-700 rounded-lg p-3 text-sm text-amber-900 dark:text-amber-200">
+                  <div className="flex items-start gap-2">
+                    <span className="text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0">&#9888;</span>
+                    <div>
+                      <span className="font-semibold text-xs uppercase tracking-wide text-amber-700 dark:text-amber-400">Not so fast</span>
+                      <p className="mt-1 leading-relaxed">{rejectFeedback}</p>
+                    </div>
                   </div>
                 </div>
+              )}
+            </>
+          );
+          if (usesPnl) {
+            return (
+              <div className="flex gap-6">
+                <div className="w-2/5 flex-shrink-0">{palette}</div>
+                <div className="w-3/5">{builder}</div>
               </div>
-            )}
-          </div>
-        </div>
+            );
+          }
+          // No P&L context (e.g. LBO calc): builder gets full width on top, palette stacks below.
+          return (
+            <div className="flex flex-col gap-5">
+              <div>{builder}</div>
+              <div>{palette}</div>
+            </div>
+          );
+        })()}
       </div>
     </div>
   );

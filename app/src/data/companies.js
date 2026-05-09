@@ -111,13 +111,13 @@ export const COMPANIES = [
       recurringRevenuePct: 60, customerConcentration: 22,
       employeeCount: 85, avgRevenuePerEmployee: 0.567
     },
-    redFlags: ["Gross margin flat YoY despite 5% revenue growth -- cost pass-through issues", "Net income dropped 78% ($0.9M to $0.2M)", "Working capital consuming cash (AR + inventory growing faster than revenue)", "Customer concentration at 22% -- who is this?", "Low cash position ($0.4M) for a $48M revenue business"],
+    redFlags: ["Gross margin compressed 100bps YoY (20.1% to 19.1%) despite 5% revenue growth -- cost pass-through issues", "Net income dropped 78% ($0.9M to $0.2M)", "Working capital consuming cash (AR + inventory growing faster than revenue)", "Customer concentration at 22% -- who is this?", "Low cash position ($0.4M) for a $48M revenue business"],
     greenFlags: ["60% recurring revenue from contracted accounts", "Revenue per employee of $567K is decent for distribution", "Steady top-line growth", "Asset-light potential if warehouses are leased"],
     questions: [
       {
         id: "coastal-foods-q1",
         q: "Revenue grew 5.2% but net income dropped 78%. What's happening here and where would you dig in?",
-        hint: "Look at gross margin (flat), SGA growth rate vs revenue growth rate, and the add-backs",
+        hint: "Look at gross margin (compressed from 20.1% to 19.1%), SGA growth rate vs revenue growth rate, and the add-backs",
         answer: "Gross profit was flat ($9.2M both years) despite $2.4M more revenue -- meaning ALL the revenue growth was eaten by COGS increases. SGA also grew 8.6% vs 5.2% revenue growth. The $0.8M in one-time expenses also hit hard. This screams margin compression from input costs (likely transportation + product costs) that aren't being passed through to customers. First DD question: what are the contract terms with major customers? Can they reprice?",
         type: "diagnostic",
         keywords: ["gross margin", "margin compression", "COGS", "input costs", "SGA growth", "contract terms", "repricing"]

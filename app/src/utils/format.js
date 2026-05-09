@@ -4,6 +4,13 @@ export function formatCurrency(val, decimals = 1) {
 }
 
 export function extractNumericValue(text) {
+  // Days first: working-capital answers like "DSO = ($6.8M / $48.2M) x 365 = 51.5 days"
+  // would otherwise match the $M inside the formula. Word-boundary on "days?" avoids
+  // false positives like "45-day benchmark".
+  const daysMatch = text.match(/([\d,]*\.?\d+)\s*days?\b/i);
+  if (daysMatch) {
+    return { value: parseFloat(daysMatch[1].replace(/,/g, "")), unit: "days" };
+  }
   // Matches optional negative sign or parenthetical negatives, optional $, commas, decimals
   const pctMatch = text.match(/[(-]?\s*\$?\s*([\d,]*\.?\d+)\s*%\s*\)?/);
   if (pctMatch) {
@@ -30,6 +37,7 @@ export function formatUnit(unit) {
   if (unit === "%") return "%";
   if (unit === "$M") return "M";
   if (unit === "x") return "x";
+  if (unit === "days") return " days";
   return "";
 }
 
@@ -40,6 +48,7 @@ export function formatDelta(userVal, modelVal, unit) {
   if (unit === "%") return `${sign}${abs.toFixed(1)}pp`;
   if (unit === "$M") return `${sign}$${abs.toFixed(1)}M`;
   if (unit === "x") return `${sign}${abs.toFixed(1)}x`;
+  if (unit === "days") return `${sign}${abs.toFixed(1)} days`;
   return `${sign}${abs.toFixed(1)}`;
 }
 
@@ -65,6 +74,14 @@ export function getDeltaBand(delta, unit) {
     if (abs < 3) return "off";
     return "way_off";
   }
+  if (unit === "days") {
+    // Working-capital days metrics (DSO/DIO/DPO/CCC). Healthy bands sit in the 30-45 day
+    // range, so a few days off is "close", but >15 days is a real miscalc.
+    if (abs < 2) return "exact";
+    if (abs < 5) return "close";
+    if (abs < 15) return "off";
+    return "way_off";
+  }
   if (abs < 0.5) return "exact";
   if (abs < 2) return "close";
   if (abs < 5) return "off";
@@ -76,6 +93,13 @@ export const BAND_COLORS = {
   close: "text-amber-600",
   off: "text-orange-600",
   way_off: "text-red-600",
+};
+
+export const BAND_CHIP_COLORS = {
+  exact: "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200",
+  close: "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200",
+  off: "bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-200",
+  way_off: "bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200",
 };
 
 export const BAND_LABELS = {

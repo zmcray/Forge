@@ -219,13 +219,15 @@ export default function ConceptCard() {
           <div className="bg-secondary-container px-4 py-2 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="text-sm font-semibold text-on-surface">Exercise</span>
-              {phase === "done" && <span className="text-on-tertiary-container">&#10003;</span>}
               {llmResult && (
                 <span
                   className={`text-xs font-bold px-1.5 py-0.5 rounded ${llmResult.score >= 4 ? "bg-green-100 text-green-800" : llmResult.score >= 3 ? "bg-amber-100 text-amber-800" : "bg-red-100 text-red-800"}`}
                 >
                   {llmResult.score}/5 AI
                 </span>
+              )}
+              {!llmResult && !llmLoading && phase === "done" && (
+                <span className="text-xs font-medium text-on-surface-variant uppercase tracking-wide">Reviewed</span>
               )}
             </div>
             {phase === "done" && (
@@ -274,11 +276,11 @@ export default function ConceptCard() {
                   <p className="text-xs text-amber-600 mb-2">AI grading unavailable.</p>
                 )}
 
-                <div className="bg-tertiary-container border border-on-tertiary-container/30 rounded-lg p-3 text-sm text-on-tertiary-container">
-                  <span className="font-semibold text-on-tertiary-container text-xs uppercase">
+                <div className="bg-secondary-container rounded-lg p-3 text-sm">
+                  <span className="font-semibold text-on-secondary-container text-xs uppercase tracking-wide">
                     Model Answer
                   </span>
-                  <p className="mt-1">{card.practicePrompt.modelAnswer}</p>
+                  <p className="mt-1 text-on-surface">{card.practicePrompt.modelAnswer}</p>
                 </div>
               </div>
             )}

@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Forge ... McRay Rebrand Mock ... Practice Screen</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      /* Brand */
+      --mcr-graphite: #181d24;
+      --mcr-graphite-soft: #2d3239;
+      --mcr-sage: #44664b;
+      --mcr-sage-soft: #6b8770;
+      --mcr-sage-container: #c5ecc9;
+      /* Surfaces */
+      --mcr-cream: #faf9f6;
+      --mcr-cream-low: #f1efea;
+      --mcr-cream-lowest: #ffffff;
+      --mcr-cream-high: #e9e8e5;
+      --mcr-cream-highest: #e3e2df;
+      /* Ink */
+      --mcr-ink: #1b1c1a;
+      --mcr-ink-muted: #595c5d;
+      --mcr-ink-faint: #8a8c8b;
+      --mcr-ink-invert: #ffffff;
+      /* Hairline */
+      --mcr-hairline-rgba: rgba(197, 198, 203, 0.35);
+      --mcr-hairline-strong: rgba(27, 28, 26, 0.12);
+      /* Fonts */
+      --mcr-serif: "Newsreader", Georgia, "Times New Roman", serif;
+      --mcr-sans: "Inter", -apple-system, system-ui, sans-serif;
+      --mcr-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+      /* Motion */
+      --mcr-ease: cubic-bezier(0.4, 0, 0.2, 1);
+
+      /* Score signal (sparingly used; sage-only for "good", graphite for neutral, ink-muted for off) */
+      --signal-good: #44664b;
+      --signal-mid: #8a6a32;
+      --signal-bad: #8b3a3a;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      background: var(--mcr-cream);
+      color: var(--mcr-ink);
+      font-family: var(--mcr-sans);
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+    }
+    a { color: inherit; text-decoration: none; }
+    em { font-style: italic; color: var(--mcr-sage); font-weight: 400; }
+
+    /* ────────── LAYOUT ────────── */
+    .app { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+
+    /* ────────── SIDEBAR ────────── */
+    .sidebar {
+      background: var(--mcr-cream-low);
+      padding: 40px 24px 32px;
+      display: flex; flex-direction: column;
+      position: sticky; top: 0; height: 100vh;
+    }
+    .brand { font-family: var(--mcr-serif); font-size: 28px; font-weight: 400; letter-spacing: -0.015em; color: var(--mcr-graphite); line-height: 1; }
+    .brand-eyebrow { font-family: var(--mcr-sans); font-size: 10px; font-weight: 500; letter-spacing: 0.22em; color: var(--mcr-sage); text-transform: uppercase; margin-top: 10px; display: inline-flex; align-items: center; gap: 8px; }
+    .pulse-dot { display: inline-block; width: 6px; height: 6px; border-radius: 999px; background: var(--mcr-sage); animation: pulse 2s var(--mcr-ease) infinite; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.45; } }
+
+    .nav-eyebrow { font-family: var(--mcr-sans); font-size: 10px; font-weight: 500; letter-spacing: 0.22em; color: var(--mcr-ink-faint); text-transform: uppercase; margin: 56px 0 20px; padding-left: 4px; }
+    .nav-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 2px; }
+    .nav-item a {
+      display: block; padding: 10px 12px;
+      font-family: var(--mcr-sans); font-size: 13px; font-weight: 500;
+      color: var(--mcr-ink-muted);
+      transition: color 150ms var(--mcr-ease), background 300ms var(--mcr-ease);
+      border-left: 1px solid transparent;
+    }
+    .nav-item a:hover { color: var(--mcr-graphite); }
+    .nav-item.is-active a {
+      color: var(--mcr-graphite);
+      background: var(--mcr-cream-lowest);
+      border-left-color: var(--mcr-sage);
+      font-weight: 600;
+    }
+
+    .sidebar-spacer { flex: 1; }
+    .streak {
+      padding: 20px 12px 16px;
+      border-top: 1px solid var(--mcr-hairline-rgba);
+    }
+    .streak-eyebrow { font-family: var(--mcr-sans); font-size: 10px; font-weight: 500; letter-spacing: 0.22em; color: var(--mcr-ink-faint); text-transform: uppercase; }
+    .streak-value { font-family: var(--mcr-serif); font-size: 32px; font-weight: 400; color: var(--mcr-graphite); margin-top: 6px; line-height: 1; letter-spacing: -0.01em; }
+    .streak-value em { font-style: italic; color: var(--mcr-sage); font-size: 14px; margin-left: 6px; letter-spacing: normal; }
+    .sidebar-utility { display: flex; gap: 20px; padding: 16px 12px 0; font-family: var(--mcr-sans); font-size: 11px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--mcr-ink-faint); }
+    .sidebar-utility a { transition: color 150ms var(--mcr-ease); }
+    .sidebar-utility a:hover { color: var(--mcr-graphite); }
+
+    /* ────────── HEADER ────────── */
+    .main { display: flex; flex-direction: column; min-width: 0; }
+    .header {
+      position: sticky; top: 0; z-index: 30;
+      background: rgba(250, 249, 246, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 18px 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 24px;
+    }
+    .search {
+      flex: 0 1 360px;
+      background: var(--mcr-cream-low);
+      padding: 10px 14px;
+      font-family: var(--mcr-sans); font-size: 13px; color: var(--mcr-ink-muted);
+      border: none; outline: none;
+      border-radius: 0;
+      transition: background 300ms var(--mcr-ease);
+    }
+    .search:hover { background: var(--mcr-cream-lowest); }
+    .search-shortcut { font-family: var(--mcr-mono); font-size: 11px; color: var(--mcr-ink-faint); margin-left: -34px; pointer-events: none; }
+    .header-right { display: flex; align-items: center; gap: 16px; }
+    .header-link { font-family: var(--mcr-sans); font-size: 11px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--mcr-ink-muted); transition: color 150ms var(--mcr-ease); }
+    .header-link:hover { color: var(--mcr-graphite); }
+    .avatar {
+      width: 32px; height: 32px;
+      background: var(--mcr-graphite);
+      color: var(--mcr-ink-invert);
+      font-family: var(--mcr-sans); font-size: 11px; font-weight: 600; letter-spacing: 0.05em;
+      display: inline-flex; align-items: center; justify-content: center;
+      border-radius: 999px;
+    }
+
+    /* ────────── PAGE CONTENT ────────── */
+    .page { padding: 48px 48px 96px; max-width: 1280px; }
+
+    .breadcrumb { font-family: var(--mcr-sans); font-size: 11px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--mcr-ink-faint); margin-bottom: 20px; display: inline-flex; align-items: center; gap: 8px; }
+    .breadcrumb .sep { color: var(--mcr-sage); }
+
+    .deal-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 32px; margin-bottom: 56px; }
+    .deal-title { font-family: var(--mcr-serif); font-size: clamp(40px, 4.4vw, 60px); font-weight: 400; line-height: 1.05; letter-spacing: -0.022em; color: var(--mcr-graphite); margin: 0; font-optical-sizing: auto; }
+    .deal-sub { font-family: var(--mcr-sans); font-size: 17px; color: var(--mcr-ink-muted); margin: 14px 0 0; max-width: 620px; line-height: 1.6; }
+    .deal-sub em { font-style: italic; color: var(--mcr-sage); font-weight: 400; }
+
+    .timer {
+      font-family: var(--mcr-serif); font-size: 38px; font-weight: 400; letter-spacing: -0.01em;
+      color: var(--mcr-graphite); line-height: 1;
+      text-align: right;
+    }
+    .timer-label { font-family: var(--mcr-sans); font-size: 10px; font-weight: 500; letter-spacing: 0.22em; text-transform: uppercase; color: var(--mcr-ink-faint); margin-top: 8px; }
+
+    /* ────────── TABS ────────── */
+    .tabs {
+      display: flex; gap: 36px;
+      border-bottom: 1px solid var(--mcr-hairline-rgba);
+      margin-bottom: 32px;
+    }
+    .tab {
+      font-family: var(--mcr-sans); font-size: 11px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--mcr-ink-muted);
+      padding: 14px 0; position: relative;
+      transition: color 150ms var(--mcr-ease);
+      cursor: pointer;
+    }
+    .tab:hover { color: var(--mcr-graphite); }
+    .tab.is-active { color: var(--mcr-graphite); }
+    .tab.is-active::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: var(--mcr-sage); }
+
+    /* ────────── CONTENT GRID ────────── */
+    .grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 32px; }
+
+    /* ────────── FINANCIAL TABLE ────────── */
+    .panel {
+      background: var(--mcr-cream-lowest);
+      padding: 32px 36px;
+    }
+    .panel-eyebrow { font-family: var(--mcr-sans); font-size: 10px; font-weight: 500; letter-spacing: 0.22em; text-transform: uppercase; color: var(--mcr-sage); display: inline-flex; align-items: center; gap: 8px; margin-bottom: 20px; }
+    .panel-title { font-family: var(--mcr-serif); font-size: 24px; font-weight: 400; line-height: 1.2; letter-spacing: -0.01em; color: var(--mcr-graphite); margin: 0 0 4px; }
+    .panel-title em { font-style: italic; color: var(--mcr-sage); }
+    .panel-meta { font-family: var(--mcr-sans); font-size: 12px; color: var(--mcr-ink-muted); margin: 0 0 24px; }
+
+    table.fin { width: 100%; border-collapse: collapse; font-size: 14px; }
+    table.fin thead th {
+      font-family: var(--mcr-sans); font-size: 10px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--mcr-ink-faint);
+      padding: 10px 0;
+      text-align: right;
+      border-bottom: 1px solid var(--mcr-hairline-strong);
+    }
+    table.fin thead th:first-child { text-align: left; }
+    table.fin tbody td {
+      padding: 10px 0;
+      font-family: var(--mcr-sans);
+      color: var(--mcr-ink);
+      border-bottom: 1px solid var(--mcr-hairline-rgba);
+    }
+    table.fin tbody td.label { color: var(--mcr-ink-muted); }
+    table.fin tbody td.label.indent { padding-left: 16px; }
+    table.fin tbody td.num { font-family: var(--mcr-mono); font-size: 13px; text-align: right; padding-right: 24px; }
+    table.fin tbody td.num:last-child { padding-right: 0; }
+    table.fin tbody tr.major td { font-weight: 600; color: var(--mcr-graphite); border-bottom: 1px solid var(--mcr-hairline-strong); }
+    table.fin tbody tr.highlight td { background: var(--mcr-cream); }
+    table.fin tbody tr.highlight td.label { color: var(--mcr-graphite); font-weight: 600; }
+    .delta-up { color: var(--mcr-sage); }
+    .delta-down { color: var(--signal-bad); }
+
+    .addbacks { margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--mcr-hairline-rgba); }
+    .addbacks-title { font-family: var(--mcr-sans); font-size: 10px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: var(--mcr-ink-faint); margin: 0 0 10px; }
+    .addbacks-list { display: flex; gap: 28px; flex-wrap: wrap; font-family: var(--mcr-sans); font-size: 12px; color: var(--mcr-ink-muted); }
+    .addbacks-list span strong { color: var(--mcr-graphite); font-weight: 600; font-family: var(--mcr-mono); margin-left: 4px; }
+
+    /* ────────── QUESTION COLUMN ────────── */
+    .qcol { display: flex; flex-direction: column; gap: 28px; }
+
+    .question-card { background: var(--mcr-cream-lowest); padding: 36px; }
+    .q-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+    .q-numeral { font-family: var(--mcr-sans); font-size: 22px; font-weight: 700; color: var(--mcr-sage); line-height: 1; letter-spacing: -0.005em; }
+    .q-meta-eyebrow { font-family: var(--mcr-sans); font-size: 10px; font-weight: 500; letter-spacing: 0.22em; text-transform: uppercase; color: var(--mcr-ink-faint); margin-top: 6px; }
+    .q-score-pill {
+      font-family: var(--mcr-sans); font-size: 11px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--mcr-sage);
+      padding: 6px 12px;
+      background: var(--mcr-sage-container);
+      border-radius: 999px;
+    }
+    .q-score-pill em { font-style: italic; }
+    .q-text { font-family: var(--mcr-serif); font-size: 22px; font-weight: 400; line-height: 1.3; letter-spacing: -0.01em; color: var(--mcr-graphite); margin: 0 0 24px; }
+    .q-text em { font-style: italic; color: var(--mcr-sage); }
+
+    /* Delta band */
+    .delta-block { background: var(--mcr-cream); padding: 18px 20px; margin-bottom: 20px; }
+    .delta-row { display: flex; justify-content: space-between; align-items: baseline; gap: 24px; }
+    .delta-num { font-family: var(--mcr-mono); font-size: 20px; font-weight: 500; color: var(--mcr-graphite); }
+    .delta-label { font-family: var(--mcr-sans); font-size: 10px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: var(--mcr-ink-faint); }
+    .delta-band {
+      font-family: var(--mcr-sans); font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--mcr-sage);
+      margin-top: 6px;
+    }
+    .delta-band em { font-style: italic; }
+
+    /* Compare grid */
+    .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+    .compare-card { padding: 18px 20px; }
+    .compare-card.you { background: var(--mcr-cream); }
+    .compare-card.model { background: var(--mcr-cream-highest); }
+    .compare-eyebrow { font-family: var(--mcr-sans); font-size: 10px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: var(--mcr-ink-faint); margin-bottom: 8px; display: inline-flex; align-items: center; gap: 6px; }
+    .compare-card.model .compare-eyebrow { color: var(--mcr-sage); }
+    .compare-num { font-family: var(--mcr-mono); font-size: 18px; font-weight: 500; color: var(--mcr-graphite); margin: 0; }
+    .compare-text { font-family: var(--mcr-sans); font-size: 13px; line-height: 1.55; color: var(--mcr-ink); margin: 0; }
+
+    /* LLM feedback */
+    .llm { padding: 24px 0 0; border-top: 1px solid var(--mcr-hairline-rgba); }
+    .llm-head { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 18px; }
+    .llm-title { font-family: var(--mcr-serif); font-size: 18px; font-weight: 400; color: var(--mcr-graphite); margin: 0; line-height: 1.2; }
+    .llm-title em { font-style: italic; color: var(--mcr-sage); }
+    .llm-score { font-family: var(--mcr-serif); font-size: 32px; font-weight: 400; color: var(--mcr-graphite); line-height: 1; letter-spacing: -0.01em; }
+    .llm-score em { font-style: italic; color: var(--mcr-sage); font-size: 14px; margin-left: 4px; letter-spacing: normal; }
+    .llm-section { margin-top: 14px; }
+    .llm-section-eyebrow { font-family: var(--mcr-sans); font-size: 10px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: var(--mcr-sage); margin-bottom: 6px; }
+    .llm-section-eyebrow.gap { color: var(--signal-mid); }
+    .llm-list { margin: 0; padding-left: 18px; font-family: var(--mcr-sans); font-size: 13px; line-height: 1.55; color: var(--mcr-ink); }
+    .llm-list li { margin-bottom: 4px; }
+    .llm-suggestion {
+      margin-top: 18px; padding: 14px 16px; background: var(--mcr-cream);
+      font-family: var(--mcr-serif); font-size: 14px; font-style: italic; line-height: 1.5; color: var(--mcr-graphite);
+    }
+    .llm-suggestion::before { content: '...'; margin-right: 8px; color: var(--mcr-sage); font-style: normal; letter-spacing: 0.05em; }
+
+    /* Buttons */
+    .btn-row { display: flex; gap: 12px; margin-top: 24px; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 22px;
+      font-family: var(--mcr-serif); font-size: 14px; font-weight: 500;
+      border-radius: 6px;
+      border: none; cursor: pointer; text-decoration: none;
+      transition: all 300ms var(--mcr-ease);
+    }
+    .btn-primary {
+      color: var(--mcr-ink-invert);
+      background: linear-gradient(135deg, #181d24 0%, #2d3239 100%);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.1);
+    }
+    .btn-primary:hover { background: linear-gradient(135deg, #2d3239 0%, #181d24 100%); }
+    .btn-secondary {
+      color: var(--mcr-ink);
+      background: var(--mcr-cream-high);
+    }
+    .btn-secondary:hover { background: var(--mcr-cream-lowest); }
+
+    /* Up-next strip */
+    .upnext { background: var(--mcr-cream-low); padding: 24px 32px; display: flex; justify-content: space-between; align-items: center; }
+    .upnext-left { display: flex; flex-direction: column; gap: 4px; }
+    .upnext-eyebrow { font-family: var(--mcr-sans); font-size: 10px; font-weight: 500; letter-spacing: 0.22em; text-transform: uppercase; color: var(--mcr-sage); display: inline-flex; align-items: center; gap: 8px; }
+    .upnext-text { font-family: var(--mcr-serif); font-size: 16px; line-height: 1.4; color: var(--mcr-graphite); margin: 0; max-width: 520px; }
+    .upnext-text em { font-style: italic; color: var(--mcr-sage); }
+
+    /* Notes block */
+    .note { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; background: var(--mcr-cream); }
+    .note-text { font-family: var(--mcr-sans); font-size: 12px; color: var(--mcr-ink-muted); line-height: 1.5; max-width: 440px; }
+    .note-action { font-family: var(--mcr-sans); font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--mcr-graphite); padding: 0; background: none; border: none; cursor: pointer; position: relative; }
+    .note-action::after { content: ''; position: absolute; left: 0; right: 0; bottom: -3px; height: 1px; background: var(--mcr-sage); transform-origin: left; transform: scaleX(0); transition: transform 300ms var(--mcr-ease); }
+    .note-action:hover::after { transform: scaleX(1); }
+
+    /* Footnote */
+    .legend { margin-top: 56px; padding-top: 28px; border-top: 1px solid var(--mcr-hairline-rgba); display: flex; gap: 36px; flex-wrap: wrap; font-family: var(--mcr-sans); font-size: 11px; color: var(--mcr-ink-faint); letter-spacing: 0.04em; }
+    .legend strong { color: var(--mcr-graphite); font-weight: 600; }
+
+    @media (max-width: 1024px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .grid { grid-template-columns: 1fr; }
+      .deal-head { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- ────────── SIDEBAR ────────── -->
+    <aside class="sidebar">
+      <div>
+        <div class="brand">Forge</div>
+        <span class="brand-eyebrow"><span class="pulse-dot" aria-hidden="true"></span>PE Analyst</span>
+      </div>
+
+      <div class="nav-eyebrow">Workspace</div>
+      <ul class="nav-list">
+        <li class="nav-item"><a href="#">Dashboard</a></li>
+        <li class="nav-item"><a href="#">Fundamentals</a></li>
+        <li class="nav-item"><a href="#">Quick Screen</a></li>
+        <li class="nav-item is-active"><a href="#">Practice</a></li>
+        <li class="nav-item"><a href="#">Progress</a></li>
+      </ul>
+
+      <div class="sidebar-spacer"></div>
+
+      <div class="streak">
+        <div class="streak-eyebrow">Current Streak</div>
+        <div class="streak-value">12<em>days</em></div>
+      </div>
+      <div class="sidebar-utility">
+        <a href="#">Light</a>
+        <a href="#">Help</a>
+      </div>
+    </aside>
+
+    <!-- ────────── MAIN ────────── -->
+    <div class="main">
+      <!-- Header -->
+      <header class="header">
+        <div style="display: flex; align-items: center; flex: 1 1 auto; gap: 12px;">
+          <input class="search" placeholder="Search companies, metrics, fundamentals..." />
+          <span class="search-shortcut">⌘K</span>
+        </div>
+        <div class="header-right">
+          <a class="header-link" href="#">Save Draft</a>
+          <a class="header-link" href="#">Finish Session</a>
+          <span class="avatar">ZM</span>
+        </div>
+      </header>
+
+      <!-- Page -->
+      <main class="page">
+        <div class="breadcrumb">
+          Practice <span class="sep">·</span> Deep Dive <span class="sep">·</span> HVAC Services
+        </div>
+
+        <header class="deal-head">
+          <div>
+            <h1 class="deal-title">
+              Summit Mechanical Services<em>.</em>
+            </h1>
+            <p class="deal-sub">
+              $32.5M HVAC services platform with concentrated East-coast metro footprint. <em>Owner-operator transition</em> in motion, 19% revenue growth two-year stack, and a service-contract book that anchors recurring revenue.
+            </p>
+          </div>
+          <div>
+            <div class="timer">12:48</div>
+            <div class="timer-label">Time Remaining</div>
+          </div>
+        </header>
+
+        <nav class="tabs" aria-label="Financial views">
+          <span class="tab is-active">Income Statement</span>
+          <span class="tab">Balance Sheet</span>
+          <span class="tab">Cash Flow</span>
+          <span class="tab">Key Metrics</span>
+        </nav>
+
+        <section class="grid">
+          <!-- Financial table -->
+          <div class="panel">
+            <span class="panel-eyebrow"><span class="pulse-dot" aria-hidden="true"></span>Income Statement</span>
+            <h2 class="panel-title">Two-year operating <em>view</em></h2>
+            <p class="panel-meta">All values in $M. Δ% = year-over-year change.</p>
+
+            <table class="fin">
+              <thead>
+                <tr>
+                  <th>Line Item</th>
+                  <th>FY 2024</th>
+                  <th>FY 2025</th>
+                  <th>Δ %</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td class="label">Revenue</td><td class="num">$28.1</td><td class="num">$32.5</td><td class="num delta-up">+15.7%</td></tr>
+                <tr><td class="label indent">Cost of Goods Sold</td><td class="num">($16.4)</td><td class="num">($18.7)</td><td class="num">+14.0%</td></tr>
+                <tr class="major"><td class="label">Gross Profit</td><td class="num">$11.7</td><td class="num">$13.8</td><td class="num delta-up">+17.9%</td></tr>
+                <tr><td class="label indent">SG&amp;A Expense</td><td class="num">($6.2)</td><td class="num">($7.3)</td><td class="num">+17.7%</td></tr>
+                <tr><td class="label indent">Owner Compensation</td><td class="num">($1.4)</td><td class="num">($1.5)</td><td class="num">+7.1%</td></tr>
+                <tr><td class="label indent">Depreciation</td><td class="num">($0.6)</td><td class="num">($0.7)</td><td class="num">+16.7%</td></tr>
+                <tr><td class="label indent">Interest Expense</td><td class="num">($0.4)</td><td class="num">($0.4)</td><td class="num">+0.0%</td></tr>
+                <tr class="major highlight"><td class="label">Net Income</td><td class="num">$3.1</td><td class="num">$3.9</td><td class="num delta-up">+25.8%</td></tr>
+              </tbody>
+            </table>
+
+            <div class="addbacks">
+              <p class="addbacks-title">Reported Add-Backs</p>
+              <div class="addbacks-list">
+                <span>Owner perks <strong>$0.4</strong></span>
+                <span>One-time legal <strong>$0.2</strong></span>
+                <span>Family payroll <strong>$0.3</strong></span>
+                <span>Discretionary travel <strong>$0.1</strong></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Question column -->
+          <div class="qcol">
+            <article class="question-card">
+              <div class="q-head">
+                <div>
+                  <div class="q-numeral">03</div>
+                  <div class="q-meta-eyebrow">Question · Metric</div>
+                </div>
+                <span class="q-score-pill">4 / 5 <em>AI</em></span>
+              </div>
+
+              <p class="q-text">
+                What is the <em>adjusted EBITDA margin</em> for FY 2025, and how does it compare to typical HVAC services operators in this revenue band?
+              </p>
+
+              <div class="delta-block">
+                <div class="delta-row">
+                  <div>
+                    <div class="delta-label">Your Answer</div>
+                    <div class="delta-num">17.2%</div>
+                  </div>
+                  <div>
+                    <div class="delta-label">Model</div>
+                    <div class="delta-num">16.8%</div>
+                  </div>
+                  <div style="text-align: right;">
+                    <div class="delta-label">Delta</div>
+                    <div class="delta-band">+0.4 pts <em>... close</em></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="compare">
+                <div class="compare-card you">
+                  <div class="compare-eyebrow">Your Answer</div>
+                  <p class="compare-text">EBITDA $5.3M plus $1.0M add-backs over $32.5M revenue. Margin sits roughly 200 bps above the small-platform HVAC average of ~14-15%.</p>
+                </div>
+                <div class="compare-card model">
+                  <div class="compare-eyebrow"><span class="pulse-dot" aria-hidden="true"></span>Model Answer</div>
+                  <p class="compare-text">Adj. EBITDA of $5.5M on $32.5M revenue = 16.8% margin. Sits at the high end of the typical 14-17% band for HVAC operators in this revenue tier ... slightly above peers given service-contract mix.</p>
+                </div>
+              </div>
+
+              <div class="llm">
+                <div class="llm-head">
+                  <h3 class="llm-title"><em>AI evaluation</em></h3>
+                  <span class="llm-score">4<em>/ 5</em></span>
+                </div>
+
+                <div class="llm-section">
+                  <div class="llm-section-eyebrow">Strengths</div>
+                  <ul class="llm-list">
+                    <li>Correctly identified the add-back stack and computed margin from adjusted EBITDA.</li>
+                    <li>Pulled in the right peer band rather than an absolute benchmark.</li>
+                  </ul>
+                </div>
+
+                <div class="llm-section">
+                  <div class="llm-section-eyebrow gap">Gaps to close</div>
+                  <ul class="llm-list">
+                    <li>Did not call out service-contract mix as the structural reason for above-peer margin.</li>
+                  </ul>
+                </div>
+
+                <div class="llm-suggestion">
+                  When margin sits a touch above the peer band, anchor it to a structural driver. In Summit&rsquo;s case the recurring service-contract revenue is doing the work ... that&rsquo;s the durability story for the IC.
+                </div>
+              </div>
+
+              <div class="btn-row">
+                <button class="btn btn-secondary">Try Again</button>
+                <button class="btn btn-primary">Next Question</button>
+              </div>
+            </article>
+
+            <div class="upnext">
+              <div class="upnext-left">
+                <span class="upnext-eyebrow"><span class="pulse-dot" aria-hidden="true"></span>Up Next</span>
+                <p class="upnext-text">04 · Risk ... <em>What are the three risks you would flag to the IC?</em></p>
+              </div>
+              <button class="btn btn-secondary">Begin</button>
+            </div>
+
+            <div class="note">
+              <p class="note-text">Service-contract concentration: top 3 customers = 31% of recurring book. Worth a diligence note for the IC memo.</p>
+              <button class="note-action">Save to Notes</button>
+            </div>
+          </div>
+        </section>
+
+        <footer class="legend">
+          <span><strong>Δ Bands</strong> Exact &lt; ±0.5 pts · Close ±0.5-2 pts · Off ±2-5 pts · Way Off &gt; ±5 pts</span>
+          <span><strong>Score</strong> 1 off · 3 right direction · 5 nailed it</span>
+          <span><strong>Session</strong> 03 of 06 questions answered</span>
+        </footer>
+      </main>
+    </div>
+  </div>
+</body>
+</html>
