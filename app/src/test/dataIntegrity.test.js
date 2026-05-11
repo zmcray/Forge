@@ -18,8 +18,8 @@ describe("Data Integrity", () => {
       expect(section4).toBeDefined();
     });
 
-    it("has 7 subsections", () => {
-      expect(section4.subsections).toHaveLength(7);
+    it("has 9 subsections", () => {
+      expect(section4.subsections).toHaveLength(9);
     });
 
     it("every companyData block references a valid company", () => {
