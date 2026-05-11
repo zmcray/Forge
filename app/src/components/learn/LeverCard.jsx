@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { VALUE_LEVERS, LEVER_CATEGORIES } from "../../data/valueLevers";
 import { COMPANIES } from "../../data/companies";
 import { resolveDataPath } from "../../utils/resolveDataPath";
+import { formatDataPoint } from "../../utils/format";
 import useLeverProgress from "../../hooks/useLeverProgress";
 import useNotes from "../../hooks/useNotes";
 import CommitInput from "../CommitInput";
@@ -16,12 +17,6 @@ const CATEGORY_STYLES = {
   technology: { chip: "bg-surface-container-high text-on-surface", dot: "bg-on-surface-variant" },
   strategic: { chip: "bg-error-container text-on-error-container", dot: "bg-error" },
 };
-
-function formatValue(value) {
-  if (value == null) return "N/A";
-  if (Array.isArray(value)) return value[value.length - 1];
-  return value;
-}
 
 function buildModelAnswer(acceptanceCriteria) {
   const numbered = acceptanceCriteria.map((c, i) => `${i + 1}) ${c}`).join(". ");
@@ -258,7 +253,7 @@ export default function LeverCard() {
                       <div key={dp.label} className="flex justify-between items-center">
                         <span className="text-[11px] text-on-surface-variant">{dp.label}</span>
                         <span className="text-xs font-semibold text-on-surface font-mono">
-                          {formatValue(value)}
+                          {formatDataPoint(value, dp.path)}
                         </span>
                       </div>
                     );

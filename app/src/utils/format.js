@@ -3,6 +3,19 @@ export function formatCurrency(val, decimals = 1) {
   return `$${val.toFixed(decimals)}M`;
 }
 
+export function formatCurrencyK(valInMillions, decimals = 0) {
+  if (valInMillions == null || isNaN(valInMillions)) return "$--";
+  const k = valInMillions * 1000;
+  return `$${k.toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}K`;
+}
+
+export function formatDataPoint(value, path) {
+  if (value == null) return "N/A";
+  if (Array.isArray(value)) value = value[value.length - 1];
+  if (path === "keyMetrics.avgRevenuePerEmployee") return formatCurrencyK(value);
+  return value;
+}
+
 export function extractNumericValue(text) {
   // Days first: working-capital answers like "DSO = ($6.8M / $48.2M) x 365 = 51.5 days"
   // would otherwise match the $M inside the formula. Word-boundary on "days?" avoids

@@ -282,12 +282,13 @@ export const LEARN_CONTENT = [
         id: "s2b",
         title: "2B. Working Capital Metrics",
         objectives: [
+          "Calculate net working capital (textbook and operating definitions)",
           "Calculate DSO, DIO, DPO, and the cash conversion cycle",
           "Apply working capital analysis to Coastal Fresh Foods",
           "Assess whether working capital helps or hurts the business",
         ],
-        skillTags: ["Working Capital", "DSO", "DPO", "CCC", "Coastal Foods"],
-        timeEstimate: 15,
+        skillTags: ["Working Capital", "NWC", "DSO", "DPO", "CCC", "Coastal Foods"],
+        timeEstimate: 20,
         suggestedQuestions: [
           "Why is working capital a hidden trap in LMM acquisitions?",
           "How do DSO, DPO, and DIO interact?",
@@ -296,6 +297,34 @@ export const LEARN_CONTENT = [
           {
             type: "text",
             content: "Working capital is cash tied up in day-to-day operations. It is the money locked in inventory and owed by customers (AR), offset by money owed to suppliers (AP). In PE deals, working capital determines how much cash a buyer needs at close beyond the purchase price, and whether the business generates or consumes cash as it grows."
+          },
+          {
+            type: "text",
+            content: "Start with the formula. Two definitions matter, and the difference shows up the first time you talk price with a seller. Textbook NWC is Current Assets minus Current Liabilities. Operating NWC, the version PE actually uses in deals, is AR + Inventory minus AP. The operating version strips out cash and short-term debt because those get handled separately in the purchase agreement (cash-free, debt-free close). Whenever you hear 'NWC peg,' assume operating NWC unless told otherwise."
+          },
+          {
+            type: "metricTable",
+            headers: ["Definition", "Formula", "When to Use"],
+            rows: [
+              ["Textbook NWC", "Current Assets - Current Liabilities", "Liquidity analysis, financial reporting, covenant calcs"],
+              ["Operating NWC (PE)", "AR + Inventory - AP", "Deal mechanics, NWC peg, modeling growth capital needs"]
+            ]
+          },
+          {
+            type: "text",
+            content: "Worked example on Coastal. Current Assets = $0.4M cash + $6.8M AR + $3.2M inventory + $0.2M other = $10.6M. Current Liabilities = $5.1M AP + $1.2M current debt + $0.8M accrued = $7.1M. Textbook NWC = $10.6M - $7.1M = $3.5M. Operating NWC = $6.8M + $3.2M - $5.1M = $4.9M. The operating figure is larger here because Coastal carries more current debt than cash. Anchor any peg conversation with the seller around the $4.9M number, not the $3.5M."
+          },
+          {
+            type: "exercise",
+            id: "ex-2b-nwc-calc",
+            q: "Using Coastal's balance sheet above, calculate operating NWC. Show your work.",
+            inputMode: "quantitative",
+            unit: "$M",
+            answer: "Operating NWC = AR + Inventory - AP = $6.8M + $3.2M - $5.1M = $4.9M. That is roughly 10% of $48.2M revenue, on the high side of the 5-15% healthy range. It signals Coastal needs meaningful cash to fund growth, and it is the figure to anchor a working capital peg discussion around at close."
+          },
+          {
+            type: "text",
+            content: "Now that you know the dollar number, decompose it. NWC is a snapshot. The ratios below tell you why it is that size and whether it is improving or decaying."
           },
           {
             type: "metricTable",
@@ -928,7 +957,7 @@ export const LEARN_CONTENT = [
         blocks: [
           {
             type: "text",
-            content: "Customer concentration measures how much revenue depends on a small number of customers. It is the #1 deal-killer in LMM PE. The rule of thumb: any single customer above 20% of revenue is a red flag. Above 35% is often a deal-breaker. But the real assessment depends on contract terms, switching costs, and replacement speed."
+            content: "Customer concentration measures how much revenue is dependent on a small number of customers. It is the #1 deal-killer in LMM PE. The rule of thumb: any single customer above 20% of revenue is a red flag. Above 35% is often a deal-breaker. But the real assessment depends on contract terms, switching costs, and replacement speed."
           },
           {
             type: "text",
@@ -936,7 +965,18 @@ export const LEARN_CONTENT = [
           },
           {
             type: "text",
-            content: "How to evaluate: Look at the top customer percentage, but also examine contract duration, historical relationship length, switching costs for the customer, and how quickly the lost revenue could be replaced."
+            content: "Run the same five-step check on every deal. The percentage is just the first step. The other four tell you whether the percentage is actually a problem."
+          },
+          {
+            type: "metricTable",
+            headers: ["Step", "What to Check", "What to Look For"],
+            rows: [
+              ["1. Magnitude", "Top customer % of revenue", "Under 20% mostly fine. 20-35% red flag. Above 35% often deal-breaker."],
+              ["2. Contract terms", "Length, renewal mechanics, exclusivity", "Multi-year with auto-renew is sticky. At-will or short-term is exposed."],
+              ["3. Switching costs", "What does the customer have to do to leave?", "Re-certification, deep integration, retraining, regulatory approval all reduce risk."],
+              ["4. Replaceability", "How fast could the lost revenue be backfilled?", "Strong pipeline + growth makes loss survivable. Thin pipeline makes it catastrophic."],
+              ["5. Stress test", "EBITDA if the top customer leaves and fixed costs stay", "If the business cannot cover debt service in that scenario, structure protection or pass."]
+            ]
           },
           {
             type: "text",
@@ -1023,11 +1063,30 @@ export const LEARN_CONTENT = [
             content: "Precision: The owner is the sole technical expert. CNC machining for aerospace and medical devices requires deep expertise, and the owner personally handles estimating and quality control. The ISO certifications are tied to processes the owner built. Losing the owner means losing the technical moat."
           },
           {
+            type: "text",
+            content: "How to address it: a buyer has five primary instruments to manage key-person risk in deal structure. Each one addresses a specific piece of the problem. The mix you choose depends on the risk profile, the founder's leverage in negotiation, and how seller-friendly the market is."
+          },
+          {
+            type: "metricTable",
+            headers: ["Instrument", "What it does", "Tied to"],
+            rows: [
+              ["Closing payment", "Cash paid at close. Larger share = founder gets paid quickly and loses leverage post-close.", "Deal certainty, founder's leverage in negotiation."],
+              ["Earnout", "Portion of purchase price paid over time, contingent on agreed milestones.", "Revenue retention, GM onboarding, top-customer retention, EBITDA targets."],
+              ["Non-compete", "Prevents founder from starting or joining a competing business.", "Geography (state, region), industry vertical, duration (typically multi-year)."],
+              ["Consulting agreement", "Paid advisory role post-close, often part-time.", "GM remaining in seat, transition staying on track, founder's continued availability."],
+              ["Transition period", "How long the founder stays operationally involved before stepping back.", "Phasing of customer / vendor / employee relationship transfer."]
+            ]
+          },
+          {
+            type: "text",
+            content: "The principle behind all of them: every dollar the founder receives after closing should depend on the business operating well without them. Specific percentages, durations, and dollar amounts vary by deal. What matters is matching the instrument to the risk it is supposed to address."
+          },
+          {
             type: "exercise",
             id: "ex-4f-1",
             q: "You are acquiring Summit HVAC. The founder wants to retire in 2-3 years. Design a transition plan that protects the investment. What milestones would you set, and how would you structure the deal to align incentives?",
             inputMode: "qualitative",
-            answer: "Transition plan: (1) Year 1: Hire a GM ($250K) and have the founder introduce them to all key customers, vendors, and employees. Founder stays full-time. (2) Year 2: GM takes over day-to-day operations. Founder shifts to advisory role (part-time) focused on top 5 customer relationships and strategic partnerships. (3) Year 3: Founder exits fully. GM is established, relationships are transferred. Deal structure: (a) Purchase price split between closing payment and earnout. 60% at close, 40% over 3 years tied to revenue retention and GM onboarding milestones. (b) Non-compete for 5 years covering the Southeast US HVAC market. (c) Consulting agreement at $200K/year for 2 years post-close, contingent on GM remaining. (d) Quarterly customer NPS or retention check tied to earnout payments. The goal: make it financially irrational for the founder to undermine the transition."
+            answer: "There is no single right answer here. The rubric is whether each part of the plan actually addresses a risk identified in 4E. One workable structure: Transition phasing tied to the risk surfaces. Year 1, the founder stays full-time and personally introduces a hired GM to every key customer, vendor, and employee. Year 2, the GM owns day-to-day operations and the founder shifts to advisory, retaining only the top customer relationships. Year 3, the founder exits fully. The phasing forces relationship transfer to happen on a clock the buyer controls. Deal structure that aligns the founder's payout with successful transition, not with closing day. Applying the five instruments: (a) split purchase price between a closing payment and a multi-year earnout sized large enough that the founder feels real consequences if the transition stalls; (b) tie earnout payments to milestones the buyer cares about, such as revenue retention, GM onboarding completion, and top-customer retention; (c) non-compete covering the same geography and industry, with duration long enough that the founder cannot start a competitor before the transition is complete; (d) optionally, a paid consulting agreement post-close, contingent on the GM remaining and the transition staying on track. The principle: make it financially irrational for the founder to undermine the transition. Every dollar still on the table after closing should depend on the business operating well without them. Specific percentages, durations, and dollar amounts depend on the deal's risk profile, the founder's leverage, and how seller-friendly the market is."
           },
           {
             type: "notes",
@@ -1036,8 +1095,89 @@ export const LEARN_CONTENT = [
         ]
       },
       {
+        id: "s4-qual",
+        title: "4F. Qualitative Due Diligence",
+        objectives: [
+          "Apply the 5-dimension qualitative framework: moats, process maturity, growth quality, scalability, customer transferability",
+          "Walk through Summit on each dimension as a worked example",
+          "Apply the framework to TrueNorth and identify what carries the premium multiple",
+        ],
+        skillTags: ["Qualitative DD", "Moats", "Process Maturity", "Scalability", "Summit HVAC", "TrueNorth SaaS"],
+        timeEstimate: 12,
+        suggestedQuestions: [
+          "What separates a 5x business from an 8x business when the financials look similar?",
+          "How do you assess whether a business will scale from $30M to $100M without breaking?",
+        ],
+        blocks: [
+          {
+            type: "text",
+            content: "Two companies with identical EBITDA can trade at very different multiples. The numbers tell you what the business produces today. The qualitative side tells you whether it will keep producing it, scale it, or break trying. PE pays a premium for businesses where the qualitative answers are strong, even when the quant looks unremarkable."
+          },
+          {
+            type: "text",
+            content: "Why it matters: The valuation multiple is largely a qualitative judgment dressed up as a number. If you cannot defend the qualitative case, you cannot defend the multiple. And if you cannot defend the multiple, you either overpay at entry or get squeezed at exit when the next buyer asks the same questions."
+          },
+          {
+            type: "text",
+            content: "Run the same five-dimension check on every deal. Score each one weak, mixed, or strong, then ask which ones could be improved during the hold and which are structural."
+          },
+          {
+            type: "metricTable",
+            headers: ["Dimension", "What to Check", "Strong Looks Like"],
+            rows: [
+              ["1. Moat / barriers to entry", "What stops a competitor from showing up next year and undercutting price?", "Certifications, regulatory licenses, switching costs, network effects, brand, geographic density."],
+              ["2. Process maturity", "Could a new operator step in and run the business from documentation alone?", "Documented SOPs, software-driven workflows, training programs, reproducible playbooks."],
+              ["3. Growth quality", "Where did the last three years of growth actually come from?", "Organic, repeatable drivers (new logos, expanded wallet share). Less ideal: one-time tailwinds, acquired revenue, founder hustle."],
+              ["4. Scalability", "Can this model 3-5x without rebuilding it from scratch?", "Multi-location proof points, software leverage, replicable hiring, infrastructure that supports the next stage."],
+              ["5. Customer relationship transferability", "If the founder leaves, do the customers stay?", "Institutional contracts, multi-stakeholder relationships, switching costs on the customer side."]
+            ]
+          },
+          {
+            type: "text",
+            content: "Red flags: Margins held up only by the founder's personal hustle. Growth driven by one mega-customer ramping. 'We have a process' that actually lives in someone's head. Single location with no proof the model travels. Customers say 'I work with [founder name]' rather than 'I work with [company name]'."
+          },
+          {
+            type: "text",
+            content: "Worked example: Summit Mechanical Services. Walk through each dimension and notice where Summit is strong, mixed, or weak."
+          },
+          {
+            type: "companyData",
+            companyId: "summit-hvac",
+            view: "metrics"
+          },
+          {
+            type: "text",
+            content: "Dimension 1 (Moat): Mixed-to-weak. Commercial HVAC is competitive at the local level. The moats are reputation, relationships, and the cost and disruption of switching installed equipment. Real but modest. Dimension 2 (Process maturity): Likely weak. A founder-led 127-person services business with $2.4M in owner comp signals decisions that route through one person. Dispatch, estimating, and customer escalations probably are not documented. Dimension 3 (Growth quality): Mixed. 15.7% growth is real, but on a $32.5M regional services base it is likely a mix of new contracts the founder personally won and service-contract expansion. DD needs to confirm how much is recurring expansion versus a few large project wins. Dimension 4 (Scalability): Mixed. Three branches in the Southeast prove the model travels, but expanding to a new metro requires hiring a strong local GM and a year of investment. Not a software business that scales with a server. Dimension 5 (Customer transferability): Weak. Commercial HVAC relationships in LMM tend to be personal. Customers call the owner. A new GM would have to rebuild trust over 12-18 months."
+          },
+          {
+            type: "text",
+            content: "Verdict on Summit: a solid services business with real but modest qualitative strength. A buyer should pay a fair multiple for a well-run founder-led HVAC business and resist any premium until the qualitative dimensions are actively improved post-close."
+          },
+          {
+            type: "text",
+            content: "Now your turn. Apply the same five-dimension framework to TrueNorth Analytics. Identify which dimensions carry the SaaS premium multiple, and which would still need work even though the financials look strong."
+          },
+          {
+            type: "companyData",
+            companyId: "truenorth-saas",
+            view: "metrics"
+          },
+          {
+            type: "exercise",
+            id: "ex-4-qual",
+            q: "Walk through TrueNorth on all five qualitative dimensions. For each, mark it strong, mixed, or weak and explain in one sentence why. Then state which dimensions carry the SaaS premium multiple and which would be the most important post-close investments.",
+            inputMode: "qualitative",
+            answer: "Dimension 1 (Moat): Strong. Compliance software has high switching costs (audit cycles, integration with audit firms, internal training) and the SOC 2 / ISO 27001 / HIPAA tooling is hard to replicate quickly. Dimension 2 (Process maturity): Mixed-to-strong for a 5-year-old startup. Software bakes process into the product itself, but a 68-person company at $14.2M revenue with two co-founder leaders likely still has key decisions concentrated at the top. Dimension 3 (Growth quality): Strong. 27.9% growth on a 92% recurring revenue base is the gold standard for repeatable growth. Same playbook, more reps, rather than one-time tailwinds. Dimension 4 (Scalability): Strong structurally (cloud infrastructure, low marginal cost per customer) but operationally constrained because the company is spending heavily on sales and marketing to acquire each new customer. Dimension 5 (Customer transferability): Strong. 8% concentration, multi-stakeholder buying (security + compliance + finance), and the product lives in the customer's compliance workflow, not in a founder's address book. Dimensions carrying the premium: 1, 3, and 5. Multiple expansion thesis: improve sales-and-marketing efficiency to fix dimension 4 operationally, and build a real management layer below the co-founders to improve dimension 2. Both are achievable in a 3-4 year hold."
+          },
+          {
+            type: "notes",
+            id: "notes-4-qual"
+          }
+        ]
+      },
+      {
         id: "s4g",
-        title: "4F. Valuation Multiples",
+        title: "4G. Valuation Multiples",
         objectives: [
           "Know typical LMM multiples by sector",
           "Understand what drives multiples up or down",
@@ -1065,6 +1205,10 @@ export const LEARN_CONTENT = [
           {
             type: "text",
             content: "Multiple expansion drivers: Growing recurring revenue percentage. Improving margins. Reducing customer concentration. Building a management team (reducing key-person risk). Scaling to platform size in roll-up sectors."
+          },
+          {
+            type: "text",
+            content: "Sector-specific quick check: Rule of 40 (SaaS only). For software businesses, a fast triage heuristic is revenue growth percentage + EBITDA margin percentage. Above 40 signals a healthy combination of growth and profitability and supports premium SaaS multiples (8-12x). Below 40 means the business is either growing too slowly or burning too much cash to justify the multiple. It is a check, not a valuation method, and only applies to SaaS where growth and margin trade off cleanly."
           },
           {
             type: "companyData",
@@ -1107,8 +1251,82 @@ export const LEARN_CONTENT = [
         ]
       },
       {
+        id: "s4-rtn",
+        title: "4H. Return Analysis",
+        objectives: [
+          "Calculate MOIC, IRR, and cash-on-cash for a PE deal",
+          "Understand how hold period transforms identical MOIC into very different IRRs",
+          "Decompose returns into the three PE value creation levers and judge which actually drove the result",
+        ],
+        skillTags: ["MOIC", "IRR", "Cash-on-Cash", "Returns", "TrueNorth SaaS"],
+        timeEstimate: 15,
+        suggestedQuestions: [
+          "Why isn't MOIC enough to evaluate a deal? Why does IRR matter?",
+          "How does hold period change which deals look attractive?",
+        ],
+        blocks: [
+          {
+            type: "text",
+            content: "PE deals are ultimately judged on return to limited partners. The three numbers that matter: how much cash you got back (MOIC), how fast you got it back (IRR), and how much actually came out as cash distributions versus paper value at exit (cash-on-cash). Each metric answers a different question, and using only one of them is how investors talk themselves into bad deals."
+          },
+          {
+            type: "text",
+            content: "Why it matters: A 3x MOIC sounds great until you realize it took 8 years (~15% IRR, barely beating the public market). A 25% IRR sounds great until you realize the deal returned 1.4x in 18 months on small absolute dollars. Sophisticated LPs ask for both, plus the cash distribution profile, before they evaluate a manager's track record."
+          },
+          {
+            type: "metricTable",
+            headers: ["Metric", "Formula", "What it measures", "PE Benchmark"],
+            rows: [
+              ["MOIC (Multiple on Invested Capital)", "Total cash returned to equity / Total cash invested as equity", "Absolute size of the return. 'How many times my money did I get back?'", "2.5-3.0x typical, 4x+ exceptional"],
+              ["IRR (Internal Rate of Return)", "Annualized rate that discounts all cash flows back to zero", "Time-weighted return. 'How fast did the money compound?'", "20-25% typical, 30%+ exceptional"],
+              ["Cash-on-Cash", "Cumulative cash distributions / Initial equity invested", "Actual cash in pocket. Excludes unrealized exit value still inside the deal.", "Important for measuring dividend recaps and partial exits during the hold"]
+            ]
+          },
+          {
+            type: "text",
+            content: "The hold-period trap. A 3x MOIC is the same number whether the deal closes in 3 years or 7 years. The IRR is wildly different. 3x in 3 years compounds at ~44% IRR (exceptional). 3x in 5 years = ~25% IRR (target band). 3x in 7 years = ~17% IRR (weak for the risk and illiquidity). LPs care about IRR because they need to compare across managers, asset classes, and time horizons. A GP that produces 3x in 4 years beats a GP that produces 4x in 8 years on IRR (~32% vs ~19%)."
+          },
+          {
+            type: "text",
+            content: "Decomposing returns. Every dollar of equity gain in an LBO comes from one of three levers: (1) EBITDA growth (operating improvement), (2) multiple expansion (the market or the business is worth more per dollar of EBITDA at exit), or (3) debt paydown (the loan that funded the deal is smaller, so more of the EV belongs to equity). Knowing which lever drove the return matters more than the headline number. A 3x driven by EBITDA growth is repeatable; a 3x driven by multiple expansion is a market call you may not be able to make twice."
+          },
+          {
+            type: "text",
+            content: "Red flags in return analysis: Headline MOIC reported without IRR (the GP is hiding a long hold). IRR reported without MOIC (the GP is hiding small absolute dollars). Returns dependent entirely on multiple expansion (low operating improvement = bet on the market). Cash-on-cash trailing far behind paper MOIC at the 3-year mark (the GP cannot get money out)."
+          },
+          {
+            type: "text",
+            content: "Worked example: walk back through the TrueNorth LBO from 4A. Entry: $18M EV, $10.8M debt, $7.2M equity. EBITDA grows from $3.0M to $6.22M over 4 years (20% per year). Exit at 8x: $49.8M EV, $2.8M debt remaining, $47.0M to equity."
+          },
+          {
+            type: "companyData",
+            companyId: "truenorth-saas",
+            view: "metrics"
+          },
+          {
+            type: "text",
+            content: "MOIC: $47.0M / $7.2M = 6.5x. Well above the typical 2.5-3.0x band, into exceptional territory. IRR: 6.5x over 4 years compounds at (47/7.2)^(1/4) - 1 = ~60% per year. Exceptional, well above the 20-25% target. Cash-on-cash: assuming no interim distributions and a single exit, cash-on-cash equals MOIC at exit = 6.5x. Decomposition of the $39.8M equity gain: EBITDA growth contribution = $3.22M growth x 6x entry multiple = $19.3M (~48% of the gain). Multiple expansion contribution = $6.22M EBITDA x (8x - 6x) = $12.4M (~31%). Debt paydown contribution = $8M directly to equity (~20%). The TrueNorth case is the bull scenario for the LBO model. Most deals do not look like this. The base case (3-4x MOIC, 20-25% IRR over 5 years) is what underwriters actually plan for."
+          },
+          {
+            type: "text",
+            content: "Now your turn. Calculate the return profile for a more realistic base-case deal and decompose where the return actually came from."
+          },
+          {
+            type: "exercise",
+            id: "ex-4-rtn",
+            q: "You acquire a business at $30M EV with $15M of debt and $15M of equity. Hold for 5 years. EBITDA grows from $5M to $7.5M (50% total, ~8.5% per year). You pay down $7M of debt during the hold. You exit at the same 6x multiple as entry (no multiple expansion). Calculate: (a) exit equity value, (b) MOIC, (c) approximate IRR, (d) decomposition: how much of the return came from EBITDA growth vs. multiple expansion vs. debt paydown, and what does that tell you about the deal?",
+            inputMode: "qualitative",
+            answer: "(a) Exit EV = $7.5M x 6 = $45M. Remaining debt = $15M - $7M = $8M. Exit equity = $45M - $8M = $37M. (b) MOIC = $37M / $15M = ~2.5x. Right at the bottom of the typical PE target band. (c) IRR: 2.5x over 5 years = (2.5)^(1/5) - 1 = ~20% annualized. Right at the lower bound of the 20-25% target. (d) Decomposing the $22M of equity gain: EBITDA growth contribution = $2.5M of growth x 6x multiple = $15M (~68% of the gain). Debt paydown contribution = $7M directly to equity (~32%). Multiple expansion contribution = $0 (held flat at 6x). What this tells you: the deal is a base case. Returns sit right at the target band, driven by operating improvement and debt paydown, with no help from the market. The thesis is honest because it does not depend on multiple expansion. If the buyer needed a 3x+ MOIC to clear their fund's hurdle, they would need either faster EBITDA growth, an exit at a higher multiple, or a shorter hold. The broader lesson: the same purchase price can produce a 2.5x or a 4x MOIC depending on which levers actually move during the hold. A thesis that requires multiple expansion to clear the hurdle is a thesis that depends on the market staying favorable at exit."
+          },
+          {
+            type: "notes",
+            id: "notes-4-rtn"
+          }
+        ]
+      },
+      {
         id: "s4h",
-        title: "4G. Investment Thesis Structure",
+        title: "4I. Investment Thesis Structure",
         objectives: [
           "Learn the five components of a strong thesis",
           "Evaluate the BrightSmile roll-up thesis",
