@@ -21,7 +21,7 @@ export const LEARN_CONTENT = [
         blocks: [
           {
             type: "text",
-            content: "Gross margin is the first number PE analysts check on any income statement. It tells you how much money the business keeps after paying direct costs (COGS) to deliver its product or service. A high gross margin means pricing power and room for overhead; a low or declining one signals a commodity business or cost pressure."
+            content: "Gross margin is one of the first measures PE analysts analyze on any income statement. It tells you how much money the business keeps after paying direct costs (COGS) to deliver its product or service. A high gross margin means pricing power and room for overhead; a low or declining one signals a commodity business or cost pressure."
           },
           {
             type: "text",
