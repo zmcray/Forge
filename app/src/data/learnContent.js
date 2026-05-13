@@ -8,7 +8,7 @@ export const LEARN_CONTENT = [
         id: "s1a",
         title: "1A. Gross Margin",
         objectives: [
-          "Understand why gross margin is the first number PE checks",
+          "Understand why gross margin is one of the first measures PE analyzes",
           "Build the gross margin formula from P&L components",
           "Calculate Summit Mechanical's gross margin",
         ],
