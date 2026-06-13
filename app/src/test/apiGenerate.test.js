@@ -141,7 +141,8 @@ describe("api/generate", () => {
     expect(mockJsonSchemaOutputFormat).toHaveBeenCalledOnce();
     expect(mockParse).toHaveBeenCalledWith(
       expect.objectContaining({
-        model: "claude-sonnet-4-5",
+        // Must be a structured-output-capable model (Sonnet 4.5 is not; 4.6 is).
+        model: "claude-sonnet-4-6",
         messages: [{ role: "user", content: expect.stringContaining("Generate one realistic") }],
         output_config: expect.objectContaining({ format: expect.any(Object) }),
       }),

@@ -233,7 +233,9 @@ async function generateWithRetry() {
 
 async function requestCompany() {
   const message = await getClient().messages.parse({
-    model: "claude-sonnet-4-5",
+    // Must be a model that supports structured outputs (output_config.format).
+    // Sonnet 4.5 does not; 4.6 does. Keep in sync with evaluate.js (haiku-4-5).
+    model: "claude-sonnet-4-6",
     max_tokens: 4096,
     system: SYSTEM_PROMPT,
     messages: [{ role: "user", content: USER_PROMPT }],
