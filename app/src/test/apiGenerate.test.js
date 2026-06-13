@@ -142,9 +142,7 @@ describe("api/generate", () => {
       expect.objectContaining({
         // Plain JSON generation via messages.create — strict structured outputs
         // (output_config.format) compile a grammar too large for this schema.
-        model: "claude-sonnet-4-6",
-        // Thinking must stay disabled — adaptive thinking blew past the function timeout.
-        thinking: { type: "disabled" },
+        model: "claude-haiku-4-5",
         messages: [
           { role: "user", content: expect.stringContaining("Generate one realistic") },
         ],

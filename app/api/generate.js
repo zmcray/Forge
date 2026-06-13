@@ -246,13 +246,10 @@ async function generateWithRetry() {
 // normalizeCompany + checkCompanyConsistency validate the result.
 async function requestCompany() {
   const message = await getClient().messages.create({
-    // Keep in sync with evaluate.js (haiku-4-5). Sonnet 4.6 is the current Sonnet.
-    model: "claude-sonnet-4-6",
+    // Haiku 4.5: fast, same model /api/evaluate uses. Sonnet 4.6 produced richer
+    // companies but took ~50s, intermittently exceeding the function timeout.
+    model: "claude-haiku-4-5",
     max_tokens: 8192,
-    // Deterministic JSON generation: no thinking needed. Sonnet 4.6 otherwise
-    // defaults to high-effort adaptive thinking, which (x2 with the retry) blew
-    // past the function timeout. Disabling it keeps generation fast.
-    thinking: { type: "disabled" },
     system: SYSTEM_PROMPT,
     messages: [
       {
