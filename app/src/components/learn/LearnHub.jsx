@@ -1,39 +1,40 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { LEARN_CONTENT } from "../../data/learnContent";
 
 export default function LearnHub({ learnProgress, onStartLesson }) {
   const [activeTab, setActiveTab] = useState("focus");
   const navigate = useNavigate();
-  const {
-    getCurrentStep, getStepIndex, getStepStatus,
-    getSubsectionProgress, overallStats, allSteps,
-  } = learnProgress;
+  const { getCurrentStep, getStepIndex, getSubsectionProgress, overallStats, allSteps } =
+    learnProgress;
 
   const currentStep = getCurrentStep();
   const currentStepIdx = getStepIndex(currentStep.id);
-  const currentProgress = getSubsectionProgress(currentStep);
-  const pct = overallStats.totalSteps > 0
-    ? Math.round((overallStats.completedSteps / overallStats.totalSteps) * 100)
-    : 0;
+  const pct =
+    overallStats.totalSteps > 0
+      ? Math.round((overallStats.completedSteps / overallStats.totalSteps) * 100)
+      : 0;
 
   // First text block as description for the continue card
   const stepDescription = useMemo(() => {
-    const textBlock = (currentStep.blocks || []).find(b => b.type === "text");
-    return textBlock?.content?.slice(0, 180) + (textBlock?.content?.length > 180 ? "..." : "") || "";
+    const textBlock = (currentStep.blocks || []).find((b) => b.type === "text");
+    return (
+      textBlock?.content?.slice(0, 180) +
+        (textBlock?.content?.length > 180 ? "..." : "") || ""
+    );
   }, [currentStep]);
 
   // Objective completion: proportional to exercise completion within the subsection
   const objectiveStatuses = useMemo(() => {
     if (!currentStep.objectives) return [];
-    const exercises = (currentStep.blocks || []).filter(b => b.type === "exercise" || b.type === "calculationExercise");
-    const completedCount = exercises.filter(e => learnProgress.isComplete(e.id)).length;
+    const exercises = (currentStep.blocks || []).filter(
+      (b) => b.type === "exercise" || b.type === "calculationExercise",
+    );
+    const completedCount = exercises.filter((e) => learnProgress.isComplete(e.id)).length;
     const totalExercises = exercises.length;
     // Mark objectives proportionally: if 2/3 exercises done, mark first 2/3 of objectives
     const objCount = currentStep.objectives.length;
-    const doneObjectives = totalExercises > 0
-      ? Math.floor((completedCount / totalExercises) * objCount)
-      : 0;
+    const doneObjectives =
+      totalExercises > 0 ? Math.floor((completedCount / totalExercises) * objCount) : 0;
     return currentStep.objectives.map((obj, i) => ({
       text: obj,
       done: i < doneObjectives,
@@ -88,7 +89,6 @@ export default function LearnHub({ learnProgress, onStartLesson }) {
           currentStepIdx={currentStepIdx}
           totalSteps={overallStats.totalSteps}
           stepDescription={stepDescription}
-          currentProgress={currentProgress}
           objectiveStatuses={objectiveStatuses}
           pct={pct}
           overallStats={overallStats}
@@ -113,9 +113,15 @@ export default function LearnHub({ learnProgress, onStartLesson }) {
 
 /* ===== FOCUS VIEW ===== */
 function FocusView({
-  currentStep, currentStepIdx, totalSteps, stepDescription,
-  currentProgress, objectiveStatuses, pct, overallStats,
-  onContinue, onNavigate,
+  currentStep,
+  currentStepIdx,
+  totalSteps,
+  stepDescription,
+  objectiveStatuses,
+  pct,
+  overallStats,
+  onContinue,
+  onNavigate,
 }) {
   const isFirstTime = overallStats.completedSteps === 0;
 
@@ -177,7 +183,10 @@ function FocusView({
           </div>
           <ul className="space-y-2 mb-4">
             {objectiveStatuses.map((obj, i) => (
-              <li key={i} className="flex items-start gap-2.5 text-sm text-on-surface-variant">
+              <li
+                key={i}
+                className="flex items-start gap-2.5 text-sm text-on-surface-variant"
+              >
                 <span
                   className={`material-symbols-outlined text-[16px] mt-0.5 shrink-0 ${
                     obj.done ? "text-on-tertiary-container" : "text-outline-variant"
@@ -186,13 +195,15 @@ function FocusView({
                 >
                   {obj.done ? "check_circle" : "radio_button_unchecked"}
                 </span>
-                <span className={obj.done ? "text-on-surface-variant/60" : ""}>{obj.text}</span>
+                <span className={obj.done ? "text-on-surface-variant/60" : ""}>
+                  {obj.text}
+                </span>
               </li>
             ))}
           </ul>
           {currentStep.skillTags && (
             <div className="flex gap-1.5 flex-wrap">
-              {currentStep.skillTags.map(tag => (
+              {currentStep.skillTags.map((tag) => (
                 <span
                   key={tag}
                   className="text-[10px] uppercase tracking-widest px-2.5 py-1 rounded-full bg-primary/8 text-primary border border-primary/10"
@@ -217,7 +228,10 @@ function FocusView({
               </div>
             </div>
             <div>
-              <div className="text-xl font-bold text-on-surface" style={{ color: "#FFB74D" }}>
+              <div
+                className="text-xl font-bold text-on-surface"
+                style={{ color: "#FFB74D" }}
+              >
                 ~{overallStats.remainingTime}m
               </div>
               <div className="text-[10px] uppercase tracking-widest text-outline-variant">
@@ -237,8 +251,12 @@ function FocusView({
           onClick={() => onNavigate("/quickfire")}
           className="bg-surface-container-lowest ghost-border rounded-xl p-4 text-left hover:bg-surface-container-low transition-colors"
         >
-          <span className="material-symbols-outlined text-[24px] text-on-surface-variant mb-2">bolt</span>
-          <div className="text-sm font-semibold font-headline text-on-surface">Quick Screen</div>
+          <span className="material-symbols-outlined text-[24px] text-on-surface-variant mb-2">
+            bolt
+          </span>
+          <div className="text-sm font-semibold font-headline text-on-surface">
+            Quick Screen
+          </div>
           <div className="text-xs text-outline-variant mt-0.5">
             60-second go/no-go decisions. Pattern recognition drill.
           </div>
@@ -247,8 +265,12 @@ function FocusView({
           onClick={() => onNavigate("/")}
           className="bg-surface-container-lowest ghost-border rounded-xl p-4 text-left hover:bg-surface-container-low transition-colors"
         >
-          <span className="material-symbols-outlined text-[24px] text-on-surface-variant mb-2">business</span>
-          <div className="text-sm font-semibold font-headline text-on-surface">Explore Companies</div>
+          <span className="material-symbols-outlined text-[24px] text-on-surface-variant mb-2">
+            business
+          </span>
+          <div className="text-sm font-semibold font-headline text-on-surface">
+            Explore Companies
+          </div>
           <div className="text-xs text-outline-variant mt-0.5">
             Browse all 9 companies. Deep dive any industry.
           </div>
@@ -260,8 +282,14 @@ function FocusView({
 
 /* ===== JOURNEY VIEW ===== */
 function JourneyView({
-  allSteps, currentStepId, getStepStatus, getSubsectionProgress,
-  overallStats, pct, onStartLesson, onNavigate,
+  allSteps,
+  currentStepId,
+  getStepStatus,
+  getSubsectionProgress,
+  overallStats,
+  pct,
+  onStartLesson,
+  onNavigate,
 }) {
   // Group steps by section
   const sectionGroups = useMemo(() => {
@@ -285,9 +313,12 @@ function JourneyView({
       <div className="flex items-center gap-4 mb-7">
         <ProgressRing size={56} pct={pct} strokeWidth={4} fontSize={16} />
         <div>
-          <div className="text-lg font-bold font-headline text-on-surface">Your Journey</div>
+          <div className="text-lg font-bold font-headline text-on-surface">
+            Your Journey
+          </div>
           <div className="text-sm text-outline-variant">
-            {overallStats.completedSteps} of {overallStats.totalSteps} steps complete ... ~{overallStats.remainingTime} min remaining
+            {overallStats.completedSteps} of {overallStats.totalSteps} steps complete ...
+            ~{overallStats.remainingTime} min remaining
           </div>
         </div>
       </div>
@@ -306,7 +337,6 @@ function JourneyView({
               const status = getStepStatus(step);
               const isCurrent = step.id === currentStepId;
               const progress = getSubsectionProgress(step);
-              const globalIdx = allSteps.indexOf(step);
 
               return (
                 <div key={step.id} className="relative mb-1.5">
@@ -316,39 +346,48 @@ function JourneyView({
                       status === "completed"
                         ? "bg-on-tertiary-container border-on-tertiary-container"
                         : isCurrent
-                        ? "bg-primary border-primary shadow-[0_0_8px_rgba(var(--primary-rgb,160,196,255),0.4)]"
-                        : "bg-surface-container-low border-outline-variant/30 opacity-30"
+                          ? "bg-primary border-primary shadow-[0_0_8px_rgba(var(--primary-rgb,160,196,255),0.4)]"
+                          : "bg-surface-container-low border-outline-variant/30 opacity-30"
                     }`}
                   />
 
                   {/* Card */}
                   <div
                     className={`rounded-[10px] px-4 py-2.5 transition-colors ${
-                      isCurrent
-                        ? "bg-primary/8"
-                        : status === "locked"
-                        ? "opacity-40"
-                        : ""
+                      isCurrent ? "bg-primary/8" : status === "locked" ? "opacity-40" : ""
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <div className={`text-sm font-medium ${status === "completed" ? "text-on-surface-variant/60" : "text-on-surface"}`}>
+                      <div
+                        className={`text-sm font-medium ${status === "completed" ? "text-on-surface-variant/60" : "text-on-surface"}`}
+                      >
                         {status === "completed" && (
-                          <span className="text-on-tertiary-container mr-1.5">&#10003;</span>
+                          <span className="text-on-tertiary-container mr-1.5">
+                            &#10003;
+                          </span>
                         )}
                         {step.title}
                       </div>
                       {progress && status === "completed" && (
                         <span className="text-xs font-semibold text-on-tertiary-container flex items-center gap-1">
-                          <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
+                          <span
+                            className="material-symbols-outlined text-[14px]"
+                            style={{ fontVariationSettings: "'FILL' 1" }}
+                          >
+                            star
+                          </span>
                           {progress.completed}/{progress.total}
                         </span>
                       )}
                     </div>
                     <div className="flex items-center gap-2 mt-0.5 text-[11px] text-outline-variant">
                       <span className="material-symbols-outlined text-[13px]">timer</span>
-                      {status === "completed" ? `${step.timeEstimate || 8}m` : `~${step.timeEstimate || 8}m`}
-                      {isCurrent && <span className="text-primary font-medium">In progress</span>}
+                      {status === "completed"
+                        ? `${step.timeEstimate || 8}m`
+                        : `~${step.timeEstimate || 8}m`}
+                      {isCurrent && (
+                        <span className="text-primary font-medium">In progress</span>
+                      )}
                     </div>
 
                     {/* Skill tags and CTA on active node */}
@@ -356,18 +395,25 @@ function JourneyView({
                       <>
                         {step.skillTags && (
                           <div className="flex gap-1.5 flex-wrap mt-2">
-                            {step.skillTags.map(tag => (
-                              <span key={tag} className="text-[9px] uppercase tracking-widest px-2 py-0.5 rounded-full bg-primary/10 text-primary">
+                            {step.skillTags.map((tag) => (
+                              <span
+                                key={tag}
+                                className="text-[9px] uppercase tracking-widest px-2 py-0.5 rounded-full bg-primary/10 text-primary"
+                              >
                                 {tag}
                               </span>
                             ))}
                           </div>
                         )}
                         <button
-                          onClick={() => onStartLesson(step._sectionIndex, step._subsectionIndex)}
+                          onClick={() =>
+                            onStartLesson(step._sectionIndex, step._subsectionIndex)
+                          }
                           className="inline-flex items-center gap-1.5 mt-2.5 px-4 py-1.5 rounded-lg text-xs font-semibold bg-primary/15 text-primary hover:bg-primary/20 transition-colors"
                         >
-                          <span className="material-symbols-outlined text-[14px]">play_arrow</span>
+                          <span className="material-symbols-outlined text-[14px]">
+                            play_arrow
+                          </span>
                           Continue
                         </button>
                       </>
@@ -387,18 +433,45 @@ function JourneyView({
         </h4>
         <div className="grid grid-cols-2 gap-3">
           {[
-            { path: "/learn/concepts", icon: "lightbulb", label: "Key Concepts", desc: "Deep-dive concept cards" },
-            { path: "/learn/compare", icon: "compare_arrows", label: "Cross-Industry Compare", desc: "Compare companies side by side" },
-            { path: "/learn/levers", icon: "account_tree", label: "Value Creation Levers", desc: "Revenue, margin, multiple, debt" },
-            { path: "/learn/bridge", icon: "stacked_bar_chart", label: "Bridge Calculator", desc: "Model value creation waterfalls" },
-            { path: "/learn/playbooks", icon: "assignment", label: "Playbooks", desc: "Operating playbooks and frameworks" },
-          ].map(m => (
+            {
+              path: "/learn/concepts",
+              icon: "lightbulb",
+              label: "Key Concepts",
+              desc: "Deep-dive concept cards",
+            },
+            {
+              path: "/learn/compare",
+              icon: "compare_arrows",
+              label: "Cross-Industry Compare",
+              desc: "Compare companies side by side",
+            },
+            {
+              path: "/learn/levers",
+              icon: "account_tree",
+              label: "Value Creation Levers",
+              desc: "Revenue, margin, multiple, debt",
+            },
+            {
+              path: "/learn/bridge",
+              icon: "stacked_bar_chart",
+              label: "Bridge Calculator",
+              desc: "Model value creation waterfalls",
+            },
+            {
+              path: "/learn/playbooks",
+              icon: "assignment",
+              label: "Playbooks",
+              desc: "Operating playbooks and frameworks",
+            },
+          ].map((m) => (
             <button
               key={m.path}
               onClick={() => onNavigate(m.path)}
               className="flex items-center gap-3 bg-surface-container-lowest ghost-border rounded-xl px-4 py-3 text-left hover:bg-surface-container-low transition-colors"
             >
-              <span className="material-symbols-outlined text-[20px] text-primary">{m.icon}</span>
+              <span className="material-symbols-outlined text-[20px] text-primary">
+                {m.icon}
+              </span>
               <div>
                 <div className="text-sm font-medium text-on-surface">{m.label}</div>
                 <div className="text-[11px] text-outline-variant">{m.desc}</div>
@@ -421,13 +494,19 @@ function ProgressRing({ size = 90, pct = 0, strokeWidth = 5, fontSize = 20 }) {
     <div className="relative" style={{ width: size, height: size }}>
       <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }}>
         <circle
-          cx={size / 2} cy={size / 2} r={radius}
-          fill="none" strokeWidth={strokeWidth}
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          strokeWidth={strokeWidth}
           className="stroke-outline-variant/10"
         />
         <circle
-          cx={size / 2} cy={size / 2} r={radius}
-          fill="none" strokeWidth={strokeWidth}
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          strokeWidth={strokeWidth}
           strokeLinecap="round"
           strokeDasharray={circumference}
           strokeDashoffset={offset}

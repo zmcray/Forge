@@ -70,11 +70,14 @@ describe("useLeverProgress", () => {
     const { result } = renderHook(() => useLeverProgress());
 
     act(() => {
-      result.current.setLeverNotes("procurement", "Key takeaway: vendor consolidation first");
+      result.current.setLeverNotes(
+        "procurement",
+        "Key takeaway: vendor consolidation first",
+      );
     });
 
     expect(result.current.getLever("procurement").notes).toBe(
-      "Key takeaway: vendor consolidation first"
+      "Key takeaway: vendor consolidation first",
     );
   });
 
@@ -113,7 +116,7 @@ describe("useLeverProgress", () => {
             exerciseScore: 5,
           },
         },
-      })
+      }),
     );
 
     const { result } = renderHook(() => useLeverProgress());
@@ -121,5 +124,20 @@ describe("useLeverProgress", () => {
     expect(lever.notes).toBe("prior notes");
     expect(lever.exerciseAttempted).toBe(true);
     expect(lever.exerciseScore).toBe(5);
+  });
+
+  it("falls back to defaults when localStorage has the wrong shape", () => {
+    localStorageMock.setItem("forge-levers", JSON.stringify({}));
+
+    const { result } = renderHook(() => useLeverProgress());
+
+    expect(result.current.getLever("ai-software")).toEqual({
+      notes: "",
+      lastStudied: null,
+      exerciseAttempted: false,
+      exerciseScore: null,
+    });
+    expect(result.current.getStudiedCount()).toBe(0);
+    expect(result.current.getExerciseCount()).toBe(0);
   });
 });

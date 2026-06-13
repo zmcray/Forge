@@ -1,12 +1,28 @@
 import { useState, useCallback } from "react";
 
 const STORAGE_KEY = "forge-levers";
+const DEFAULT_STATE = { levers: {} };
+const DEFAULT_LEVER = {
+  notes: "",
+  lastStudied: null,
+  exerciseAttempted: false,
+  exerciseScore: null,
+};
+
+function isRecord(value) {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+function getLevers(progress) {
+  return isRecord(progress?.levers) ? progress.levers : {};
+}
 
 function loadProgress() {
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || { levers: {} };
+    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    return isRecord(parsed) && isRecord(parsed.levers) ? parsed : DEFAULT_STATE;
   } catch {
-    return { levers: {} };
+    return DEFAULT_STATE;
   }
 }
 
@@ -22,24 +38,19 @@ export default function useLeverProgress() {
   const [progress, setProgress] = useState(loadProgress);
 
   const getLever = useCallback(
-    (leverId) =>
-      progress.levers[leverId] || {
-        notes: "",
-        lastStudied: null,
-        exerciseAttempted: false,
-        exerciseScore: null,
-      },
-    [progress]
+    (leverId) => getLevers(progress)[leverId] || DEFAULT_LEVER,
+    [progress],
   );
 
   const markStudied = useCallback((leverId) => {
     setProgress((prev) => {
+      const levers = getLevers(prev);
       const next = {
         ...prev,
         levers: {
-          ...prev.levers,
+          ...levers,
           [leverId]: {
-            ...prev.levers[leverId],
+            ...levers[leverId],
             lastStudied: new Date().toISOString(),
           },
         },
@@ -51,12 +62,13 @@ export default function useLeverProgress() {
 
   const markExerciseAttempted = useCallback((leverId, score = null) => {
     setProgress((prev) => {
+      const levers = getLevers(prev);
       const next = {
         ...prev,
         levers: {
-          ...prev.levers,
+          ...levers,
           [leverId]: {
-            ...prev.levers[leverId],
+            ...levers[leverId],
             exerciseAttempted: true,
             exerciseScore: score,
           },
@@ -69,12 +81,13 @@ export default function useLeverProgress() {
 
   const setLeverNotes = useCallback((leverId, text) => {
     setProgress((prev) => {
+      const levers = getLevers(prev);
       const next = {
         ...prev,
         levers: {
-          ...prev.levers,
+          ...levers,
           [leverId]: {
-            ...prev.levers[leverId],
+            ...levers[leverId],
             notes: text,
             lastUpdated: new Date().toISOString(),
           },
@@ -86,13 +99,13 @@ export default function useLeverProgress() {
   }, []);
 
   const getStudiedCount = useCallback(
-    () => Object.values(progress.levers).filter((l) => l.lastStudied).length,
-    [progress]
+    () => Object.values(getLevers(progress)).filter((l) => l.lastStudied).length,
+    [progress],
   );
 
   const getExerciseCount = useCallback(
-    () => Object.values(progress.levers).filter((l) => l.exerciseAttempted).length,
-    [progress]
+    () => Object.values(getLevers(progress)).filter((l) => l.exerciseAttempted).length,
+    [progress],
   );
 
   return {

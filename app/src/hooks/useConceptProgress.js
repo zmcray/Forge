@@ -1,12 +1,23 @@
 import { useState, useCallback } from "react";
 
 const STORAGE_KEY = "forge-concepts";
+const DEFAULT_STATE = { cards: {} };
+const DEFAULT_CARD = { notes: "", lastStudied: null, practiceAttempted: false };
+
+function isRecord(value) {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+function getCards(progress) {
+  return isRecord(progress?.cards) ? progress.cards : {};
+}
 
 function loadProgress() {
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || { cards: {} };
+    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    return isRecord(parsed) && isRecord(parsed.cards) ? parsed : DEFAULT_STATE;
   } catch {
-    return { cards: {} };
+    return DEFAULT_STATE;
   }
 }
 
@@ -22,18 +33,19 @@ export default function useConceptProgress() {
   const [progress, setProgress] = useState(loadProgress);
 
   const getCard = useCallback(
-    (cardId) => progress.cards[cardId] || { notes: "", lastStudied: null, practiceAttempted: false },
-    [progress]
+    (cardId) => getCards(progress)[cardId] || DEFAULT_CARD,
+    [progress],
   );
 
   const markStudied = useCallback((cardId) => {
     setProgress((prev) => {
+      const cards = getCards(prev);
       const next = {
         ...prev,
         cards: {
-          ...prev.cards,
+          ...cards,
           [cardId]: {
-            ...prev.cards[cardId],
+            ...cards[cardId],
             lastStudied: new Date().toISOString(),
           },
         },
@@ -45,12 +57,13 @@ export default function useConceptProgress() {
 
   const markPracticeAttempted = useCallback((cardId) => {
     setProgress((prev) => {
+      const cards = getCards(prev);
       const next = {
         ...prev,
         cards: {
-          ...prev.cards,
+          ...cards,
           [cardId]: {
-            ...prev.cards[cardId],
+            ...cards[cardId],
             practiceAttempted: true,
           },
         },
@@ -62,12 +75,13 @@ export default function useConceptProgress() {
 
   const setCardNotes = useCallback((cardId, text) => {
     setProgress((prev) => {
+      const cards = getCards(prev);
       const next = {
         ...prev,
         cards: {
-          ...prev.cards,
+          ...cards,
           [cardId]: {
-            ...prev.cards[cardId],
+            ...cards[cardId],
             notes: text,
             lastUpdated: new Date().toISOString(),
           },
@@ -79,13 +93,13 @@ export default function useConceptProgress() {
   }, []);
 
   const getStudiedCount = useCallback(
-    () => Object.values(progress.cards).filter((c) => c.lastStudied).length,
-    [progress]
+    () => Object.values(getCards(progress)).filter((c) => c.lastStudied).length,
+    [progress],
   );
 
   const getPracticeCount = useCallback(
-    () => Object.values(progress.cards).filter((c) => c.practiceAttempted).length,
-    [progress]
+    () => Object.values(getCards(progress)).filter((c) => c.practiceAttempted).length,
+    [progress],
   );
 
   return {

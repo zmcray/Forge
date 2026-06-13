@@ -73,12 +73,12 @@ describe("usePlaybookProgress", () => {
     act(() => {
       result.current.setPlaybookNotes(
         "summit-hvac-playbook",
-        "Key risk: CFO hire delay cascades across all initiatives"
+        "Key risk: CFO hire delay cascades across all initiatives",
       );
     });
 
     expect(result.current.getPlaybook("summit-hvac-playbook").notes).toBe(
-      "Key risk: CFO hire delay cascades across all initiatives"
+      "Key risk: CFO hire delay cascades across all initiatives",
     );
   });
 
@@ -89,7 +89,9 @@ describe("usePlaybookProgress", () => {
       result.current.setGoldenYearGuess("precision-cnc-playbook", "35%");
     });
 
-    expect(result.current.getPlaybook("precision-cnc-playbook").goldenYearGuess).toBe("35%");
+    expect(result.current.getPlaybook("precision-cnc-playbook").goldenYearGuess).toBe(
+      "35%",
+    );
 
     const stored = JSON.parse(localStorageMock.getItem("forge-playbooks"));
     expect(stored.playbooks["precision-cnc-playbook"].goldenYearGuess).toBe("35%");
@@ -124,7 +126,7 @@ describe("usePlaybookProgress", () => {
       "forge-levers",
       JSON.stringify({
         levers: { "pricing-optimization": { notes: "lever notes" } },
-      })
+      }),
     );
 
     const { result } = renderHook(() => usePlaybookProgress());
@@ -160,5 +162,21 @@ describe("usePlaybookProgress", () => {
     });
 
     expect(result.current.getExerciseCount()).toBe(2);
+  });
+
+  it("falls back to defaults when localStorage has the wrong shape", () => {
+    localStorageMock.setItem("forge-playbooks", JSON.stringify({}));
+
+    const { result } = renderHook(() => usePlaybookProgress());
+
+    expect(result.current.getPlaybook("summit-hvac-playbook")).toEqual({
+      notes: "",
+      lastVisited: null,
+      exerciseAttempted: false,
+      exerciseScore: null,
+      goldenYearGuess: null,
+    });
+    expect(result.current.getVisitedCount()).toBe(0);
+    expect(result.current.getExerciseCount()).toBe(0);
   });
 });
