@@ -1,5 +1,4 @@
 import Anthropic from "@anthropic-ai/sdk";
-import { jsonSchemaOutputFormat } from "@anthropic-ai/sdk/helpers/json-schema";
 
 function getEnv(name) {
   if (process.env[name]) return process.env[name];
@@ -214,37 +213,71 @@ export async function POST(request) {
 async function generateWithRetry() {
   let lastCompany = null;
   let lastWarnings = [];
+  let lastError = null;
 
   for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt += 1) {
-    const company = await requestCompany();
-    const normalized = normalizeCompany(company);
-    const warnings = checkCompanyConsistency(normalized);
+    try {
+      const company = await requestCompany();
+      const normalized = normalizeCompany(company);
+      const warnings = checkCompanyConsistency(normalized);
 
-    if (warnings.length === 0) {
-      return normalized;
+      if (warnings.length === 0) {
+        return normalized;
+      }
+
+      lastCompany = normalized;
+      lastWarnings = warnings;
+    } catch (err) {
+      lastError = err;
     }
+  }
 
-    lastCompany = normalized;
-    lastWarnings = warnings;
+  if (!lastCompany) {
+    throw lastError || new Error("Generation produced no usable company");
   }
 
   return { ...lastCompany, _warnings: lastWarnings };
 }
 
+// We request plain JSON and parse it ourselves rather than using strict
+// structured outputs (output_config.format): the full CompanySchema compiles to
+// a grammar too large for the structured-output engine ("compiled grammar is too
+// large"). The schema is still handed to the model as the contract, and
+// normalizeCompany + checkCompanyConsistency validate the result.
 async function requestCompany() {
-  const message = await getClient().messages.parse({
-    // Must be a model that supports structured outputs (output_config.format).
-    // Sonnet 4.5 does not; 4.6 does. Keep in sync with evaluate.js (haiku-4-5).
+  const message = await getClient().messages.create({
+    // Keep in sync with evaluate.js (haiku-4-5). Sonnet 4.6 is the current Sonnet.
     model: "claude-sonnet-4-6",
-    max_tokens: 4096,
+    max_tokens: 8192,
     system: SYSTEM_PROMPT,
-    messages: [{ role: "user", content: USER_PROMPT }],
-    output_config: {
-      format: jsonSchemaOutputFormat(CompanySchema),
-    },
+    messages: [
+      {
+        role: "user",
+        content: `${USER_PROMPT}
+
+Return ONLY a JSON object that conforms to this JSON Schema. No markdown, no code fences, no commentary:
+${JSON.stringify(CompanySchema)}`,
+      },
+    ],
   });
 
-  return message.parsed_output;
+  return parseCompanyResponse(message);
+}
+
+function parseCompanyResponse(message) {
+  const text = (message.content || [])
+    .filter(block => block.type === "text")
+    .map(block => block.text)
+    .join("")
+    .trim();
+
+  const start = text.indexOf("{");
+  const end = text.lastIndexOf("}");
+  if (start === -1 || end < start) {
+    throw new Error("No JSON object found in model response");
+  }
+
+  return JSON.parse(text.slice(start, end + 1));
 }
 
 function normalizeCompany(company) {

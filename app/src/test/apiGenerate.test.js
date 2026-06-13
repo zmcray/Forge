@@ -1,21 +1,16 @@
 // @vitest-environment node
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
-const { mockParse, mockJsonSchemaOutputFormat } = vi.hoisted(() => ({
-  mockParse: vi.fn(),
-  mockJsonSchemaOutputFormat: vi.fn(schema => ({ type: "json_schema", schema })),
+const { mockCreate } = vi.hoisted(() => ({
+  mockCreate: vi.fn(),
 }));
 
 vi.mock("@anthropic-ai/sdk", () => ({
   default: class MockAnthropic {
     messages = {
-      parse: mockParse,
+      create: mockCreate,
     };
   },
-}));
-
-vi.mock("@anthropic-ai/sdk/helpers/json-schema", () => ({
-  jsonSchemaOutputFormat: mockJsonSchemaOutputFormat,
 }));
 
 function makeCompany(overrides = {}) {
@@ -89,6 +84,12 @@ function makeCompany(overrides = {}) {
   };
 }
 
+// The handler now requests plain JSON and parses the text itself, so a model
+// response is a content array with a single text block holding the JSON.
+function modelResponse(company) {
+  return { content: [{ type: "text", text: JSON.stringify(company) }] };
+}
+
 function makeRequest({ method = "POST", headers = {} } = {}) {
   return new Request("http://localhost/api/generate", {
     method,
@@ -102,8 +103,7 @@ describe("api/generate", () => {
 
   beforeEach(async () => {
     vi.resetModules();
-    mockParse.mockReset();
-    mockJsonSchemaOutputFormat.mockClear();
+    mockCreate.mockReset();
     delete process.env.FORGE_AUTH_TOKEN;
     delete process.env.ANTHROPIC_API_KEY;
     const mod = await import("../../api/generate.js");
@@ -125,11 +125,11 @@ describe("api/generate", () => {
     process.env.FORGE_AUTH_TOKEN = "secret";
     const res = await POST(makeRequest());
     expect(res.status).toBe(401);
-    expect(mockParse).not.toHaveBeenCalled();
+    expect(mockCreate).not.toHaveBeenCalled();
   });
 
-  it("generates a normalized company with structured output", async () => {
-    mockParse.mockResolvedValueOnce({ parsed_output: makeCompany() });
+  it("generates a normalized company from the model's JSON", async () => {
+    mockCreate.mockResolvedValueOnce(modelResponse(makeCompany()));
 
     const res = await POST(makeRequest());
     const data = await res.json();
@@ -138,31 +138,36 @@ describe("api/generate", () => {
     expect(data.id).toMatch(/^generated-atlas-specialty-services-/);
     expect(data._generated).toBe(true);
     expect(data.questions[0].id).toBe("generated-atlas-specialty-services-q1");
-    expect(mockJsonSchemaOutputFormat).toHaveBeenCalledOnce();
-    expect(mockParse).toHaveBeenCalledWith(
+    expect(mockCreate).toHaveBeenCalledWith(
       expect.objectContaining({
-        // Must be a structured-output-capable model (Sonnet 4.5 is not; 4.6 is).
+        // Plain JSON generation via messages.create — strict structured outputs
+        // (output_config.format) compile a grammar too large for this schema.
         model: "claude-sonnet-4-6",
-        messages: [{ role: "user", content: expect.stringContaining("Generate one realistic") }],
-        output_config: expect.objectContaining({ format: expect.any(Object) }),
+        messages: [
+          { role: "user", content: expect.stringContaining("Generate one realistic") },
+        ],
       }),
     );
+    // The structured-output format param must NOT be sent (it caused the grammar error).
+    expect(mockCreate.mock.calls[0][0].output_config).toBeUndefined();
   });
 
   it("retries once when the first generated company is financially inconsistent", async () => {
-    mockParse
-      .mockResolvedValueOnce({
-        parsed_output: makeCompany({
-          incomeStatement: { ...makeCompany().incomeStatement, grossProfit: [6.4, 12] },
-        }),
-      })
-      .mockResolvedValueOnce({ parsed_output: makeCompany({ name: "Boreal Field Services" }) });
+    mockCreate
+      .mockResolvedValueOnce(
+        modelResponse(
+          makeCompany({
+            incomeStatement: { ...makeCompany().incomeStatement, grossProfit: [6.4, 12] },
+          }),
+        ),
+      )
+      .mockResolvedValueOnce(modelResponse(makeCompany({ name: "Boreal Field Services" })));
 
     const res = await POST(makeRequest());
     const data = await res.json();
 
     expect(res.status).toBe(200);
-    expect(mockParse).toHaveBeenCalledTimes(2);
+    expect(mockCreate).toHaveBeenCalledTimes(2);
     expect(data.name).toBe("Boreal Field Services");
     expect(data._warnings).toBeUndefined();
   });
@@ -171,25 +176,32 @@ describe("api/generate", () => {
     const inconsistent = makeCompany({
       incomeStatement: { ...makeCompany().incomeStatement, grossProfit: [6.4, 12] },
     });
-    mockParse
-      .mockResolvedValueOnce({ parsed_output: inconsistent })
-      .mockResolvedValueOnce({ parsed_output: inconsistent });
+    mockCreate
+      .mockResolvedValueOnce(modelResponse(inconsistent))
+      .mockResolvedValueOnce(modelResponse(inconsistent));
 
     const res = await POST(makeRequest());
     const data = await res.json();
 
     expect(res.status).toBe(200);
-    expect(mockParse).toHaveBeenCalledTimes(2);
+    expect(mockCreate).toHaveBeenCalledTimes(2);
     expect(data._warnings).toContain("Gross profit mismatch in year 2");
   });
 
-  it("returns 502 when the Anthropic call fails", async () => {
-    mockParse.mockRejectedValueOnce(new Error("network down"));
+  it("returns 502 when the Anthropic call fails on every attempt", async () => {
+    mockCreate.mockRejectedValue(new Error("network down"));
 
     const res = await POST(makeRequest());
     const data = await res.json();
 
     expect(res.status).toBe(502);
     expect(data.error).toContain("Generation failed");
+  });
+
+  it("returns 502 when the model response is not valid JSON", async () => {
+    mockCreate.mockResolvedValue({ content: [{ type: "text", text: "I cannot help with that." }] });
+
+    const res = await POST(makeRequest());
+    expect(res.status).toBe(502);
   });
 });
