@@ -3,12 +3,16 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import ChatDrawer from "../components/learn/ChatDrawer";
 
-// Mock useChatContext to avoid importing companies data
-vi.mock("../hooks/useChatContext", () => ({
-  default: () => ({
+const { mockUseChatContext } = vi.hoisted(() => ({
+  mockUseChatContext: vi.fn(() => ({
     systemPrompt: "You are a tutor.",
     suggestedQuestions: ["What is EBITDA?", "Why do margins matter?"],
-  }),
+  })),
+}));
+
+// Mock useChatContext to avoid importing companies data
+vi.mock("../hooks/useChatContext", () => ({
+  default: mockUseChatContext,
 }));
 
 describe("ChatDrawer", () => {
@@ -30,6 +34,33 @@ describe("ChatDrawer", () => {
   it("renders header with subsection title", () => {
     render(<ChatDrawer {...defaultProps} />);
     expect(screen.getByText("Chat: Test Topic")).toBeInTheDocument();
+  });
+
+  it("uses explicit practice title and threads practice context into useChatContext", () => {
+    const practiceContext = {
+      companyId: "coastal-fresh-foods",
+      questionId: "risk-1",
+    };
+
+    render(
+      <ChatDrawer
+        {...defaultProps}
+        contextType="practice"
+        title="Coastal Fresh Foods"
+        practiceContext={practiceContext}
+      />
+    );
+
+    expect(screen.getByText("Chat: Coastal Fresh Foods")).toBeInTheDocument();
+    expect(screen.getByText("Ask a question about Coastal Fresh Foods")).toBeInTheDocument();
+    expect(screen.queryByText("Chat: Test Topic")).not.toBeInTheDocument();
+    expect(mockUseChatContext).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        contextType: "practice",
+        practiceContext,
+        title: "Coastal Fresh Foods",
+      })
+    );
   });
 
   it("renders suggested questions when no messages exist", () => {

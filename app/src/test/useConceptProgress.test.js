@@ -70,12 +70,26 @@ describe("useConceptProgress", () => {
             practiceAttempted: true,
           },
         },
-      })
+      }),
     );
 
     const { result } = renderHook(() => useConceptProgress());
     const card = result.current.getCard("ebitda-add-backs");
     expect(card.lastStudied).toBe("2026-01-01T00:00:00.000Z");
     expect(card.practiceAttempted).toBe(true);
+  });
+
+  it("falls back to defaults when localStorage has the wrong shape", () => {
+    localStorage.setItem("forge-concepts", JSON.stringify({}));
+
+    const { result } = renderHook(() => useConceptProgress());
+
+    expect(result.current.getCard("ebitda-add-backs")).toEqual({
+      notes: "",
+      lastStudied: null,
+      practiceAttempted: false,
+    });
+    expect(result.current.getStudiedCount()).toBe(0);
+    expect(result.current.getPracticeCount()).toBe(0);
   });
 });

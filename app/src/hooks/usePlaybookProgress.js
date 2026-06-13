@@ -1,12 +1,29 @@
 import { useState, useCallback } from "react";
 
 const STORAGE_KEY = "forge-playbooks";
+const DEFAULT_STATE = { playbooks: {} };
+const DEFAULT_PLAYBOOK = {
+  notes: "",
+  lastVisited: null,
+  exerciseAttempted: false,
+  exerciseScore: null,
+  goldenYearGuess: null,
+};
+
+function isRecord(value) {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+function getPlaybooks(progress) {
+  return isRecord(progress?.playbooks) ? progress.playbooks : {};
+}
 
 function loadProgress() {
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || { playbooks: {} };
+    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    return isRecord(parsed) && isRecord(parsed.playbooks) ? parsed : DEFAULT_STATE;
   } catch {
-    return { playbooks: {} };
+    return DEFAULT_STATE;
   }
 }
 
@@ -22,25 +39,19 @@ export default function usePlaybookProgress() {
   const [progress, setProgress] = useState(loadProgress);
 
   const getPlaybook = useCallback(
-    (playbookId) =>
-      progress.playbooks[playbookId] || {
-        notes: "",
-        lastVisited: null,
-        exerciseAttempted: false,
-        exerciseScore: null,
-        goldenYearGuess: null,
-      },
-    [progress]
+    (playbookId) => getPlaybooks(progress)[playbookId] || DEFAULT_PLAYBOOK,
+    [progress],
   );
 
   const markVisited = useCallback((playbookId) => {
     setProgress((prev) => {
+      const playbooks = getPlaybooks(prev);
       const next = {
         ...prev,
         playbooks: {
-          ...prev.playbooks,
+          ...playbooks,
           [playbookId]: {
-            ...prev.playbooks[playbookId],
+            ...playbooks[playbookId],
             lastVisited: new Date().toISOString(),
           },
         },
@@ -52,12 +63,13 @@ export default function usePlaybookProgress() {
 
   const markExerciseAttempted = useCallback((playbookId, score = null) => {
     setProgress((prev) => {
+      const playbooks = getPlaybooks(prev);
       const next = {
         ...prev,
         playbooks: {
-          ...prev.playbooks,
+          ...playbooks,
           [playbookId]: {
-            ...prev.playbooks[playbookId],
+            ...playbooks[playbookId],
             exerciseAttempted: true,
             exerciseScore: score,
           },
@@ -70,12 +82,13 @@ export default function usePlaybookProgress() {
 
   const setPlaybookNotes = useCallback((playbookId, text) => {
     setProgress((prev) => {
+      const playbooks = getPlaybooks(prev);
       const next = {
         ...prev,
         playbooks: {
-          ...prev.playbooks,
+          ...playbooks,
           [playbookId]: {
-            ...prev.playbooks[playbookId],
+            ...playbooks[playbookId],
             notes: text,
             lastUpdated: new Date().toISOString(),
           },
@@ -88,12 +101,13 @@ export default function usePlaybookProgress() {
 
   const setGoldenYearGuess = useCallback((playbookId, guess) => {
     setProgress((prev) => {
+      const playbooks = getPlaybooks(prev);
       const next = {
         ...prev,
         playbooks: {
-          ...prev.playbooks,
+          ...playbooks,
           [playbookId]: {
-            ...prev.playbooks[playbookId],
+            ...playbooks[playbookId],
             goldenYearGuess: guess,
           },
         },
@@ -104,13 +118,13 @@ export default function usePlaybookProgress() {
   }, []);
 
   const getVisitedCount = useCallback(
-    () => Object.values(progress.playbooks).filter((p) => p.lastVisited).length,
-    [progress]
+    () => Object.values(getPlaybooks(progress)).filter((p) => p.lastVisited).length,
+    [progress],
   );
 
   const getExerciseCount = useCallback(
-    () => Object.values(progress.playbooks).filter((p) => p.exerciseAttempted).length,
-    [progress]
+    () => Object.values(getPlaybooks(progress)).filter((p) => p.exerciseAttempted).length,
+    [progress],
   );
 
   return {

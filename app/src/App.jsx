@@ -1,5 +1,5 @@
-import { useState, useCallback, useMemo, useEffect, useRef } from "react";
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { useState, useCallback, useMemo, useEffect, useReducer, useRef } from "react";
+import { Routes, Route, useLocation, useNavigate, useParams } from "react-router-dom";
 import { COMPANIES, DIFFICULTY_LABELS } from "./data/companies";
 import { SCENARIOS } from "./data/scenarios";
 import { shuffleArray } from "./utils/format";
@@ -22,13 +22,13 @@ import SearchModal from "./components/SearchModal";
 import IntroSequence from "./components/onboarding/IntroSequence";
 import SmartHomeRecommendations from "./components/onboarding/SmartHomeRecommendations";
 import SoftGate from "./components/onboarding/SoftGate";
+import ChatDrawer from "./components/learn/ChatDrawer";
 import { useScoringState, useScoringDispatch } from "./contexts/ScoringContext";
 import useTimer from "./hooks/useTimer";
 import useKeyboardShortcuts from "./hooks/useKeyboardShortcuts";
 import useLearnProgress from "./hooks/useLearnProgress";
 import { useOnboarding } from "./contexts/OnboardingContext";
 import useTheme from "./hooks/useTheme";
-import { LEARN_CONTENT } from "./data/learnContent";
 
 function viewFromPath(pathname) {
   if (pathname.startsWith("/practice")) return "practice";
@@ -38,6 +38,19 @@ function viewFromPath(pathname) {
   return "home";
 }
 
+function generationReducer(state, action) {
+  switch (action.type) {
+    case "GENERATE_START":
+      return { status: "loading", error: null };
+    case "GENERATE_SUCCESS":
+      return { status: "idle", error: null };
+    case "GENERATE_ERROR":
+      return { status: "error", error: action.payload };
+    default:
+      return state;
+  }
+}
+
 export default function App() {
   const navigate = useNavigate();
   const [selectedCompany, setSelectedCompany] = useState(null);
@@ -45,6 +58,7 @@ export default function App() {
   const [showSummary, setShowSummary] = useState(false);
   const [sessionQuestions, setSessionQuestions] = useState([]);
   const [shuffledQuestions, setShuffledQuestions] = useState([]);
+  const [generatedCompanies, setGeneratedCompanies] = useState([]);
 
   // Ref-mirror state for use in finishCompany to prevent stale closures
   const selectedCompanyRef = useRef(null);
@@ -157,6 +171,13 @@ export default function App() {
     navigate("/learn");
   }, [navigate]);
 
+  const handleGeneratedCompany = useCallback((company) => {
+    setGeneratedCompanies(prev => [
+      company,
+      ...prev.filter(c => c.id !== company.id),
+    ]);
+  }, []);
+
   return (
     <>
       <SearchModal
@@ -174,6 +195,8 @@ export default function App() {
             startPractice={startPractice}
             learnProgress={learnProgress}
             selectedCompany={selectedCompany}
+            generatedCompanies={generatedCompanies}
+            onGeneratedCompany={handleGeneratedCompany}
             statementView={statementView}
             setStatementView={setStatementView}
             shuffledQuestions={shuffledQuestions}
@@ -212,26 +235,27 @@ function AppShellWrapper(props) {
             startPractice={props.startPractice}
             setView={setView}
             learnProgress={props.learnProgress}
+            generatedCompanies={props.generatedCompanies}
+            onGeneratedCompany={props.onGeneratedCompany}
           />
         } />
         <Route path="progress" element={
           <ProgressDashboard />
         } />
         <Route path="practice/:companyId" element={
-          props.selectedCompany ? (
-            <PracticeScreen
-              company={props.selectedCompany}
-              statementView={props.statementView}
-              setStatementView={props.setStatementView}
-              shuffledQuestions={props.shuffledQuestions}
-              handleScore={props.handleScore}
-              finishCompany={props.finishCompany}
-              timer={props.timer}
-              showSummary={props.showSummary}
-              sessionQuestions={props.sessionQuestions}
-              closeSummary={props.closeSummary}
-            />
-          ) : <PracticeRedirect />
+          <PracticeRoute
+            selectedCompany={props.selectedCompany}
+            startPractice={props.startPractice}
+            statementView={props.statementView}
+            setStatementView={props.setStatementView}
+            shuffledQuestions={props.shuffledQuestions}
+            handleScore={props.handleScore}
+            finishCompany={props.finishCompany}
+            timer={props.timer}
+            showSummary={props.showSummary}
+            sessionQuestions={props.sessionQuestions}
+            closeSummary={props.closeSummary}
+          />
         } />
         <Route path="learn" element={<LearnModule />} />
         <Route path="learn/compare" element={<LearnModule />} />
@@ -250,10 +274,40 @@ function AppShellWrapper(props) {
   );
 }
 
-function PracticeRedirect() {
+function PracticeRoute({ selectedCompany, startPractice, ...practiceProps }) {
+  const { companyId } = useParams();
+  const location = useLocation();
   const navigate = useNavigate();
-  useEffect(() => { navigate("/", { replace: true }); }, [navigate]);
-  return null;
+  const searchParams = useMemo(() => new URLSearchParams(location.search), [location.search]);
+  const scenarioId = searchParams.get("scenario");
+  const activePracticeId = selectedCompany?._scenarioId || selectedCompany?.id;
+  const targetPracticeId = scenarioId || companyId;
+
+  useEffect(() => {
+    if (!companyId || activePracticeId === targetPracticeId) return;
+
+    const company = COMPANIES.find(c => c.id === companyId);
+    if (!company) {
+      navigate("/", { replace: true });
+      return;
+    }
+
+    if (scenarioId && !SCENARIOS.some(s => s.id === scenarioId && s.companyId === company.id)) {
+      navigate(`/practice/${company.id}`, { replace: true });
+      return;
+    }
+
+    startPractice(company, scenarioId || undefined);
+  }, [activePracticeId, companyId, navigate, scenarioId, startPractice, targetPracticeId]);
+
+  if (!selectedCompany || activePracticeId !== targetPracticeId) return null;
+
+  return (
+    <PracticeScreen
+      company={selectedCompany}
+      {...practiceProps}
+    />
+  );
 }
 
 function getOverallLearnProgress(learnProgress) {
@@ -266,10 +320,21 @@ function getOverallLearnProgress(learnProgress) {
   };
 }
 
-function HomeScreen({ scenariosByCompany, startPractice, setView, learnProgress }) {
+function HomeScreen({ scenariosByCompany, startPractice, setView, learnProgress, generatedCompanies, onGeneratedCompany }) {
   const { sessions, streak } = useScoringState();
   const { getWeakSpots, getQuantitativeAccuracy } = useScoringDispatch();
   const { isIntroComplete, currentIntroStep, advanceIntro, skipIntro, completeIntro } = useOnboarding();
+  const [generationState, dispatchGeneration] = useReducer(generationReducer, {
+    status: "idle",
+    error: null,
+  });
+  const generationAbortRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      generationAbortRef.current?.abort();
+    };
+  }, []);
 
   const completedCompanies = useMemo(() => {
     const ids = new Set();
@@ -314,6 +379,49 @@ function HomeScreen({ scenariosByCompany, startPractice, setView, learnProgress 
     if (summit) startPractice(summit);
   }, [startPractice]);
 
+  const handleGenerateCompany = useCallback(async () => {
+    if (generationState.status === "loading") return;
+
+    generationAbortRef.current?.abort();
+    const controller = new AbortController();
+    generationAbortRef.current = controller;
+
+    dispatchGeneration({ type: "GENERATE_START" });
+
+    try {
+      const response = await fetch("/api/generate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-forge-token": import.meta.env.VITE_FORGE_AUTH_TOKEN || "",
+        },
+        body: JSON.stringify({}),
+        signal: controller.signal,
+      });
+
+      if (!response.ok) {
+        throw new Error("Generation failed, try again.");
+      }
+
+      const company = await response.json();
+      if (controller.signal.aborted) return;
+
+      onGeneratedCompany(company);
+      dispatchGeneration({ type: "GENERATE_SUCCESS" });
+    } catch (err) {
+      if (err.name === "AbortError") return;
+      console.warn("[Forge] Company generation failed:", err);
+      dispatchGeneration({
+        type: "GENERATE_ERROR",
+        payload: err.message || "Generation failed, try again.",
+      });
+    } finally {
+      if (generationAbortRef.current === controller) {
+        generationAbortRef.current = null;
+      }
+    }
+  }, [generationState.status, onGeneratedCompany]);
+
   return (
     <>
       {/* Intro overlay for first-time users */}
@@ -333,12 +441,27 @@ function HomeScreen({ scenariosByCompany, startPractice, setView, learnProgress 
         <p className="text-sm text-on-surface-variant mt-2 max-w-xl">
           Practice analyzing lower-middle-market companies through a PE lens. Review financials, commit your analysis, and track progress.
         </p>
-        <button
-          onClick={() => setView("progress")}
-          className="mt-4 px-5 py-2.5 rounded-lg text-sm font-semibold text-on-primary bg-gradient-to-r from-primary to-primary-container hover:opacity-90 transition-opacity"
-        >
-          Check Progress
-        </button>
+        <div className="mt-4 flex flex-wrap gap-3">
+          <button
+            onClick={() => setView("progress")}
+            className="px-5 py-2.5 rounded-lg text-sm font-semibold text-on-primary bg-gradient-to-r from-primary to-primary-container hover:opacity-90 transition-opacity"
+          >
+            Check Progress
+          </button>
+          <button
+            onClick={handleGenerateCompany}
+            disabled={generationState.status === "loading"}
+            className="px-5 py-2.5 rounded-lg text-sm font-semibold text-on-surface-variant bg-surface-container-low hover:bg-surface-container-high transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <span className="inline-flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-[16px]">auto_awesome</span>
+              {generationState.status === "loading" ? "Generating..." : "Generate Random Company"}
+            </span>
+          </button>
+        </div>
+        {generationState.error && (
+          <p className="mt-2 text-xs text-error">{generationState.error}</p>
+        )}
       </section>
 
       {/* Stats bento grid or welcome card */}
@@ -420,6 +543,26 @@ function HomeScreen({ scenariosByCompany, startPractice, setView, learnProgress 
 
       {/* Deep dive case studies, sorted by difficulty */}
       <section>
+        {generatedCompanies.length > 0 && (
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm uppercase tracking-widest text-on-surface-variant font-semibold">
+                Generated Cases
+              </h3>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              {generatedCompanies.map(company => (
+                <CompanyCard
+                  key={company.id}
+                  company={company}
+                  completed={completedCompanies.has(company.id)}
+                  onSelect={() => startPractice(company)}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
         {[1, 2, 3].map((difficulty) => {
           const companies = companiesByDifficulty[difficulty];
           if (!companies || companies.length === 0) return null;
@@ -462,10 +605,51 @@ function HomeScreen({ scenariosByCompany, startPractice, setView, learnProgress 
   );
 }
 
+function buildPracticeChatContext(co) {
+  return {
+    companyName: co.name,
+    industry: co.industry,
+    revenue: co.revenue,
+    context: co.context,
+    description: co.description,
+    scenarioName: co._scenarioName || null,
+    scenarioDescription: co._scenarioDescription || null,
+    keyMetrics: co.keyMetrics,
+    incomeStatement: co.incomeStatement,
+    balanceSheet: co.balanceSheet,
+    cashFlow: co.cashFlow,
+    redFlags: co.redFlags,
+    greenFlags: co.greenFlags,
+    questions: co.questions.map(q => ({
+      id: q.id,
+      type: q.type,
+      question: q.q,
+      modelAnswer: q.answer,
+    })),
+    suggestedQuestions: [
+      `What are the top diligence priorities for ${co.name}?`,
+      `How would you frame the investment thesis for ${co.name}?`,
+      `Which metric should I pressure-test first?`,
+    ],
+  };
+}
+
 function PracticeScreen({ company: co, statementView, setStatementView, shuffledQuestions, handleScore, finishCompany, timer, showSummary, sessionQuestions, closeSummary }) {
   const navigate = useNavigate();
   const learnProgress = useLearnProgress();
   const hasLearnProgress = learnProgress.progress.completedExercises.length > 0;
+  const [chatOpen, setChatOpen] = useState(false);
+  const [chatMessages, setChatMessages] = useState([]);
+  const practiceChatContext = useMemo(() => buildPracticeChatContext(co), [co]);
+
+  const handleCloseChat = useCallback(() => {
+    setChatOpen(false);
+  }, []);
+
+  useEffect(() => {
+    setChatOpen(false);
+    setChatMessages([]);
+  }, [co.id, co._scenarioId]);
 
   return (
     <div>
@@ -480,7 +664,7 @@ function PracticeScreen({ company: co, statementView, setStatementView, shuffled
       )}
 
       {/* Header */}
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex items-center justify-between gap-4 mb-2">
         <div>
           <div className="flex items-center gap-3">
             <h1 className="text-xl font-bold font-headline text-on-surface">{co.name}</h1>
@@ -496,9 +680,20 @@ function PracticeScreen({ company: co, statementView, setStatementView, shuffled
             <p className="text-sm text-on-secondary-container mt-1 bg-secondary-container/30 rounded-lg px-3 py-1.5">{co._scenarioDescription}</p>
           )}
         </div>
-        <button onClick={finishCompany} className="px-4 py-2 text-[11px] uppercase tracking-widest font-semibold bg-surface-container-low text-on-surface-variant rounded-lg hover:bg-surface-container-high transition-colors">
-          Finish
-        </button>
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            onClick={() => setChatOpen(true)}
+            className="px-4 py-2 text-[11px] uppercase tracking-widest font-semibold bg-primary text-on-primary rounded-lg hover:opacity-90 transition-opacity"
+          >
+            <span className="inline-flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-[16px]">chat</span>
+              Ask AI
+            </span>
+          </button>
+          <button onClick={finishCompany} className="px-4 py-2 text-[11px] uppercase tracking-widest font-semibold bg-surface-container-low text-on-surface-variant rounded-lg hover:bg-surface-container-high transition-colors">
+            Finish
+          </button>
+        </div>
       </div>
 
       <TimerBar
@@ -508,67 +703,86 @@ function PracticeScreen({ company: co, statementView, setStatementView, shuffled
         currentMilestone={timer.currentMilestone}
       />
 
-      <div className="grid grid-cols-5 gap-6">
-        {/* Left: Financials */}
-        <div className="col-span-3">
-          <div className="bg-surface-container-lowest rounded-xl overflow-hidden ghost-border">
-            <div className="flex">
-              {[
-                ["income", "Income Statement"],
-                ["balance", "Balance Sheet"],
-                ["cashflow", "Cash Flow"],
-                ["metrics", "Key Metrics"]
-              ].map(([key, label]) => (
-                <button
-                  key={key}
-                  onClick={() => setStatementView(key)}
-                  className={`flex-1 py-2.5 text-[11px] uppercase tracking-widest font-medium transition-colors ${statementView === key ? "bg-surface-container-lowest text-on-surface border-b-2 border-primary" : "text-on-surface-variant bg-surface-container-low hover:text-on-surface"}`}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-            <div className="p-4">
-              <FinancialTable company={co} view={statementView} />
-            </div>
-          </div>
+      <div className="flex gap-6">
+        <div className="flex-1 min-w-0">
+          <div className={chatOpen ? "space-y-6" : "grid grid-cols-5 gap-6"}>
+            {/* Left: Financials */}
+            <div className={chatOpen ? "" : "col-span-3"}>
+              <div className="bg-surface-container-lowest rounded-xl overflow-hidden ghost-border">
+                <div className="flex">
+                  {[
+                    ["income", "Income Statement"],
+                    ["balance", "Balance Sheet"],
+                    ["cashflow", "Cash Flow"],
+                    ["metrics", "Key Metrics"]
+                  ].map(([key, label]) => (
+                    <button
+                      key={key}
+                      onClick={() => setStatementView(key)}
+                      className={`flex-1 py-2.5 text-[11px] uppercase tracking-widest font-medium transition-colors ${statementView === key ? "bg-surface-container-lowest text-on-surface border-b-2 border-primary" : "text-on-surface-variant bg-surface-container-low hover:text-on-surface"}`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+                <div className="p-4">
+                  <FinancialTable company={co} view={statementView} />
+                </div>
+              </div>
 
-          {/* Red/Green Flags */}
-          <div className="grid grid-cols-2 gap-4 mt-4">
-            <div className="bg-surface-container-lowest ghost-border rounded-xl p-4">
-              <h3 className="text-[10px] uppercase tracking-widest text-error font-semibold mb-3">Red Flags</h3>
-              <ul className="space-y-2">
-                {co.redFlags.map((f, i) => (
-                  <li key={i} className="text-xs text-on-surface-variant flex gap-2">
-                    <span className="material-symbols-outlined text-[14px] text-error shrink-0 mt-0.5">warning</span>
-                    <span>{f}</span>
-                  </li>
-                ))}
-              </ul>
+              {/* Red/Green Flags */}
+              <div className="grid grid-cols-2 gap-4 mt-4">
+                <div className="bg-surface-container-lowest ghost-border rounded-xl p-4">
+                  <h3 className="text-[10px] uppercase tracking-widest text-error font-semibold mb-3">Red Flags</h3>
+                  <ul className="space-y-2">
+                    {co.redFlags.map((f, i) => (
+                      <li key={i} className="text-xs text-on-surface-variant flex gap-2">
+                        <span className="material-symbols-outlined text-[14px] text-error shrink-0 mt-0.5">warning</span>
+                        <span>{f}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="bg-surface-container-lowest ghost-border rounded-xl p-4">
+                  <h3 className="text-[10px] uppercase tracking-widest text-on-tertiary-container font-semibold mb-3">Positive Signals</h3>
+                  <ul className="space-y-2">
+                    {co.greenFlags.map((f, i) => (
+                      <li key={i} className="text-xs text-on-surface-variant flex gap-2">
+                        <span className="material-symbols-outlined text-[14px] text-on-tertiary-container shrink-0 mt-0.5">check_circle</span>
+                        <span>{f}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
             </div>
-            <div className="bg-surface-container-lowest ghost-border rounded-xl p-4">
-              <h3 className="text-[10px] uppercase tracking-widest text-on-tertiary-container font-semibold mb-3">Positive Signals</h3>
-              <ul className="space-y-2">
-                {co.greenFlags.map((f, i) => (
-                  <li key={i} className="text-xs text-on-surface-variant flex gap-2">
-                    <span className="material-symbols-outlined text-[14px] text-on-tertiary-container shrink-0 mt-0.5">check_circle</span>
-                    <span>{f}</span>
-                  </li>
+
+            {/* Right: Questions */}
+            <div className={chatOpen ? "" : "col-span-2"}>
+              <h2 className="text-[10px] uppercase tracking-widest text-on-surface-variant font-semibold mb-3">Analysis Questions</h2>
+              <div className="space-y-4">
+                {shuffledQuestions.map((q, i) => (
+                  <QuestionCard key={`${q.id || q.type}-${i}`} question={q} index={i} onScore={handleScore} companyContext={buildCompanyContext(co)} />
                 ))}
-              </ul>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Right: Questions */}
-        <div className="col-span-2">
-          <h2 className="text-[10px] uppercase tracking-widest text-on-surface-variant font-semibold mb-3">Analysis Questions</h2>
-          <div className="space-y-4">
-            {shuffledQuestions.map((q, i) => (
-              <QuestionCard key={`${q.type}-${i}`} question={q} index={i} onScore={handleScore} companyContext={buildCompanyContext(co)} />
-            ))}
-          </div>
-        </div>
+        {chatOpen && (
+          <ChatDrawer
+            title={co.name}
+            subsection={{ id: `practice-${co.id}`, title: co.name, blocks: [] }}
+            contextType="practice"
+            practiceContext={practiceChatContext}
+            messages={chatMessages}
+            setMessages={setChatMessages}
+            getNoteText={() => ""}
+            setNoteText={() => {}}
+            completedIds={[]}
+            onClose={handleCloseChat}
+          />
+        )}
       </div>
 
       {showSummary && (

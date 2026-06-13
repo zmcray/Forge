@@ -23,7 +23,7 @@ export default function LearnModule() {
   const [currentSection, setCurrentSection] = useState(0);
   const [currentSubsection, setCurrentSubsection] = useState(0);
   const learnProgress = useLearnProgress();
-  const { markComplete, isComplete, markVisited, getSubsectionProgress, resetSubsection } = learnProgress;
+  const { markComplete, isComplete, markVisited } = learnProgress;
   const { getNoteText, setNoteText } = useNotes();
   const location = useLocation();
 
@@ -44,15 +44,17 @@ export default function LearnModule() {
   const isPlaybookDetail = location.pathname.match(/^\/learn\/playbooks\/[^/]+$/);
 
   // Show sub-module routes directly (not hub)
-  const isSubRoute = isCompareRoute || isConceptRoute || isLeverRoute || isBridgeRoute || isPlaybookRoute;
+  const isSubRoute =
+    isCompareRoute || isConceptRoute || isLeverRoute || isBridgeRoute || isPlaybookRoute;
 
   const sections = LEARN_CONTENT;
   const activeSub = sections[currentSection]?.subsections[currentSubsection];
 
   // Get completed exercise IDs for current subsection
-  const completedIds = activeSub?.blocks
-    ?.filter(b => b.type === "exercise" && isComplete(b.id))
-    .map(b => b.id) || [];
+  const completedIds =
+    activeSub?.blocks
+      ?.filter((b) => b.type === "exercise" && isComplete(b.id))
+      .map((b) => b.id) || [];
 
   useEffect(() => {
     if (activeSub && !showHub && !isSubRoute) {
@@ -114,7 +116,8 @@ export default function LearnModule() {
   };
 
   const isFirst = currentSection === 0 && currentSubsection === 0;
-  const isLast = currentSection === sections.length - 1 &&
+  const isLast =
+    currentSection === sections.length - 1 &&
     currentSubsection === sections[sections.length - 1].subsections.length - 1;
 
   // Compute flat step index for nav header
@@ -130,16 +133,27 @@ export default function LearnModule() {
     return (
       <div>
         <div className="bg-surface-container-lowest ghost-border rounded-xl p-6">
-          {isPlaybookDetail ? <PlaybookDetail />
-            : isPlaybookRoute ? <PlaybookList />
-            : isBridgeDetail ? <BridgeCalculator />
-            : isBridgeRoute ? <BridgeList />
-            : isLeverDetail ? <LeverCard />
-            : isLeverRoute ? <LeverList />
-            : isConceptDetail ? <ConceptCard />
-            : isConceptRoute ? <ConceptList />
-            : isCompareDetail ? <ComparisonView />
-            : <ComparisonList />}
+          {isPlaybookDetail ? (
+            <PlaybookDetail />
+          ) : isPlaybookRoute ? (
+            <PlaybookList />
+          ) : isBridgeDetail ? (
+            <BridgeCalculator />
+          ) : isBridgeRoute ? (
+            <BridgeList />
+          ) : isLeverDetail ? (
+            <LeverCard />
+          ) : isLeverRoute ? (
+            <LeverList />
+          ) : isConceptDetail ? (
+            <ConceptCard />
+          ) : isConceptRoute ? (
+            <ConceptList />
+          ) : isCompareDetail ? (
+            <ComparisonView />
+          ) : (
+            <ComparisonList />
+          )}
         </div>
       </div>
     );
