@@ -11,3 +11,6 @@ dist/
 .claude/
 .gstack/
 *.zip
+
+# AGENTS.md migration backups (created by dev-workflow/deploy-agents-md.sh)
+*.pre-agents.bak
