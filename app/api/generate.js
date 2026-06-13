@@ -187,7 +187,7 @@ Pick a random industry from: HVAC, food distribution, manufacturing, dental, log
 Pick realistic revenue between $5M and $75M.
 Make the financial story interesting with a mix of strengths and concerns.`;
 
-export const config = { maxDuration: 30 };
+export const config = { maxDuration: 60 };
 
 export async function POST(request) {
   if (request.method !== "POST") {
@@ -249,6 +249,10 @@ async function requestCompany() {
     // Keep in sync with evaluate.js (haiku-4-5). Sonnet 4.6 is the current Sonnet.
     model: "claude-sonnet-4-6",
     max_tokens: 8192,
+    // Deterministic JSON generation: no thinking needed. Sonnet 4.6 otherwise
+    // defaults to high-effort adaptive thinking, which (x2 with the retry) blew
+    // past the function timeout. Disabling it keeps generation fast.
+    thinking: { type: "disabled" },
     system: SYSTEM_PROMPT,
     messages: [
       {
