@@ -11,8 +11,25 @@ const MODE_LABEL = {
   [CHAT_MODES.SOCRATIC]: "Socratic",
 };
 
+const resolvePracticeTitle = (practiceContext) => {
+  if (!practiceContext) return "";
+  if (typeof practiceContext === "string") return practiceContext;
+  return (
+    practiceContext.title ||
+    practiceContext.name ||
+    practiceContext.companyName ||
+    practiceContext.company?.name ||
+    practiceContext.questionTitle ||
+    practiceContext.question?.title ||
+    ""
+  );
+};
+
 export default function ChatDrawer({
   subsection,
+  contextType,
+  practiceContext,
+  title,
   chatContext,
   messages,
   setMessages,
@@ -30,6 +47,8 @@ export default function ChatDrawer({
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
   const pendingModeRef = useRef(null);
+  const contextTitle = title || resolvePracticeTitle(practiceContext) || subsection?.title || "";
+  const emptyStateSubject = contextTitle || "this topic";
 
   // Trim banner + system-prompt trim notification key off role-bearing messages
   // only. Mode-change dividers are UI-only and never sent to the LLM, so they
@@ -38,6 +57,9 @@ export default function ChatDrawer({
 
   const { systemPrompt, suggestedQuestions } = useChatContext({
     subsection,
+    contextType,
+    practiceContext,
+    title,
     completedIds,
     llmResult: chatContext?.llmResult || null,
     messageCount: roleMessageCount,
@@ -216,7 +238,7 @@ export default function ChatDrawer({
   const showCharWarning = charCount > 1500;
 
   return (
-    <div className="w-96 max-lg:fixed max-lg:inset-0 max-lg:z-50 flex flex-col bg-surface-container rounded-xl border border-outline-variant/30 overflow-hidden max-lg:rounded-none max-lg:border-0">
+    <div className="w-96 lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-7rem)] max-lg:fixed max-lg:inset-0 max-lg:z-50 flex flex-col bg-surface-container rounded-xl border border-outline-variant/30 overflow-hidden max-lg:rounded-none max-lg:border-0">
       {/* Backdrop for tablet/mobile overlay */}
       <div
         className="hidden max-lg:block fixed inset-0 bg-black/40 -z-10"
@@ -226,7 +248,7 @@ export default function ChatDrawer({
       {/* Header */}
       <div className="flex items-center gap-2 px-4 py-3 border-b border-outline-variant/30 bg-surface-container-low">
         <h3 className="text-sm font-semibold text-on-surface truncate flex-1 min-w-0">
-          Chat: {subsection?.title || ""}
+          {contextTitle ? `Chat: ${contextTitle}` : "Chat"}
         </h3>
         <div
           role="group"
@@ -282,8 +304,8 @@ export default function ChatDrawer({
         {messages.length === 0 && !isStreaming && (
           <p className="text-sm text-on-surface-variant text-center mt-8">
             {mode === CHAT_MODES.SOCRATIC
-              ? `I'll guide you with questions. Ask me to test you on ${subsection?.title || "this concept"}.`
-              : `Ask a question about ${subsection?.title || "this concept"}`}
+              ? `I'll guide you with questions. Ask me to test you on ${emptyStateSubject}.`
+              : `Ask a question about ${emptyStateSubject}`}
           </p>
         )}
 

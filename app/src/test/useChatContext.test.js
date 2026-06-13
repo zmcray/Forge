@@ -86,6 +86,118 @@ describe("useChatContext", () => {
     expect(result.current.systemPrompt).toContain("Summit");
   });
 
+  it("keeps existing learn prompt behavior when contextType='learn'", () => {
+    const { result } = renderHook(() =>
+      useChatContext({ subsection: baseSubsection, completedIds: [], llmResult: null, messageCount: 0, contextType: "learn" })
+    );
+    expect(result.current.systemPrompt).toContain("You are a PE deal analysis tutor");
+    expect(result.current.systemPrompt).toContain("CURRENT LESSON:");
+    expect(result.current.systemPrompt).toContain("Test Subsection");
+    expect(result.current.suggestedQuestions).toContain("What is EBITDA?");
+  });
+
+  describe("practice context", () => {
+    const practiceContext = {
+      companyName: "Coastal Fresh Foods",
+      industry: "Food Distribution",
+      revenue: 48.2,
+      context: "Second-gen owner wants to grow but lacks capital.",
+      description: "Regional specialty food distributor serving restaurants and grocery chains.",
+      scenarioName: "Margin squeeze",
+      scenarioDescription: "Transportation costs remain elevated and pricing power is uncertain.",
+      keyMetrics: {
+        adjustedEbitda: 3.9,
+        grossMargin: 19.1,
+        customerConcentration: 22,
+      },
+      incomeStatement: {
+        years: [2024, 2025],
+        revenue: [45.8, 48.2],
+        grossProfit: [9.2, 9.2],
+      },
+      balanceSheet: {
+        cash: 0.4,
+        ar: 6.8,
+      },
+      cashFlow: {
+        netIncome: 0.2,
+        changeWc: -1.1,
+      },
+      redFlags: ["Gross margin compressed 100bps despite revenue growth"],
+      greenFlags: ["60% recurring revenue from contracted accounts"],
+      questions: [
+        {
+          question: "Revenue grew 5.2% but net income dropped 78%. What's happening here?",
+          type: "diagnostic",
+          modelAnswer: "Gross profit was flat despite higher revenue, signaling cost pass-through issues.",
+        },
+      ],
+      suggestedQuestions: ["How should I underwrite Coastal's gross margin compression?"],
+    };
+
+    it("builds a company-analysis prompt from the practice integration shape", () => {
+      const { result } = renderHook(() =>
+        useChatContext({
+          contextType: "practice",
+          practiceContext,
+          messageCount: 0,
+          mode: CHAT_MODES.DIRECT,
+        })
+      );
+      const prompt = result.current.systemPrompt;
+      expect(prompt).toContain("PE deal analysis partner");
+      expect(prompt).not.toContain("PE deal analysis tutor");
+      expect(prompt).not.toContain("CURRENT LESSON:");
+      expect(prompt).toContain("Coastal Fresh Foods");
+      expect(prompt).toContain("Food Distribution");
+      expect(prompt).toContain("Margin squeeze");
+      expect(prompt).toContain("Transportation costs remain elevated");
+      expect(prompt).toContain("Customer Concentration: 22");
+      expect(prompt).toContain("Revenue: 45.8, 48.2");
+      expect(prompt).toContain("Gross margin compressed 100bps");
+      expect(prompt).toContain("60% recurring revenue");
+      expect(prompt).toContain("Revenue grew 5.2%");
+      expect(prompt).toContain("Model answer: Gross profit was flat despite higher revenue");
+    });
+
+    it("uses supplied practice suggestions and adds company-specific defaults", () => {
+      const { result } = renderHook(() =>
+        useChatContext({
+          contextType: "practice",
+          practiceContext,
+          messageCount: 0,
+          mode: CHAT_MODES.DIRECT,
+        })
+      );
+      expect(result.current.suggestedQuestions[0]).toBe("How should I underwrite Coastal's gross margin compression?");
+      expect(result.current.suggestedQuestions).toContain("Walk me through Coastal Fresh Foods' EBITDA quality");
+      expect(result.current.suggestedQuestions).toContain("What valuation range would fit Coastal Fresh Foods?");
+    });
+
+    it("keeps practice Socratic mode question-led and accepts missing optional fields", () => {
+      const { result } = renderHook(() =>
+        useChatContext({
+          contextType: "practice",
+          title: "Apex Last-Mile Logistics",
+          practiceContext: {
+            keyMetrics: { revenueGrowth: -8.6 },
+            redFlags: ["Revenue declined 8.6%"],
+          },
+          messageCount: 0,
+          mode: CHAT_MODES.SOCRATIC,
+        })
+      );
+      const prompt = result.current.systemPrompt;
+      expect(prompt).toContain("Apex Last-Mile Logistics");
+      expect(prompt).toContain("Do not give direct answers");
+      expect(prompt).toContain("commit-first mode");
+      expect(prompt).toContain("Revenue Growth: -8.6");
+      expect(prompt).toContain("Revenue declined 8.6%");
+      expect(result.current.suggestedQuestions).toContain("Test my thesis on Apex Last-Mile Logistics");
+      expect(result.current.suggestedQuestions).toContain("Challenge my valuation logic for Apex Last-Mile Logistics");
+    });
+  });
+
   describe("mode branching", () => {
     it("defaults mode to direct when undefined", () => {
       const { result } = renderHook(() =>

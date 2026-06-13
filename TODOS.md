@@ -47,6 +47,12 @@ GitHub Actions workflow (.github/workflows/ci.yml) runs tests and build on push 
 ### Socratic Mode Toggle for Chat
 Pill toggle in the chat drawer header (`Direct | Socratic`). Mode is a global user preference persisted in localStorage as `forge-chat-mode`. Direct mode keeps the existing concise-tutor prompt; Socratic mode swaps in a prompt that asks 1-2 probing questions per turn instead of giving answers (Khanmigo pattern). Mid-conversation flips insert an inline italic divider. Mid-stream flips let the in-flight response finish under the old prompt; the new mode applies on the next turn. `useChatMode` hook exports a `CHAT_MODES` constant. Per-subsection `socraticSuggestions` seeds were cut from this PR; will be tuned after observing real Socratic-mode usage. Shipped as part of MCR-16.
 
+### Extend Chat to Practice Mode
+Chat drawer now opens from `/practice/:companyId` with a company-specific PE analysis prompt, full financial context, red/green flags, analysis questions, and Direct/Socratic mode support. Practice deep links hydrate company state from the URL before opening chat, so reloads and shared case URLs work.
+
+### LLM-Generated Dynamic Scenarios
+Added minimal v1 "Generate Random Company" flow. `/api/generate` uses Claude structured output with a fixed prompt, optional `FORGE_AUTH_TOKEN`, financial consistency checks, and one retry before returning warnings. Home shows a session-only generated case card that opens in the existing Practice flow.
+
 ---
 
 ## Remaining
@@ -54,11 +60,3 @@ Pill toggle in the chat drawer header (`Direct | Socratic`). Mode is a global us
 ### State Management
 Consider React Context or Zustand if prop drilling becomes unwieldy. Currently manageable with hooks + prop passing.
 **Priority:** P3 | **Effort:** M
-
-### LLM-Generated Dynamic Scenarios
-Use Claude API to generate novel company profiles and scenario variations on demand. Requires API key setup.
-**Priority:** P3 | **Effort:** L
-
-### Extend Chat to Practice Mode
-Make the chat drawer available on /practice/:companyId pages. Context builder injects full company financials instead of lesson content. Users analyzing a company can ask follow-up questions ("Is 12% customer concentration risky for food distribution?") without leaving Forge. Needs different suggested questions per company and a larger context window (~2000 tokens for full financials). Depends on: LLM Chat feature ships first.
-**Priority:** P2 | **Effort:** M

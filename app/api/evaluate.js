@@ -1,10 +1,11 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { jsonSchemaOutputFormat } from "@anthropic-ai/sdk/helpers/json-schema";
 
 // Case-insensitive env lookup (Vercel dashboard may have non-standard casing)
 function getEnv(name) {
   if (process.env[name]) return process.env[name];
   const lower = name.toLowerCase();
-  const key = Object.keys(process.env).find(k => k.toLowerCase() === lower);
+  const key = Object.keys(process.env).find((k) => k.toLowerCase() === lower);
   return key ? process.env[key] : undefined;
 }
 
@@ -20,6 +21,8 @@ const feedbackSchema = {
   properties: {
     score: {
       type: "integer",
+      minimum: 1,
+      maximum: 5,
       description:
         "1=way off, 2=significant gaps, 3=partial/right direction, 4=solid with minor gaps, 5=comprehensive",
     },
@@ -46,6 +49,31 @@ const feedbackSchema = {
 
 export const config = { maxDuration: 30 };
 
+function validateFeedback(feedback) {
+  if (!feedback || typeof feedback !== "object" || Array.isArray(feedback)) {
+    throw new Error("Invalid feedback shape");
+  }
+  if (!Number.isInteger(feedback.score) || feedback.score < 1 || feedback.score > 5) {
+    throw new Error("Invalid feedback score");
+  }
+  if (
+    !Array.isArray(feedback.strengths) ||
+    !feedback.strengths.every((item) => typeof item === "string")
+  ) {
+    throw new Error("Invalid feedback strengths");
+  }
+  if (
+    !Array.isArray(feedback.gaps) ||
+    !feedback.gaps.every((item) => typeof item === "string")
+  ) {
+    throw new Error("Invalid feedback gaps");
+  }
+  if (typeof feedback.suggestion !== "string") {
+    throw new Error("Invalid feedback suggestion");
+  }
+  return feedback;
+}
+
 export async function POST(request) {
   // Skip auth check in dev (no FORGE_AUTH_TOKEN configured)
   // Use exact match here -- auth is opt-in and client/server must agree on casing
@@ -63,8 +91,7 @@ export async function POST(request) {
     return Response.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const { userAnswer, modelAnswer, questionText, questionType, companyContext } =
-    body;
+  const { userAnswer, modelAnswer, questionText, questionType, companyContext } = body;
 
   if (
     !userAnswer ||
@@ -88,7 +115,7 @@ export async function POST(request) {
   }
 
   try {
-    const response = await getClient().messages.create({
+    const response = await getClient().messages.parse({
       model: "claude-haiku-4-5",
       max_tokens: 512,
       system: [
@@ -105,14 +132,14 @@ export async function POST(request) {
         },
       ],
       output_config: {
-        format: { type: "json_schema", schema: feedbackSchema },
+        format: jsonSchemaOutputFormat(feedbackSchema),
       },
     });
 
-    const feedback = JSON.parse(response.content[0].text);
+    const feedback = validateFeedback(response.parsed_output);
     return Response.json(feedback);
   } catch (err) {
-    console.error("Evaluation failed:", err.message);
+    console.error("Evaluation failed:", err);
     return Response.json({ error: "Evaluation unavailable" }, { status: 502 });
   }
 }

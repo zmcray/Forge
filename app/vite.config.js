@@ -57,6 +57,46 @@ function apiDevPlugin() {
         }
       });
 
+      server.middlewares.use("/api/generate", async (req, res) => {
+        if (req.method !== "POST") {
+          res.statusCode = 405;
+          res.end(JSON.stringify({ error: "Method not allowed" }));
+          return;
+        }
+
+        const chunks = [];
+        for await (const chunk of req) chunks.push(chunk);
+        let body = {};
+        if (chunks.length > 0) {
+          try {
+            body = JSON.parse(Buffer.concat(chunks).toString());
+          } catch {
+            res.statusCode = 400;
+            res.end(JSON.stringify({ error: "Invalid JSON" }));
+            return;
+          }
+        }
+
+        try {
+          const { POST } = await import("./api/generate.js");
+          const request = new Request("http://localhost/api/generate", {
+            method: "POST",
+            headers: { "content-type": "application/json", ...Object.fromEntries(
+              Object.entries(req.headers).filter(([k]) => k.startsWith("x-"))
+            )},
+            body: JSON.stringify(body),
+          });
+          const response = await POST(request);
+          res.statusCode = response.status;
+          res.setHeader("Content-Type", "application/json");
+          res.end(JSON.stringify(await response.json()));
+        } catch (err) {
+          console.error("[api/generate] Dev handler error:", err.message);
+          res.statusCode = 502;
+          res.end(JSON.stringify({ error: "Generation unavailable" }));
+        }
+      });
+
       // SSE streaming middleware for chat endpoint
       server.middlewares.use("/api/chat", async (req, res) => {
         if (req.method !== "POST") {
