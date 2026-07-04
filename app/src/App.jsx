@@ -324,7 +324,7 @@ function getOverallLearnProgress(learnProgress) {
 
 function HomeScreen({ scenariosByCompany, startPractice, setView, learnProgress, generatedCompanies, onGeneratedCompany }) {
   const { sessions, streak } = useScoringState();
-  const { getWeakSpots, getQuantitativeAccuracy } = useScoringDispatch();
+  const { getWeakSpots, getQuantitativeAccuracy, getAttemptedCompanyIds } = useScoringDispatch();
   const { isIntroComplete, currentIntroStep, advanceIntro, skipIntro, completeIntro } = useOnboarding();
   const [generationState, dispatchGeneration] = useReducer(generationReducer, {
     status: "idle",
@@ -338,13 +338,7 @@ function HomeScreen({ scenariosByCompany, startPractice, setView, learnProgress,
     };
   }, []);
 
-  const completedCompanies = useMemo(() => {
-    const ids = new Set();
-    for (const session of sessions) {
-      if (session.questions.length > 0) ids.add(session.companyId);
-    }
-    return ids;
-  }, [sessions]);
+  const completedCompanies = getAttemptedCompanyIds();
 
   const totalQuestions = useMemo(() => {
     return sessions.reduce((sum, s) => sum + s.questions.length, 0);

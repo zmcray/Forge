@@ -1,5 +1,6 @@
 import { QUESTION_TYPES } from "../data/questionTypes";
 import { useScoringState, useScoringDispatch } from "../contexts/ScoringContext";
+import { average } from "../utils/scoreMath";
 
 export default function ProgressDashboard() {
   const { streak } = useScoringState();
@@ -7,12 +8,12 @@ export default function ProgressDashboard() {
   const scores = getScoresByType();
   const quantitativeAccuracy = getQuantitativeAccuracy();
   const allScores = Object.values(scores).flat();
-  const avgScore = allScores.length > 0 ? (allScores.reduce((a,b) => a+b, 0) / allScores.length).toFixed(1) : "\u2014";
+  const avgScore = average(allScores)?.toFixed(1) ?? "\u2014";
   const totalQs = allScores.length;
 
   const byType = Object.entries(QUESTION_TYPES).map(([key, info]) => {
     const typeScores = scores[key] || [];
-    const avg = typeScores.length > 0 ? (typeScores.reduce((a,b) => a+b, 0) / typeScores.length) : null;
+    const avg = average(typeScores);
     return { key, ...info, scores: typeScores, avg, count: typeScores.length };
   });
 
