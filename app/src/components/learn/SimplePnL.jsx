@@ -38,14 +38,14 @@ function DraggableItem({ item, isPlaced }) {
 function SgaBreakdownRow({ item, isDraggable, isPlaced, draggableMap }) {
   return (
     <div className="flex items-center justify-between px-4 pl-8 py-1 bg-surface-container-low/50">
-      <span className={`text-xs ${item.isAddBack ? "text-amber-700 dark:text-amber-400 font-medium" : "text-on-surface-variant"}`}>
+      <span className={`text-xs ${item.isAddBack ? "text-warning font-medium" : "text-on-surface-variant"}`}>
         {item.isAddBack && <span className="mr-1">*</span>}
         {item.label}
       </span>
       {isDraggable ? (
         <DraggableItem item={draggableMap[item.id] || item} isPlaced={isPlaced} />
       ) : (
-        <span className={`text-xs tabular-nums ${item.isAddBack ? "text-amber-700 dark:text-amber-400" : ""}`}>
+        <span className={`text-xs tabular-nums ${item.isAddBack ? "text-warning" : ""}`}>
           {item.value}
         </span>
       )}
@@ -109,8 +109,8 @@ export default function SimplePnL({
 
                 {isSgaExpandable && sgaExpanded && (
                   <div className="border-t border-outline-variant/10">
-                    <div className="px-4 pl-8 py-1 bg-amber-50/30 dark:bg-amber-900/10 border-b border-outline-variant/10">
-                      <span className="text-[10px] font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wide">
+                    <div className="px-4 pl-8 py-1 bg-warning-container/30 border-b border-outline-variant/10">
+                      <span className="text-[10px] font-semibold text-warning uppercase tracking-wide">
                         * = potential add-back
                       </span>
                     </div>

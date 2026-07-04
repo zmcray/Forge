@@ -124,18 +124,43 @@ export function getDeltaBand(delta, unit) {
   return "way_off";
 }
 
+// Semantic status colors backed by MD3 tokens in index.css (light + dark values
+// live on the token, so no per-site dark: pairs are needed).
+export const STATUS_COLORS = {
+  success: "text-success",
+  warning: "text-warning",
+  error: "text-error",
+};
+
+export const STATUS_CHIP_COLORS = {
+  success: "bg-success-container text-on-success-container",
+  warning: "bg-warning-container text-on-warning-container",
+  error: "bg-error-container text-on-error-container",
+};
+
+// Single source for the score-chip ternary previously copy-pasted across
+// QuestionCard, LLMFeedback, LearnExercise, ConceptCard, and LeverCard.
+// `warnAt` is the lower bound of the warning band (LLM scores use 3, self-scores 2).
+export function getScoreChipClass(score, { warnAt = 3 } = {}) {
+  if (score >= 4) return STATUS_CHIP_COLORS.success;
+  if (score >= warnAt) return STATUS_CHIP_COLORS.warning;
+  return STATUS_CHIP_COLORS.error;
+}
+
+// "off" sits between warning and error; orange has no semantic token, so it
+// stays on the raw palette deliberately.
 export const BAND_COLORS = {
-  exact: "text-green-600 dark:text-green-400",
-  close: "text-amber-600 dark:text-amber-400",
+  exact: STATUS_COLORS.success,
+  close: STATUS_COLORS.warning,
   off: "text-orange-600 dark:text-orange-400",
-  way_off: "text-red-600 dark:text-red-400",
+  way_off: STATUS_COLORS.error,
 };
 
 export const BAND_CHIP_COLORS = {
-  exact: "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200",
-  close: "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200",
+  exact: STATUS_CHIP_COLORS.success,
+  close: STATUS_CHIP_COLORS.warning,
   off: "bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-200",
-  way_off: "bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200",
+  way_off: STATUS_CHIP_COLORS.error,
 };
 
 export const BAND_LABELS = {

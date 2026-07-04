@@ -330,9 +330,9 @@ describe("BAND_COLORS and BAND_LABELS", () => {
     expect(BAND_COLORS.way_off).toBeDefined();
   });
 
-  it("every band color includes a dark-mode variant", () => {
+  it("every band color is a text utility (tokens carry dark mode)", () => {
     for (const band of ["exact", "close", "off", "way_off"]) {
-      expect(BAND_COLORS[band]).toMatch(/dark:text-/);
+      expect(BAND_COLORS[band]).toMatch(/text-/);
     }
   });
 

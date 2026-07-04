@@ -8,10 +8,10 @@ export default function GeneratedWarningsBanner({ warnings }) {
   return (
     <div
       role="alert"
-      className="bg-amber-500/10 border-l-4 border-amber-500 rounded-lg px-4 py-3 mb-4 flex items-start justify-between gap-4"
+      className="bg-warning/10 border-l-4 border-warning rounded-lg px-4 py-3 mb-4 flex items-start justify-between gap-4"
     >
       <div className="flex items-start gap-3 min-w-0">
-        <span className="material-symbols-outlined text-[20px] text-amber-600 dark:text-amber-400 shrink-0">
+        <span className="material-symbols-outlined text-[20px] text-warning shrink-0">
           warning
         </span>
         <div className="min-w-0">
