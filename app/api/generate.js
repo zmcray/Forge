@@ -219,6 +219,13 @@ async function generateWithRetry() {
     try {
       const company = await requestCompany();
       const normalized = normalizeCompany(company);
+
+      const structureErrors = checkCompanyStructure(normalized);
+      if (structureErrors.length > 0) {
+        lastError = new Error(`Generated company failed structural validation: ${structureErrors.join("; ")}`);
+        continue;
+      }
+
       const warnings = checkCompanyConsistency(normalized);
 
       if (warnings.length === 0) {
@@ -297,6 +304,49 @@ function normalizeCompany(company) {
       id: question.id || `generated-${idBase}-q${index + 1}`,
     })),
   };
+}
+
+// Structural walker driven by CompanySchema: verifies required objects/arrays
+// exist and numeric leaves are finite numbers, so a malformed company can never
+// reach the client and crash FinancialTable. Consistency arithmetic stays in
+// checkCompanyConsistency; this only guards shape and types.
+export function checkCompanyStructure(value, schema = CompanySchema, path = "company") {
+  const errors = [];
+
+  if (schema.type === "object") {
+    if (typeof value !== "object" || value === null || Array.isArray(value)) {
+      return [`${path} is not an object`];
+    }
+    for (const key of schema.required || []) {
+      if (!(key in value)) errors.push(`${path}.${key} is missing`);
+    }
+    for (const [key, propSchema] of Object.entries(schema.properties || {})) {
+      if (key in value) errors.push(...checkCompanyStructure(value[key], propSchema, `${path}.${key}`));
+    }
+    if (schema.additionalProperties && typeof schema.additionalProperties === "object") {
+      for (const [key, entry] of Object.entries(value)) {
+        errors.push(...checkCompanyStructure(entry, schema.additionalProperties, `${path}.${key}`));
+      }
+    }
+  } else if (schema.type === "array") {
+    if (!Array.isArray(value)) return [`${path} is not an array`];
+    if (schema.minItems && value.length < schema.minItems) {
+      errors.push(`${path} has fewer than ${schema.minItems} items`);
+    }
+    if (schema.items) {
+      value.forEach((item, index) => {
+        errors.push(...checkCompanyStructure(item, schema.items, `${path}[${index}]`));
+      });
+    }
+  } else if (schema.type === "number" || schema.type === "integer") {
+    if (typeof value !== "number" || !Number.isFinite(value)) {
+      errors.push(`${path} is not a finite number`);
+    }
+  } else if (schema.type === "string" && typeof value !== "string") {
+    errors.push(`${path} is not a string`);
+  }
+
+  return errors;
 }
 
 function almostEqual(actual, expected, tolerance = CONSISTENCY_TOLERANCE) {
