@@ -1,4 +1,6 @@
-import { useState, useCallback } from "react";
+import { useMemo } from "react";
+import { createStore, useStore } from "./progressStore";
+import { isRecord } from "../utils/normalizeRecordMap";
 
 const STORAGE_KEY = "forge-notes";
 const DEFAULT_STATE = {};
@@ -8,7 +10,7 @@ function loadNotes() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return DEFAULT_STATE;
     const parsed = JSON.parse(raw);
-    if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
+    if (!isRecord(parsed)) {
       console.warn(`[Forge] Invalid shape in ${STORAGE_KEY}, resetting`);
       return DEFAULT_STATE;
     }
@@ -31,32 +33,32 @@ function saveNotes(notes) {
   }
 }
 
+// Shared module-level store: every useNotes instance reads and writes the same
+// state, so a stale instance can no longer clobber notes saved by another.
+const store = createStore({ load: loadNotes, save: saveNotes });
+
+const setNoteText = (noteId, text) =>
+  store.setState((prev) => ({
+    ...prev,
+    [noteId]: { text, lastUpdated: new Date().toISOString() },
+  }));
+
+const clearNote = (noteId) =>
+  store.setState((prev) => {
+    const next = { ...prev };
+    delete next[noteId];
+    return next;
+  });
+
 export default function useNotes() {
-  const [notes, setNotes] = useState(loadNotes);
+  const notes = useStore(store);
 
-  const getNoteText = useCallback((noteId) => {
-    return notes[noteId]?.text || "";
-  }, [notes]);
-
-  const setNoteText = useCallback((noteId, text) => {
-    setNotes(prev => {
-      const next = {
-        ...prev,
-        [noteId]: { text, lastUpdated: new Date().toISOString() },
-      };
-      saveNotes(next);
-      return next;
-    });
-  }, []);
-
-  const clearNote = useCallback((noteId) => {
-    setNotes(prev => {
-      const next = { ...prev };
-      delete next[noteId];
-      saveNotes(next);
-      return next;
-    });
-  }, []);
-
-  return { getNoteText, setNoteText, clearNote };
+  return useMemo(
+    () => ({
+      getNoteText: (noteId) => notes[noteId]?.text || "",
+      setNoteText,
+      clearNote,
+    }),
+    [notes],
+  );
 }

@@ -1,8 +1,6 @@
-import { useState, useCallback } from "react";
-import { isRecord, stripNonRecords } from "../utils/normalizeRecordMap";
+import { useMemo } from "react";
+import { createProgressStore, useStore } from "./progressStore";
 
-const STORAGE_KEY = "forge-playbooks";
-const DEFAULT_STATE = { playbooks: {} };
 const DEFAULT_PLAYBOOK = {
   notes: "",
   lastVisited: null,
@@ -11,128 +9,31 @@ const DEFAULT_PLAYBOOK = {
   goldenYearGuess: null,
 };
 
-function getPlaybooks(progress) {
-  return isRecord(progress?.playbooks) ? progress.playbooks : {};
-}
+const store = createProgressStore({ storageKey: "forge-playbooks", containerKey: "playbooks" });
 
-function loadProgress() {
-  try {
-    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    if (!isRecord(parsed) || !isRecord(parsed.playbooks)) return DEFAULT_STATE;
-    // Null/garbage inner values crash count consumers; strip once at load.
-    return { ...parsed, playbooks: stripNonRecords(parsed.playbooks) };
-  } catch {
-    return DEFAULT_STATE;
-  }
-}
-
-function saveProgress(data) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  } catch {
-    // localStorage may be unavailable (private browsing, quota exceeded)
-  }
-}
+// Module-stable mutators: safe in effect deps, shared across all instances.
+const markVisited = (playbookId) =>
+  store.patchRecord(playbookId, { lastVisited: new Date().toISOString() });
+const markExerciseAttempted = (playbookId, score = null) =>
+  store.patchRecord(playbookId, { exerciseAttempted: true, exerciseScore: score });
+const setPlaybookNotes = (playbookId, text) =>
+  store.patchRecord(playbookId, { notes: text, lastUpdated: new Date().toISOString() });
+const setGoldenYearGuess = (playbookId, guess) =>
+  store.patchRecord(playbookId, { goldenYearGuess: guess });
 
 export default function usePlaybookProgress() {
-  const [progress, setProgress] = useState(loadProgress);
+  const progress = useStore(store);
 
-  const getPlaybook = useCallback(
-    (playbookId) => getPlaybooks(progress)[playbookId] || DEFAULT_PLAYBOOK,
-    [progress],
-  );
-
-  const markVisited = useCallback((playbookId) => {
-    setProgress((prev) => {
-      const playbooks = getPlaybooks(prev);
-      const next = {
-        ...prev,
-        playbooks: {
-          ...playbooks,
-          [playbookId]: {
-            ...playbooks[playbookId],
-            lastVisited: new Date().toISOString(),
-          },
-        },
-      };
-      saveProgress(next);
-      return next;
-    });
-  }, []);
-
-  const markExerciseAttempted = useCallback((playbookId, score = null) => {
-    setProgress((prev) => {
-      const playbooks = getPlaybooks(prev);
-      const next = {
-        ...prev,
-        playbooks: {
-          ...playbooks,
-          [playbookId]: {
-            ...playbooks[playbookId],
-            exerciseAttempted: true,
-            exerciseScore: score,
-          },
-        },
-      };
-      saveProgress(next);
-      return next;
-    });
-  }, []);
-
-  const setPlaybookNotes = useCallback((playbookId, text) => {
-    setProgress((prev) => {
-      const playbooks = getPlaybooks(prev);
-      const next = {
-        ...prev,
-        playbooks: {
-          ...playbooks,
-          [playbookId]: {
-            ...playbooks[playbookId],
-            notes: text,
-            lastUpdated: new Date().toISOString(),
-          },
-        },
-      };
-      saveProgress(next);
-      return next;
-    });
-  }, []);
-
-  const setGoldenYearGuess = useCallback((playbookId, guess) => {
-    setProgress((prev) => {
-      const playbooks = getPlaybooks(prev);
-      const next = {
-        ...prev,
-        playbooks: {
-          ...playbooks,
-          [playbookId]: {
-            ...playbooks[playbookId],
-            goldenYearGuess: guess,
-          },
-        },
-      };
-      saveProgress(next);
-      return next;
-    });
-  }, []);
-
-  const getVisitedCount = useCallback(
-    () => Object.values(getPlaybooks(progress)).filter((p) => p.lastVisited).length,
-    [progress],
-  );
-
-  const getExerciseCount = useCallback(
-    () => Object.values(getPlaybooks(progress)).filter((p) => p.exerciseAttempted).length,
-    [progress],
-  );
-
-  return {
-    getPlaybook,
-    markVisited,
-    markExerciseAttempted,
-    setPlaybookNotes,
-    setGoldenYearGuess,
-    getVisitedCount,
-    getExerciseCount,
-  };
+  return useMemo(() => {
+    const playbooks = store.getRecords(progress);
+    return {
+      getPlaybook: (playbookId) => playbooks[playbookId] || DEFAULT_PLAYBOOK,
+      markVisited,
+      markExerciseAttempted,
+      setPlaybookNotes,
+      setGoldenYearGuess,
+      getVisitedCount: () => Object.values(playbooks).filter((p) => p.lastVisited).length,
+      getExerciseCount: () => Object.values(playbooks).filter((p) => p.exerciseAttempted).length,
+    };
+  }, [progress]);
 }
