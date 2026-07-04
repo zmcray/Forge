@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { VALUE_LEVERS, LEVER_CATEGORIES } from "../../data/valueLevers";
 import { COMPANIES } from "../../data/companies";
@@ -8,7 +8,7 @@ import useLeverProgress from "../../hooks/useLeverProgress";
 import useNotes from "../../hooks/useNotes";
 import CommitInput from "../CommitInput";
 import { LLMGrading, LLMFeedbackSkeleton } from "../LLMFeedback";
-import { evaluateAnswer } from "../../utils/evaluateAnswer";
+import useLLMEvaluation from "../../hooks/useLLMEvaluation";
 
 const CATEGORY_STYLES = {
   revenue: { chip: "bg-primary-container text-on-primary-container", dot: "bg-primary" },
@@ -32,12 +32,9 @@ export default function LeverCard() {
   const [textAnswer, setTextAnswer] = useState("");
   const [phase, setPhase] = useState("commit");
   const [committedText, setCommittedText] = useState("");
-  const [llmResult, setLlmResult] = useState(null);
-  const [llmLoading, setLlmLoading] = useState(false);
-  const [llmError, setLlmError] = useState(null);
-
-  const abortRef = useRef(null);
-  useEffect(() => () => { abortRef.current?.abort(); }, []);
+  // LLM state resets and inflight requests abort when leverId changes
+  const { llmResult, llmLoading, llmError, evaluate, reset: resetLLM } =
+    useLLMEvaluation({ resetKey: leverId });
 
   const lever = VALUE_LEVERS.find((l) => l.id === leverId);
 
@@ -46,9 +43,6 @@ export default function LeverCard() {
     setTextAnswer("");
     setCommittedText("");
     setPhase("commit");
-    setLlmResult(null);
-    setLlmLoading(false);
-    setLlmError(null);
   }, [leverId]);
 
   useEffect(() => {
@@ -82,41 +76,25 @@ export default function LeverCard() {
     setPhase("done");
     const modelAnswer = buildModelAnswer(lever.exercise.acceptanceCriteria);
 
-    abortRef.current?.abort();
-    const ctrl = new AbortController();
-    abortRef.current = ctrl;
-
-    setLlmLoading(true);
-    setLlmError(null);
-    evaluateAnswer({
+    evaluate({
       userAnswer: textAnswer,
       modelAnswer,
       questionText: lever.exercise.prompt,
       questionType: lever.exercise.type,
       companyContext: "",
-    })
-      .then((result) => {
-        if (ctrl.signal.aborted) return;
-        setLlmResult(result);
-        markExerciseAttempted(leverId, result?.score ?? null);
-      })
-      .catch((err) => {
-        if (ctrl.signal.aborted) return;
-        console.warn("[Forge] LLM evaluation failed:", err);
-        setLlmError(true);
+    }).then((outcome) => {
+      if (outcome.status === "success") {
+        markExerciseAttempted(leverId, outcome.data?.score ?? null);
+      } else if (outcome.status === "error") {
         markExerciseAttempted(leverId, null);
-      })
-      .finally(() => {
-        if (!ctrl.signal.aborted) setLlmLoading(false);
-      });
+      }
+    });
   };
 
   const handleRedo = () => {
     setTextAnswer("");
     setCommittedText("");
-    setLlmResult(null);
-    setLlmLoading(false);
-    setLlmError(null);
+    resetLLM();
     setPhase("commit");
   };
 

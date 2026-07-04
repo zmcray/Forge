@@ -1,11 +1,11 @@
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { QUESTION_TYPES } from "../data/questionTypes";
 import { extractNumericValue, getScoreChipClass, STATUS_CHIP_COLORS } from "../utils/format";
-import { evaluateAnswer } from "../utils/evaluateAnswer";
 import { LLMGrading, LLMFeedbackSkeleton } from "./LLMFeedback";
 import CommitInput from "./CommitInput";
 import DeltaDisplay from "./DeltaDisplay";
 import useKeyboardShortcuts from "../hooks/useKeyboardShortcuts";
+import useLLMEvaluation from "../hooks/useLLMEvaluation";
 
 export default function QuestionCard({ question, index, onScore, companyContext }) {
   const [phase, setPhase] = useState("commit"); // commit, hint, reveal, scored
@@ -16,12 +16,8 @@ export default function QuestionCard({ question, index, onScore, companyContext 
   const [committedNumeric, setCommittedNumeric] = useState(null);
 
   // LLM evaluation state (qualitative only, orthogonal to phase)
-  const [llmResult, setLlmResult] = useState(null);
-  const [llmLoading, setLlmLoading] = useState(false);
-  const [llmError, setLlmError] = useState(null);
-
-  const abortRef = useRef(null);
-  useEffect(() => () => { abortRef.current?.abort(); }, []);
+  const { llmResult, llmLoading, llmError, evaluate, reset: resetLLM } =
+    useLLMEvaluation();
 
   const typeInfo = QUESTION_TYPES[question.type];
   const isQuantitative = typeInfo.inputMode === "quantitative";
@@ -37,46 +33,31 @@ export default function QuestionCard({ question, index, onScore, companyContext 
 
     // Fire LLM evaluation for qualitative questions
     if (!isQuantitative) {
-      abortRef.current?.abort();
-      const ctrl = new AbortController();
-      abortRef.current = ctrl;
-
-      setLlmLoading(true);
-      setLlmError(null);
-      evaluateAnswer({
+      evaluate({
         userAnswer: textAnswer,
         modelAnswer: question.answer,
         questionText: question.q,
         questionType: question.type,
         companyContext: companyContext || "",
-      })
-        .then((data) => {
-          if (ctrl.signal.aborted) return;
-          setLlmResult(data);
-          // Auto-score using the LLM's score
-          setSelfScore(data.score);
-          setPhase("scored");
-          onScore(question.type, data.score, {
-            delta: null,
-            unit: null,
-            aiScore: data.score,
-            atomId: question.id ?? null,
-            atomType: question.id ? "company-question" : null,
-            feedback: {
-              strengths: data.strengths ?? [],
-              gaps: data.gaps ?? [],
-              suggestion: data.suggestion ?? "",
-            },
-          });
-        })
-        .catch((err) => {
-          if (ctrl.signal.aborted) return;
-          console.warn("[Forge] LLM evaluation failed:", err);
-          setLlmError(true);
-        })
-        .finally(() => {
-          if (!ctrl.signal.aborted) setLlmLoading(false);
+      }).then((outcome) => {
+        if (outcome.status !== "success") return;
+        const data = outcome.data;
+        // Auto-score using the LLM's score
+        setSelfScore(data.score);
+        setPhase("scored");
+        onScore(question.type, data.score, {
+          delta: null,
+          unit: null,
+          aiScore: data.score,
+          atomId: question.id ?? null,
+          atomType: question.id ? "company-question" : null,
+          feedback: {
+            strengths: data.strengths ?? [],
+            gaps: data.gaps ?? [],
+            suggestion: data.suggestion ?? "",
+          },
         });
+      });
     }
   };
 
@@ -102,9 +83,7 @@ export default function QuestionCard({ question, index, onScore, companyContext 
     setNumericAnswer(null);
     setCommittedText("");
     setCommittedNumeric(null);
-    setLlmResult(null);
-    setLlmLoading(false);
-    setLlmError(null);
+    resetLLM();
   };
 
   const modelExtracted = isQuantitative
