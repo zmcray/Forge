@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { isRecord, stripNonRecords } from "../utils/normalizeRecordMap";
 
 const STORAGE_KEY = "forge-levers";
 const DEFAULT_STATE = { levers: {} };
@@ -9,10 +10,6 @@ const DEFAULT_LEVER = {
   exerciseScore: null,
 };
 
-function isRecord(value) {
-  return value !== null && typeof value === "object" && !Array.isArray(value);
-}
-
 function getLevers(progress) {
   return isRecord(progress?.levers) ? progress.levers : {};
 }
@@ -20,7 +17,9 @@ function getLevers(progress) {
 function loadProgress() {
   try {
     const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    return isRecord(parsed) && isRecord(parsed.levers) ? parsed : DEFAULT_STATE;
+    if (!isRecord(parsed) || !isRecord(parsed.levers)) return DEFAULT_STATE;
+    // Null/garbage inner values crash count consumers; strip once at load.
+    return { ...parsed, levers: stripNonRecords(parsed.levers) };
   } catch {
     return DEFAULT_STATE;
   }

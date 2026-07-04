@@ -43,8 +43,8 @@ export const LEARN_CONTENT = [
               { id: "revenue", label: "Revenue", value: "$32.5M" },
               { id: "cogs", label: "COGS", value: "$20.8M" },
               { id: "gross-profit", label: "Gross Profit", value: "$11.7M" },
-              { id: "net-income", label: "Net Income", value: "$2.3M" },
-              { id: "sga", label: "SG&A", value: "$8.1M" }
+              { id: "net-income", label: "Net Income", value: "$3.1M" },
+              { id: "sga", label: "SG&A", value: "$7.3M" }
             ],
             supplementalItems: []
           }
@@ -79,8 +79,8 @@ export const LEARN_CONTENT = [
             layout: "division",
             instruction: "Build the net margin formula. What goes in the numerator and denominator?",
             resultLabel: "Net Margin",
-            resultValue: "7.1%",
-            explanation: "Summit's 7.1% net margin looks thin, but in LMM this number is almost always misleading. SG&A includes discretionary spending and perks that will change under new ownership. Interest expense reflects the current owner's debt choices, not what a buyer would structure. Depreciation is a non-cash charge. That is why PE strips all of this out and works with EBITDA and Adjusted EBITDA instead. The next two exercises show exactly how.",
+            resultValue: "9.5%",
+            explanation: "Summit's 9.5% net margin looks thin, but in LMM this number is almost always misleading. SG&A includes discretionary spending and perks that will change under new ownership. Interest expense reflects the current owner's debt choices, not what a buyer would structure. Depreciation is a non-cash charge. That is why PE strips all of this out and works with EBITDA and Adjusted EBITDA instead. The next two exercises show exactly how.",
             zones: [
               { id: "numerator", correctIds: ["net-income"], hint: "What is the bottom line?" },
               { id: "denominator", correctIds: ["revenue"], hint: "Divide by what?" }
@@ -88,9 +88,9 @@ export const LEARN_CONTENT = [
             draggables: [
               { id: "revenue", label: "Revenue", value: "$32.5M" },
               { id: "gross-profit", label: "Gross Profit", value: "$11.7M" },
-              { id: "net-income", label: "Net Income", value: "$2.3M" },
+              { id: "net-income", label: "Net Income", value: "$3.1M" },
               { id: "cogs", label: "COGS", value: "$20.8M" },
-              { id: "sga", label: "SG&A", value: "$8.1M" }
+              { id: "sga", label: "SG&A", value: "$7.3M" }
             ],
             supplementalItems: []
           }
@@ -117,7 +117,7 @@ export const LEARN_CONTENT = [
           },
           {
             type: "text",
-            content: "The formula starts with Net Income and adds back four items. Note: Taxes are not shown as a separate line on Summit's P&L, but they are implied by the gap between pre-tax income and net income. Check the 'Additional Items' section below the P&L."
+            content: "The formula starts with Net Income and adds back four items. Note: Taxes are not a separate line on Summit's P&L because the company is a pass-through entity (taxes are paid at the owner level), so the tax add-back is $0.0M here. The slot still belongs in the formula: for a C-corp target it would carry a real number."
           },
           {
             type: "calculationExercise",
@@ -135,16 +135,16 @@ export const LEARN_CONTENT = [
               { id: "add4", correctIds: ["interest", "taxes", "depreciation", "amortization"], hint: "Add back..." }
             ],
             draggables: [
-              { id: "net-income", label: "Net Income", value: "$2.3M" },
+              { id: "net-income", label: "Net Income", value: "$3.1M" },
               { id: "interest", label: "Interest", value: "$0.3M" },
-              { id: "taxes", label: "Taxes", value: "$0.8M" },
+              { id: "taxes", label: "Taxes", value: "$0.0M" },
               { id: "depreciation", label: "Depreciation", value: "$1.1M" },
               { id: "amortization", label: "Amortization", value: "$0.1M" },
               { id: "revenue", label: "Revenue", value: "$32.5M" },
               { id: "gross-profit", label: "Gross Profit", value: "$11.7M" }
             ],
             supplementalItems: [
-              { id: "taxes", label: "Taxes (derived)", value: "$0.8M", note: "Taxes are not a separate line on this P&L. Pre-tax income is $3.1M and Net Income is $2.3M, so taxes = $0.8M." }
+              { id: "taxes", label: "Taxes", value: "$0.0M", note: "Taxes are not a separate line on this P&L. Summit is a pass-through entity, so entity-level taxes are $0. The add-back slot still belongs in the EBITDA formula." }
             ]
           }
         ]
@@ -916,7 +916,7 @@ export const LEARN_CONTENT = [
           },
           {
             type: "text",
-            content: "TrueNorth: FCF = $2.4M + $0.8M + (-$0.6M) + (-$0.4M) = $2.2M. Cash conversion = $2.2M / $2.6M EBITDA = 85%. SaaS businesses typically have excellent cash conversion because of minimal capex and prepaid annual contracts that create negative working capital. This is why SaaS commands premium multiples."
+            content: "TrueNorth: FCF = $1.7M + $0.8M + (-$0.6M) + (-$0.4M) = $1.5M. Cash conversion = $1.5M / $2.6M EBITDA = 58%. SaaS businesses typically have strong cash conversion because of minimal capex and prepaid annual contracts that create negative working capital; TrueNorth is held back by heavy reinvestment in sales and marketing. This is still why SaaS commands premium multiples."
           },
           {
             type: "text",
@@ -932,7 +932,7 @@ export const LEARN_CONTENT = [
             id: "ex-4d-1",
             q: "Apex Logistics has $4.55M adjusted EBITDA but only $0.9M in free cash flow (20% conversion). If you were presenting this deal to an investment committee, how would you explain the gap and what would need to change for the deal to work?",
             inputMode: "qualitative",
-            answer: "Walk through the formula on Apex's numbers: Net Income $0.6M + D&A $2.0M + ΔWC $0.8M - CapEx $2.5M = $0.9M FCF. The gap from $4.55M Adj. EBITDA to $0.9M FCF has two drivers, both inside the formula: (1) the wedge between EBITDA and Net Income, which is mostly interest expense ($0.8M) and cash taxes — Apex is leveraged and thin enough that interest alone eats ~18% of EBITDA. (2) CapEx of $2.5M, which more than absorbs the D&A add-back. Trucks wear out, so most of that capex is maintenance, not growth. Below the FCF line, debt service ($1.2M of principal payments) and distributions ($0.3M) consume what little cash is left, but those are uses of FCF, not part of FCF itself. To make the deal work: (a) separate maintenance capex (~$1.5M to keep the fleet running) from growth capex (~$1.0M) so the IC sees true sustainable FCF; (b) explore truck leasing to convert capex into operating cost and free up the balance sheet; (c) restructure the debt at a lower rate to recover the interest wedge; or (d) accept this is a growth equity play where you reinvest every dollar of FCF into fleet expansion and bet on revenue scaling to fix the economics."
+            answer: "Walk through the formula on Apex's numbers: Net Income $0.6M + D&A $2.0M + ΔWC $0.8M - CapEx $2.5M = $0.9M FCF. The gap from $4.55M Adj. EBITDA to $0.9M FCF has two drivers, both inside the formula: (1) the wedge between EBITDA and Net Income, which is mostly interest expense ($1.4M) and cash taxes — Apex is leveraged and thin enough that interest alone eats ~35% of EBITDA. (2) CapEx of $2.5M, which more than absorbs the D&A add-back. Trucks wear out, so most of that capex is maintenance, not growth. Below the FCF line, debt service ($1.2M of principal payments) and distributions ($0.3M) consume what little cash is left, but those are uses of FCF, not part of FCF itself. To make the deal work: (a) separate maintenance capex (~$1.5M to keep the fleet running) from growth capex (~$1.0M) so the IC sees true sustainable FCF; (b) explore truck leasing to convert capex into operating cost and free up the balance sheet; (c) restructure the debt at a lower rate to recover the interest wedge; or (d) accept this is a growth equity play where you reinvest every dollar of FCF into fleet expansion and bet on revenue scaling to fix the economics."
           },
           {
             type: "notes",

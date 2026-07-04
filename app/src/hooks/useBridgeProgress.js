@@ -1,18 +1,14 @@
 import { useState, useCallback } from "react";
+import { isRecord, stripNonRecords } from "../utils/normalizeRecordMap";
 
 const STORAGE_KEY = "forge-bridge";
 
 function loadProgress() {
   try {
     const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    if (
-      parsed &&
-      typeof parsed === "object" &&
-      parsed.scenarios &&
-      typeof parsed.scenarios === "object" &&
-      !Array.isArray(parsed.scenarios)
-    ) {
-      return parsed;
+    if (isRecord(parsed) && isRecord(parsed.scenarios)) {
+      // Null/garbage inner values crash count consumers; strip once at load.
+      return { ...parsed, scenarios: stripNonRecords(parsed.scenarios) };
     }
   } catch {
     // corrupt JSON or storage unavailable

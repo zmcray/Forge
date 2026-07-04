@@ -125,10 +125,10 @@ export function getDeltaBand(delta, unit) {
 }
 
 export const BAND_COLORS = {
-  exact: "text-green-600",
-  close: "text-amber-600",
-  off: "text-orange-600",
-  way_off: "text-red-600",
+  exact: "text-green-600 dark:text-green-400",
+  close: "text-amber-600 dark:text-amber-400",
+  off: "text-orange-600 dark:text-orange-400",
+  way_off: "text-red-600 dark:text-red-400",
 };
 
 export const BAND_CHIP_COLORS = {

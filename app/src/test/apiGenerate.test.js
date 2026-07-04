@@ -116,6 +116,16 @@ describe("api/generate", () => {
     delete process.env.ANTHROPIC_API_KEY;
   });
 
+  it("returns 429 with Retry-After after a per-IP burst", async () => {
+    mockCreate.mockResolvedValue(modelResponse(makeCompany()));
+    let lastRes;
+    for (let i = 0; i < 6; i += 1) {
+      lastRes = await POST(makeRequest({ headers: { "x-forwarded-for": "203.0.113.60" } }));
+    }
+    expect(lastRes.status).toBe(429);
+    expect(Number(lastRes.headers.get("Retry-After"))).toBeGreaterThan(0);
+  });
+
   it("returns 405 for non-POST requests", async () => {
     const res = await POST(makeRequest({ method: "GET" }));
     expect(res.status).toBe(405);
@@ -186,6 +196,32 @@ describe("api/generate", () => {
     expect(res.status).toBe(200);
     expect(mockCreate).toHaveBeenCalledTimes(2);
     expect(data._warnings).toContain("Gross profit mismatch in year 2");
+  });
+
+  it("returns 502 when the generated company is structurally incomplete", async () => {
+    const { balanceSheet, ...rest } = makeCompany();
+    const missingKey = { ...rest, balanceSheet: { ...balanceSheet } };
+    delete missingKey.balanceSheet.ltDebt;
+    mockCreate.mockResolvedValue(modelResponse(missingKey));
+
+    const res = await POST(makeRequest());
+    const data = await res.json();
+
+    expect(res.status).toBe(502);
+    expect(data.error).toContain("Generation failed");
+    expect(mockCreate).toHaveBeenCalledTimes(2);
+  });
+
+  it("returns 502 when a numeric leaf is string-typed", async () => {
+    const company = makeCompany();
+    company.balanceSheet.cash = "1.1";
+    mockCreate.mockResolvedValue(modelResponse(company));
+
+    const res = await POST(makeRequest());
+    const data = await res.json();
+
+    expect(res.status).toBe(502);
+    expect(data.error).toContain("Generation failed");
   });
 
   it("returns 502 when the Anthropic call fails on every attempt", async () => {

@@ -45,14 +45,14 @@ export default function FinancialTable({ company, view }) {
             {rows.map((r, i) => {
               const change = r.values[1] && r.values[0] ? ((r.values[1] - r.values[0]) / Math.abs(r.values[0]) * 100) : 0;
               return (
-                <tr key={i} className={`${r.line ? "border-t border-outline-variant" : ""} ${r.highlight ? "bg-amber-50" : ""}`}>
+                <tr key={i} className={`${r.line ? "border-t border-outline-variant" : ""} ${r.highlight ? "bg-amber-50 dark:bg-amber-950/40" : ""}`}>
                   <td className={`py-1.5 pr-4 ${r.indent ? "pl-4" : ""} ${r.bold ? "font-semibold" : "text-on-surface-variant"}`}>{r.label}</td>
                   {r.values.map((v, j) => (
                     <td key={j} className={`text-right py-1.5 px-3 font-mono ${r.bold ? "font-semibold" : ""} ${r.negative ? "text-on-surface-variant" : ""}`}>
                       {r.negative ? `(${formatCurrency(v)})` : formatCurrency(v)}
                     </td>
                   ))}
-                  <td className={`text-right py-1.5 px-3 font-mono text-sm ${change > 0 ? "text-green-600" : change < 0 ? "text-red-600" : "text-on-surface-variant"}`}>
+                  <td className={`text-right py-1.5 px-3 font-mono text-sm ${change > 0 ? "text-green-600 dark:text-green-400" : change < 0 ? "text-red-600 dark:text-red-400" : "text-on-surface-variant"}`}>
                     {change !== 0 ? formatPercent(change, { signed: true }) : "\u2014"}
                   </td>
                 </tr>
@@ -90,7 +90,7 @@ export default function FinancialTable({ company, view }) {
           {[["PP&E (net)", bs.ppe], ["Goodwill", bs.goodwill], ["Other LT Assets", bs.otherLtAssets]].map(([l, v]) => (
             <div key={l} className="flex justify-between py-0.5 pl-2"><span className="text-on-surface-variant">{l}</span><span className="font-mono">{formatCurrency(v)}</span></div>
           ))}
-          <div className="flex justify-between py-1 font-bold border-t-2 border-outline mt-2 bg-amber-50 px-1"><span>Total Assets</span><span className="font-mono">{formatCurrency(totalAssets)}</span></div>
+          <div className="flex justify-between py-1 font-bold border-t-2 border-outline mt-2 bg-amber-50 dark:bg-amber-950/40 px-1"><span>Total Assets</span><span className="font-mono">{formatCurrency(totalAssets)}</span></div>
         </div>
         <div>
           <h4 className="font-semibold text-on-surface-variant border-b-2 border-outline pb-1 mb-2">Liabilities & Equity</h4>
@@ -105,7 +105,7 @@ export default function FinancialTable({ company, view }) {
           ))}
           <div className="flex justify-between py-1 font-semibold border-t border-outline-variant mt-1"><span>Total Liabilities</span><span className="font-mono">{formatCurrency(totalLiab)}</span></div>
           <div className="flex justify-between py-1 pl-2 mt-2"><span className="text-on-surface-variant">Shareholders' Equity</span><span className="font-mono">{formatCurrency(bs.equity)}</span></div>
-          <div className="flex justify-between py-1 font-bold border-t-2 border-outline mt-1 bg-amber-50 px-1"><span>Total L + E</span><span className="font-mono">{formatCurrency(totalLiab + bs.equity)}</span></div>
+          <div className="flex justify-between py-1 font-bold border-t-2 border-outline mt-1 bg-amber-50 dark:bg-amber-950/40 px-1"><span>Total L + E</span><span className="font-mono">{formatCurrency(totalLiab + bs.equity)}</span></div>
         </div>
       </div>
     );
@@ -118,7 +118,7 @@ export default function FinancialTable({ company, view }) {
           <tbody>
             <tr className="border-b border-outline-variant"><td className="py-1.5 font-semibold">Net Income</td><td className="text-right font-mono">{formatCurrency(cf.netIncome)}</td></tr>
             <tr><td className="py-1.5 pl-4 text-on-surface-variant">+ Depreciation & Amortization</td><td className="text-right font-mono">{formatCurrency(cf.da)}</td></tr>
-            <tr><td className="py-1.5 pl-4 text-on-surface-variant">+/- Change in Working Capital</td><td className={`text-right font-mono ${cf.changeWc < 0 ? "text-red-600" : "text-green-600"}`}>{formatCurrency(cf.changeWc)}</td></tr>
+            <tr><td className="py-1.5 pl-4 text-on-surface-variant">+/- Change in Working Capital</td><td className={`text-right font-mono ${cf.changeWc < 0 ? "text-red-600 dark:text-red-400" : "text-green-600 dark:text-green-400"}`}>{formatCurrency(cf.changeWc)}</td></tr>
             <tr className="border-t border-outline-variant bg-secondary-container/40"><td className="py-1.5 font-semibold">Cash from Operations</td><td className="text-right font-mono font-semibold">{formatCurrency(cf.netIncome + cf.da + cf.changeWc)}</td></tr>
             <tr className="border-t border-outline-variant"><td className="py-1.5 pl-4 text-on-surface-variant">Capital Expenditures</td><td className="text-right font-mono text-red-600 dark:text-red-400">{formatCurrency(cf.capex)}</td></tr>
             <tr className="border-t border-outline-variant bg-tertiary-container/40"><td className="py-1.5 font-semibold">Free Cash Flow</td><td className="text-right font-mono font-semibold">{formatCurrency(cf.netIncome + cf.da + cf.changeWc + cf.capex)}</td></tr>

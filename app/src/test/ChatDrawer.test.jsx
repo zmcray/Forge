@@ -5,7 +5,7 @@ import ChatDrawer from "../components/learn/ChatDrawer";
 
 const { mockUseChatContext } = vi.hoisted(() => ({
   mockUseChatContext: vi.fn(() => ({
-    systemPrompt: "You are a tutor.",
+    chatParams: { subsectionId: "test-sub" },
     suggestedQuestions: ["What is EBITDA?", "Why do margins matter?"],
   })),
 }));

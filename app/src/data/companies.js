@@ -14,13 +14,13 @@ export const COMPANIES = [
       revenue: [28.1, 32.5],
       cogs: [18.3, 20.8],
       grossProfit: [9.8, 11.7],
-      sgaExpense: [5.2, 6.1],
+      sgaExpense: [5.2, 5.3],
       ownerComp: [1.8, 2.0],
       depreciation: [0.9, 1.1],
       amortization: [0.1, 0.1],
       interestExpense: [0.3, 0.3],
       otherIncome: [0.1, 0.2],
-      netIncome: [1.6, 2.3],
+      netIncome: [1.6, 3.1],
       addBacks: { ownerPerks: 0.4, oneTimeExpenses: 0.3, aboveMarketRent: 0.2 }
     },
     balanceSheet: {
@@ -30,7 +30,7 @@ export const COMPANIES = [
       ltDebt: 2.8, otherLtLiabilities: 0.4, equity: 3.8
     },
     cashFlow: {
-      netIncome: 2.3, da: 1.2, changeWc: -0.4, capex: -1.5,
+      netIncome: 3.1, da: 1.2, changeWc: -0.4, capex: -1.5,
       debtPayments: -0.6, distributions: -1.0
     },
     keyMetrics: {
@@ -89,10 +89,10 @@ export const COMPANIES = [
       grossProfit: [9.2, 9.2],
       sgaExpense: [5.8, 6.3],
       ownerComp: [0.9, 0.9],
-      depreciation: [1.1, 1.2],
+      depreciation: [1.1, 2.1],
       amortization: [0.0, 0.0],
       interestExpense: [0.5, 0.6],
-      otherIncome: [0.0, 0.0],
+      otherIncome: [0.0, 0.9],
       netIncome: [0.9, 0.2],
       addBacks: { ownerPerks: 0.2, oneTimeExpenses: 0.8, aboveMarketRent: 0.0 }
     },
@@ -103,7 +103,7 @@ export const COMPANIES = [
       ltDebt: 4.8, otherLtLiabilities: 0.3, equity: 4.2
     },
     cashFlow: {
-      netIncome: 0.2, da: 1.2, changeWc: -1.1, capex: -0.8,
+      netIncome: 0.2, da: 2.1, changeWc: -1.1, capex: -0.8,
       debtPayments: -0.5, distributions: -0.3
     },
     keyMetrics: {
@@ -161,13 +161,13 @@ export const COMPANIES = [
       revenue: [11.2, 12.8],
       cogs: [6.5, 7.3],
       grossProfit: [4.7, 5.5],
-      sgaExpense: [1.8, 2.0],
-      ownerComp: [1.2, 1.4],
+      sgaExpense: [1.8, 1.3],
+      ownerComp: [1.2, 0.7],
       depreciation: [0.6, 0.7],
       amortization: [0.0, 0.0],
       interestExpense: [0.2, 0.2],
       otherIncome: [0.0, 0.1],
-      netIncome: [0.9, 1.3],
+      netIncome: [0.9, 2.7],
       addBacks: { ownerPerks: 0.3, oneTimeExpenses: 0.1, aboveMarketRent: 0.15 }
     },
     balanceSheet: {
@@ -177,7 +177,7 @@ export const COMPANIES = [
       ltDebt: 1.8, otherLtLiabilities: 0.2, equity: 5.7
     },
     cashFlow: {
-      netIncome: 1.3, da: 0.7, changeWc: -0.3, capex: -1.2,
+      netIncome: 2.7, da: 0.7, changeWc: -0.3, capex: -1.2,
       debtPayments: -0.4, distributions: -0.8
     },
     keyMetrics: {
@@ -240,8 +240,8 @@ export const COMPANIES = [
       depreciation: [0.4, 0.5],
       amortization: [0.2, 0.3],
       interestExpense: [0.3, 0.4],
-      otherIncome: [0.1, 0.1],
-      netIncome: [0.3, 0.4],
+      otherIncome: [0.1, 0.4],
+      netIncome: [0.3, 0.7],
       addBacks: { ownerPerks: 0.1, oneTimeExpenses: 0.5, aboveMarketRent: 0.0 }
     },
     balanceSheet: {
@@ -251,7 +251,7 @@ export const COMPANIES = [
       ltDebt: 4.2, otherLtLiabilities: 0.3, equity: 2.4
     },
     cashFlow: {
-      netIncome: 0.4, da: 0.8, changeWc: -0.2, capex: -0.6,
+      netIncome: 0.7, da: 0.8, changeWc: -0.2, capex: -0.6,
       debtPayments: -0.5, distributions: -0.2
     },
     keyMetrics: {
@@ -313,8 +313,8 @@ export const COMPANIES = [
       ownerComp: [0.6, 0.6],
       depreciation: [1.8, 2.0],
       amortization: [0.0, 0.0],
-      interestExpense: [0.7, 0.8],
-      otherIncome: [0.1, 0.1],
+      interestExpense: [0.7, 1.4],
+      otherIncome: [0.1, 0.7],
       netIncome: [2.6, 0.6],
       addBacks: { ownerPerks: 0.15, oneTimeExpenses: 0.4, aboveMarketRent: 0.0 }
     },
@@ -383,13 +383,13 @@ export const COMPANIES = [
       revenue: [11.1, 14.2],
       cogs: [2.4, 3.1],
       grossProfit: [8.7, 11.1],
-      sgaExpense: [5.8, 7.2],
+      sgaExpense: [5.8, 7.9],
       ownerComp: [0.6, 0.7],
       depreciation: [0.2, 0.3],
       amortization: [0.4, 0.5],
       interestExpense: [0.1, 0.1],
       otherIncome: [0.0, 0.1],
-      netIncome: [1.6, 2.4],
+      netIncome: [1.6, 1.7],
       addBacks: { ownerPerks: 0.1, oneTimeExpenses: 0.3, aboveMarketRent: 0.0 }
     },
     balanceSheet: {
@@ -399,7 +399,7 @@ export const COMPANIES = [
       ltDebt: 1.2, otherLtLiabilities: 0.8, equity: 4.4
     },
     cashFlow: {
-      netIncome: 2.4, da: 0.8, changeWc: -0.6, capex: -0.4,
+      netIncome: 1.7, da: 0.8, changeWc: -0.6, capex: -0.4,
       debtPayments: -0.2, distributions: -0.5
     },
     keyMetrics: {
@@ -561,13 +561,13 @@ export const COMPANIES = [
       revenue: [6.9, 8.4],
       cogs: [2.6, 3.2],
       grossProfit: [4.3, 5.2],
-      sgaExpense: [2.3, 2.8],
+      sgaExpense: [2.3, 3.1],
       ownerComp: [0.5, 0.5],
       depreciation: [0.3, 0.3],
       amortization: [0.1, 0.2],
       interestExpense: [0.2, 0.2],
       otherIncome: [0.0, 0.1],
-      netIncome: [0.9, 1.3],
+      netIncome: [0.9, 1.0],
       addBacks: { ownerPerks: 0.15, oneTimeExpenses: 0.3, aboveMarketRent: 0.0 }
     },
     balanceSheet: {
@@ -577,7 +577,7 @@ export const COMPANIES = [
       ltDebt: 2.1, otherLtLiabilities: 0.2, equity: 1.4
     },
     cashFlow: {
-      netIncome: 1.3, da: 0.5, changeWc: -0.1, capex: -0.4,
+      netIncome: 1.0, da: 0.5, changeWc: -0.1, capex: -0.4,
       debtPayments: -0.3, distributions: -0.4
     },
     keyMetrics: {
@@ -654,8 +654,8 @@ export const COMPANIES = [
       ownerComp: [0.7, 0.8],
       depreciation: [1.0, 1.2],
       amortization: [0.1, 0.1],
-      interestExpense: [0.4, 0.5],
-      otherIncome: [0.1, 0.1],
+      interestExpense: [0.6, 0.7],
+      otherIncome: [0.3, 0.3],
       netIncome: [2.1, 2.1],
       addBacks: { ownerPerks: 0.2, oneTimeExpenses: 0.35, aboveMarketRent: 0.0 }
     },

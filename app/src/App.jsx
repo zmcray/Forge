@@ -4,6 +4,7 @@ import { COMPANIES, DIFFICULTY_LABELS } from "./data/companies";
 import { SCENARIOS } from "./data/scenarios";
 import { shuffleArray } from "./utils/format";
 import { mergeScenario } from "./utils/scenarios";
+import { buildPracticeChatContext } from "./utils/chatPrompts";
 import { buildCompanyContext } from "./utils/buildCompanyContext";
 import FinancialTable from "./components/FinancialTable";
 import QuestionCard from "./components/QuestionCard";
@@ -22,6 +23,7 @@ import SearchModal from "./components/SearchModal";
 import IntroSequence from "./components/onboarding/IntroSequence";
 import SmartHomeRecommendations from "./components/onboarding/SmartHomeRecommendations";
 import SoftGate from "./components/onboarding/SoftGate";
+import GeneratedWarningsBanner from "./components/GeneratedWarningsBanner";
 import ChatDrawer from "./components/learn/ChatDrawer";
 import { useScoringState, useScoringDispatch } from "./contexts/ScoringContext";
 import useTimer from "./hooks/useTimer";
@@ -605,35 +607,6 @@ function HomeScreen({ scenariosByCompany, startPractice, setView, learnProgress,
   );
 }
 
-function buildPracticeChatContext(co) {
-  return {
-    companyName: co.name,
-    industry: co.industry,
-    revenue: co.revenue,
-    context: co.context,
-    description: co.description,
-    scenarioName: co._scenarioName || null,
-    scenarioDescription: co._scenarioDescription || null,
-    keyMetrics: co.keyMetrics,
-    incomeStatement: co.incomeStatement,
-    balanceSheet: co.balanceSheet,
-    cashFlow: co.cashFlow,
-    redFlags: co.redFlags,
-    greenFlags: co.greenFlags,
-    questions: co.questions.map(q => ({
-      id: q.id,
-      type: q.type,
-      question: q.q,
-      modelAnswer: q.answer,
-    })),
-    suggestedQuestions: [
-      `What are the top diligence priorities for ${co.name}?`,
-      `How would you frame the investment thesis for ${co.name}?`,
-      `Which metric should I pressure-test first?`,
-    ],
-  };
-}
-
 function PracticeScreen({ company: co, statementView, setStatementView, shuffledQuestions, handleScore, finishCompany, timer, showSummary, sessionQuestions, closeSummary }) {
   const navigate = useNavigate();
   const learnProgress = useLearnProgress();
@@ -661,6 +634,11 @@ function PracticeScreen({ company: co, statementView, setStatementView, shuffled
           recommendedAction={() => navigate("/learn")}
           recommendedLabel="Go to Learn"
         />
+      )}
+
+      {/* AI-generated companies can ship with flagged inconsistencies; surface them */}
+      {co._generated && (
+        <GeneratedWarningsBanner key={co.id} warnings={co._warnings} />
       )}
 
       {/* Header */}
