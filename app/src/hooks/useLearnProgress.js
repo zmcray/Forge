@@ -164,11 +164,17 @@ export default function useLearnProgress() {
     };
   }, [progress.completedExercises, progress.visitedSubsections]);
 
-  return {
+  // Stable return identity: consumers use this object (or its members) as
+  // useMemo/useEffect deps, so a fresh object every render defeats memoization.
+  return useMemo(() => ({
     markComplete, isComplete, markVisited, isVisited,
     getSubsectionProgress, resetSubsection, progress,
     getCurrentStep, getStepIndex, getStepStatus, overallStats, allSteps: ALL_STEPS,
-  };
+  }), [
+    markComplete, isComplete, markVisited, isVisited,
+    getSubsectionProgress, resetSubsection, progress,
+    getCurrentStep, getStepIndex, getStepStatus, overallStats,
+  ]);
 }
 
 export { loadProgress, saveProgress };

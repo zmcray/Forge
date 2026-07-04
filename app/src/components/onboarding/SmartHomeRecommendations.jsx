@@ -160,7 +160,9 @@ export default function SmartHomeRecommendations({ startPracticeById }) {
   const learnProgress = useLearnProgress();
   const navigate = useNavigate();
 
-  const weakSpots = getWeakSpots();
+  // Memoize the derived array: getWeakSpots() returns a fresh array each call,
+  // which would invalidate the recommendations memo on every render.
+  const weakSpots = useMemo(() => getWeakSpots(), [getWeakSpots]);
   const recommendations = useMemo(
     () => getRecommendations(sessions, streak, weakSpots, learnProgress),
     [sessions, streak, weakSpots, learnProgress],
