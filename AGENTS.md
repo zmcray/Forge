@@ -59,7 +59,8 @@ Defaults, not rules. Override in Key Decisions if a project needs a different ap
 - Number formatting: $XM for currency, X% for percentages, Xx for multiples.
 
 ### Environment/Config
-- `app/.env` for local dev. `ANTHROPIC_API_KEY` (required), `FORGE_AUTH_TOKEN` (optional).
+- `app/.env` for local dev. `ANTHROPIC_API_KEY` (required), `FORGE_AUTH_TOKEN` (optional, server-side gate), `VITE_FORGE_AUTH_TOKEN` (optional, client-side token sent as `x-forge-token`).
+- `VITE_FORGE_AUTH_TOKEN` is embedded in the public bundle by Vite; it is obfuscation, not auth. Real secrets stay server-side.
 - On Vercel: set in project environment variables dashboard.
 - No `NEXT_PUBLIC_` prefix (not Next.js). Client code never touches API keys.
 
@@ -76,11 +77,12 @@ Defaults, not rules. Override in Key Decisions if a project needs a different ap
 
 **Must test:** Scoring logic, data integrity, LLM eval client handler, utility functions, timer behavior.
 **Conventions:** Vitest. Colocated test files (`thing.test.js`). Integration tests for hooks, unit tests for utils.
-**Coverage:** 15 test files across components, hooks, utils, and data integrity.
-- Components: TimerBar, DeltaDisplay, CommitInput, FinancialTable, ComparisonList, ComparisonView, LLMFeedback, NotesBlock
-- Hooks: useScoring, useTimer, useLearnProgress
-- Utils: format (52 tests), scenarios, evaluateAnswer
-- Data: dataIntegrity (validates all company profiles)
+**Coverage:** 43 test files across components, hooks, utils, API handlers, and data integrity.
+- Components: TimerBar, DeltaDisplay, CommitInput, FinancialTable, ComparisonList, ComparisonView, LLMFeedback, NotesBlock, ConceptList, LeverCard, BridgeCalculator, PlaybookDetail, ChatDrawer (3 files), ChatMessage, ChatTriggers, LearnModuleChat, PracticeChat, IntroSequence, SmartHomeRecommendations, SoftGate
+- Hooks: useScoring (2 files), useTimer, useLearnProgress, useConceptProgress, useLeverProgress, useBridgeProgress, usePlaybookProgress, useChatContext, useChatMode, useOnboarding
+- Utils: format, scenarios, evaluateAnswer, bridgeMath, socraticPrompt
+- API: apiEvaluate, apiChat, apiGenerate (auth, validation, response shape)
+- Data: dataIntegrity (validates all company profiles), conceptCards
 
 CI runs all tests via GitHub Actions on push/PR to main.
 
@@ -132,13 +134,20 @@ forge/
   app/                            # Vite + React application
     api/
       evaluate.js                 # Vercel serverless: Claude-powered qualitative eval
+      chat.js                     # Vercel serverless: LLM chat with SSE streaming
+      generate.js                 # Vercel serverless: LLM company profile generation
     src/
       contexts/
         ScoringContext.jsx        # State/dispatch split context for scoring data
+        OnboardingContext.jsx     # First-run onboarding state
       data/
         companies.js              # 9 company profiles with full financials + questions
         questionTypes.js          # 6 question types (metric, adjustment, valuation, risk, diagnostic, thesis)
         learnContent.js           # Learn module content (3 sections, 10 subsections)
+        conceptCards.js           # Concept card content for the Learn module
+        valueLevers.js            # Value creation lever content
+        valueBridge.js            # Value bridge exercise data
+        playbooks.js              # Operational playbook content
         scenarios.js              # 5 scenario overlays (what-if variations)
         comparisons.js            # Cross-company comparison data
       components/
@@ -158,12 +167,23 @@ forge/
         QuickFireScreen.jsx       # 60-second go/no-go screening mode
         SearchModal.jsx           # Cmd+K search across companies, metrics, learn
         LLMFeedback.jsx           # Structured feedback (score, strengths, gaps, suggestion)
-        learn/                    # Learn module components (11 files)
+        learn/                    # Learn module components (30 files): LearnHub, LearnModule,
+                                  #   ConceptCard/List, LeverCard/List, Bridge* (calculator,
+                                  #   waterfall, sliders, exercise), PlaybookDetail/List,
+                                  #   ChatDrawer/ChatMessage, ComparisonList/View, NotesBlock, ...
+        onboarding/               # IntroSequence, SmartHomeRecommendations, SoftGate
       hooks/
         useScoring.js             # localStorage persistence, sessions, streak, weak spots
         useTimer.js               # Countdown timer with pace milestones
         useKeyboardShortcuts.js   # 1-5 score, Enter reveal, Esc back
         useLearnProgress.js       # Learn module progress tracking
+        useConceptProgress.js     # Concept card progress tracking
+        useLeverProgress.js       # Value lever progress tracking
+        useBridgeProgress.js      # Value bridge progress tracking
+        usePlaybookProgress.js    # Playbook progress tracking
+        useChatContext.js         # Builds chat system-prompt context
+        useChatMode.js            # Chat mode state (socratic vs direct)
+        useOnboarding.js          # Onboarding flow state
         useTheme.js               # Dark mode toggle
         useNotes.js               # Per-lesson notes
       utils/
@@ -171,10 +191,12 @@ forge/
         scenarios.js              # mergeScenario (deep merge with path validation)
         evaluateAnswer.js         # Client-side handler for /api/evaluate
         buildCompanyContext.js    # Company summary string for LLM context
+        bridgeMath.js             # Value bridge calculations
         resolveDataPath.js        # Dot-notation path resolution
       test/
         renderWithProviders.jsx   # Test helper with ScoringProvider + MemoryRouter
-        test-setup.js             # Vitest globals configuration
+        *.test.js(x)              # Cross-cutting tests (API handlers, chat, onboarding, data)
+      test-setup.js               # Vitest globals configuration (localStorage shim)
       App.jsx                     # Main orchestrator with React Router
       main.jsx                    # Vite entry point
       index.css                   # Tailwind import + design tokens
@@ -202,7 +224,20 @@ Users must enter an answer before revealing the model answer:
 - Model: claude-haiku-4-5 with structured JSON output
 - Returns: score (1-5), strengths[], gaps[], suggestion
 - Client: `utils/evaluateAnswer.js` handles fetch, `LLMFeedback.jsx` renders results
-- Auth: optional `FORGE_AUTH_TOKEN` header check (skipped in dev)
+- Auth: all three API handlers (evaluate, chat, generate) gate on `if (process.env.FORGE_AUTH_TOKEN)`; the `x-forge-token` header check is enforced only when the env var is set, in any environment (including production). When unset, endpoints are open. Client sends `VITE_FORGE_AUTH_TOKEN`, which is embedded in the public bundle: obfuscation, not auth.
+
+### LLM Chat (Learn + Practice)
+- Endpoint: `app/api/chat.js` (POST). Model: claude-haiku-4-5, max 1024 tokens.
+- Streams responses as SSE (`data: {type: "delta", text}` events, terminated by `{type: "done"}`).
+- Request: `{ messages: [{role, content}], systemPrompt }`. Validation limits: 20 messages max, 2000 chars per message, 5000 chars system prompt. System prompt is cached via `cache_control: ephemeral`.
+- Client: `ChatDrawer.jsx` renders the drawer; `useChatContext` builds company/lesson context into the system prompt; `useChatMode` toggles socratic vs direct mode.
+- Same `FORGE_AUTH_TOKEN` gate as evaluate/generate.
+
+### LLM Company Generation
+- Endpoint: `app/api/generate.js` (POST). Model: claude-haiku-4-5, max 8192 tokens, 60s maxDuration.
+- Generates a full LMM company profile (financials + exactly 6 questions, one per type) as plain JSON validated against an in-file JSON Schema; plain-JSON parse is used because the full schema exceeds the structured-output grammar limit.
+- Retries up to 2 attempts; `normalizeCompany` + `checkCompanyConsistency` validate internal consistency (0.3 tolerance); inconsistent-but-usable results return with `_warnings`.
+- Same `FORGE_AUTH_TOKEN` gate as evaluate/chat.
 
 ### Scoring & Persistence
 - All scores in `localStorage` under key `forge-data`. Backup of pre-v2 data at `forge-data-v1-backup` after first migration.
