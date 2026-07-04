@@ -1,85 +1,225 @@
+// @vitest-environment jsdom
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { renderHook, act } from "@testing-library/react";
+import useTimer from "./useTimer";
 
-// Test the timer logic directly (not as a hook)
-describe("useTimer logic", () => {
+describe("useTimer", () => {
   beforeEach(() => {
     vi.useFakeTimers();
   });
 
   afterEach(() => {
     vi.useRealTimers();
+    vi.restoreAllMocks();
   });
 
-  it("formats time correctly", () => {
-    // Test the formatting logic
-    const formatTime = (elapsed) => {
-      const minutes = Math.floor(elapsed / 60);
-      const seconds = elapsed % 60;
-      return `${minutes}:${String(seconds).padStart(2, "0")}`;
-    };
+  it("initializes idle with zeroed state", () => {
+    const { result } = renderHook(() => useTimer());
 
-    expect(formatTime(0)).toBe("0:00");
-    expect(formatTime(65)).toBe("1:05");
-    expect(formatTime(900)).toBe("15:00");
-    expect(formatTime(599)).toBe("9:59");
+    expect(result.current.elapsed).toBe(0);
+    expect(result.current.formattedTime).toBe("0:00");
+    expect(result.current.isRunning).toBe(false);
+    expect(result.current.isExpired).toBe(false);
+    expect(result.current.progress).toBe(0);
+    expect(result.current.currentMilestone).toBeUndefined();
   });
 
-  it("calculates progress correctly", () => {
-    const limit = 15 * 60; // 900 seconds
-    expect(Math.min(0 / limit, 1)).toBe(0);
-    expect(Math.min(450 / limit, 1)).toBe(0.5);
-    expect(Math.min(900 / limit, 1)).toBe(1);
-    expect(Math.min(1200 / limit, 1)).toBe(1); // caps at 1
+  it("does not tick before start is called", () => {
+    const { result } = renderHook(() => useTimer());
+
+    act(() => {
+      vi.advanceTimersByTime(10_000);
+    });
+
+    expect(result.current.elapsed).toBe(0);
   });
 
-  it("identifies pace milestones", () => {
-    const PACE_MILESTONES = [
-      { minutes: 5, message: "5 min in. Have you checked margins and growth?" },
-      { minutes: 10, message: "10 min in. Time to form your investment thesis." },
-      { minutes: 15, message: "15 min. A real screening call would be wrapping up." },
-    ];
+  it("counts up once started and formats elapsed time", () => {
+    const { result } = renderHook(() => useTimer());
 
-    const getMilestone = (elapsedMinutes) =>
-      PACE_MILESTONES.filter(m => elapsedMinutes >= m.minutes).pop();
+    act(() => {
+      result.current.start();
+    });
+    expect(result.current.isRunning).toBe(true);
 
-    expect(getMilestone(0)).toBeUndefined();
-    expect(getMilestone(3)).toBeUndefined();
-    expect(getMilestone(5).minutes).toBe(5);
-    expect(getMilestone(7).minutes).toBe(5);
-    expect(getMilestone(10).minutes).toBe(10);
-    expect(getMilestone(15).minutes).toBe(15);
+    act(() => {
+      vi.advanceTimersByTime(65_000);
+    });
+
+    expect(result.current.elapsed).toBe(65);
+    expect(result.current.formattedTime).toBe("1:05");
+    expect(result.current.elapsedMinutes).toBe(1);
   });
 
-  it("detects expiration at limit", () => {
-    const limit = 15 * 60;
-    expect(900 >= limit).toBe(true);
-    expect(899 >= limit).toBe(false);
-  });
-});
+  it("reports progress as a fraction of the limit, capped at 1", () => {
+    const { result } = renderHook(() => useTimer(15));
 
-describe("useKeyboardShortcuts logic", () => {
-  it("ignores events from input elements", () => {
-    const mockEvent = {
-      target: { tagName: "INPUT" },
-      key: "1",
-      preventDefault: vi.fn(),
-    };
+    act(() => {
+      result.current.start();
+    });
+    act(() => {
+      vi.advanceTimersByTime(450_000); // 7:30 of a 15:00 limit
+    });
+    expect(result.current.progress).toBe(0.5);
 
-    // Logic from useKeyboardShortcuts
-    const shouldIgnore = mockEvent.target.tagName === "INPUT" || mockEvent.target.tagName === "TEXTAREA";
-    expect(shouldIgnore).toBe(true);
+    act(() => {
+      vi.advanceTimersByTime(600_000); // well past the limit
+    });
+    expect(result.current.progress).toBe(1);
   });
 
-  it("detects score keys 1-5", () => {
-    for (let i = 1; i <= 5; i++) {
-      const num = parseInt(String(i));
-      expect(num >= 1 && num <= 5).toBe(true);
-    }
+  it("crosses pace milestones at 5, 10, and 15 minutes", () => {
+    const { result } = renderHook(() => useTimer());
+
+    act(() => {
+      result.current.start();
+    });
+
+    act(() => {
+      vi.advanceTimersByTime(299_000); // 4:59
+    });
+    expect(result.current.currentMilestone).toBeUndefined();
+
+    act(() => {
+      vi.advanceTimersByTime(1_000); // 5:00
+    });
+    expect(result.current.currentMilestone?.minutes).toBe(5);
+
+    act(() => {
+      vi.advanceTimersByTime(300_000); // 10:00
+    });
+    expect(result.current.currentMilestone?.minutes).toBe(10);
+
+    act(() => {
+      vi.advanceTimersByTime(300_000); // 15:00
+    });
+    expect(result.current.currentMilestone?.minutes).toBe(15);
   });
 
-  it("does not treat 0 or 6+ as score keys", () => {
-    expect(parseInt("0") >= 1 && parseInt("0") <= 5).toBe(false);
-    expect(parseInt("6") >= 1 && parseInt("6") <= 5).toBe(false);
-    expect(parseInt("a") >= 1 && parseInt("a") <= 5).toBe(false);
+  it("flips isExpired exactly at the limit and keeps counting", () => {
+    const { result } = renderHook(() => useTimer(15));
+
+    act(() => {
+      result.current.start();
+    });
+
+    act(() => {
+      vi.advanceTimersByTime(899_000); // 14:59
+    });
+    expect(result.current.isExpired).toBe(false);
+
+    act(() => {
+      vi.advanceTimersByTime(1_000); // 15:00
+    });
+    expect(result.current.isExpired).toBe(true);
+
+    act(() => {
+      vi.advanceTimersByTime(5_000);
+    });
+    expect(result.current.elapsed).toBe(905);
+    expect(result.current.isExpired).toBe(true);
+  });
+
+  it("respects a custom limit", () => {
+    const { result } = renderHook(() => useTimer(1));
+
+    act(() => {
+      result.current.start();
+    });
+    act(() => {
+      vi.advanceTimersByTime(60_000);
+    });
+
+    expect(result.current.isExpired).toBe(true);
+    expect(result.current.progress).toBe(1);
+  });
+
+  it("stop halts the countdown without clearing elapsed", () => {
+    const { result } = renderHook(() => useTimer());
+
+    act(() => {
+      result.current.start();
+    });
+    act(() => {
+      vi.advanceTimersByTime(30_000);
+    });
+    act(() => {
+      result.current.stop();
+    });
+
+    expect(result.current.isRunning).toBe(false);
+    expect(result.current.elapsed).toBe(30);
+
+    act(() => {
+      vi.advanceTimersByTime(60_000);
+    });
+    expect(result.current.elapsed).toBe(30);
+  });
+
+  it("start after stop restarts from zero", () => {
+    const { result } = renderHook(() => useTimer());
+
+    act(() => {
+      result.current.start();
+    });
+    act(() => {
+      vi.advanceTimersByTime(30_000);
+    });
+    act(() => {
+      result.current.stop();
+    });
+    act(() => {
+      result.current.start();
+    });
+
+    expect(result.current.elapsed).toBe(0);
+
+    act(() => {
+      vi.advanceTimersByTime(10_000);
+    });
+    expect(result.current.elapsed).toBe(10);
+  });
+
+  it("reset zeroes state, stops the timer, and clears expiry", () => {
+    const { result } = renderHook(() => useTimer(1));
+
+    act(() => {
+      result.current.start();
+    });
+    act(() => {
+      vi.advanceTimersByTime(60_000);
+    });
+    expect(result.current.isExpired).toBe(true);
+
+    act(() => {
+      result.current.reset();
+    });
+
+    expect(result.current.elapsed).toBe(0);
+    expect(result.current.isRunning).toBe(false);
+    expect(result.current.isExpired).toBe(false);
+    expect(result.current.progress).toBe(0);
+
+    act(() => {
+      vi.advanceTimersByTime(60_000);
+    });
+    expect(result.current.elapsed).toBe(0);
+  });
+
+  it("clears its interval on unmount", () => {
+    const clearSpy = vi.spyOn(globalThis, "clearInterval");
+    const { result, unmount } = renderHook(() => useTimer());
+
+    act(() => {
+      result.current.start();
+    });
+    act(() => {
+      vi.advanceTimersByTime(5_000);
+    });
+
+    unmount();
+
+    expect(clearSpy).toHaveBeenCalled();
+    expect(vi.getTimerCount()).toBe(0);
   });
 });
