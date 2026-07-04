@@ -106,18 +106,7 @@ export default function SearchModal({ open, onClose, onNavigateCompany, onNaviga
     return () => window.removeEventListener("keydown", handleKey);
   }, [open, results, selectedIndex, onClose, selectResult]);
 
-  // Global Cmd+K / Ctrl+K
-  useEffect(() => {
-    const handleGlobal = (e) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
-        e.preventDefault();
-        if (open) onClose();
-        else onClose.__open?.();
-      }
-    };
-    window.addEventListener("keydown", handleGlobal);
-    return () => window.removeEventListener("keydown", handleGlobal);
-  }, [open, onClose]);
+  // Cmd+K / Ctrl+K open-toggle is owned by App.jsx, which renders this modal.
 
   if (!open) return null;
 
