@@ -154,19 +154,55 @@ describe("Data Integrity", () => {
   });
 
   describe("EBITDA reconciliation", () => {
-    it("Ironclad EBITDA matches Net Income + D + A + I", () => {
-      const ironclad = COMPANIES.find((c) => c.id === "ironclad-construction");
-      const is = ironclad.incomeStatement;
-      const latestIdx = is.years.length - 1;
-      const computed =
-        is.netIncome[latestIdx] +
-        is.depreciation[latestIdx] +
-        is.amortization[latestIdx] +
-        is.interestExpense[latestIdx];
-      expect(
-        Math.abs(computed - ironclad.keyMetrics.ebitda),
-        `Ironclad: computed EBITDA ${computed.toFixed(2)} does not match reported ${ironclad.keyMetrics.ebitda}`
-      ).toBeLessThan(0.1);
+    it("every company EBITDA matches Net Income + D + A + I", () => {
+      for (const company of COMPANIES) {
+        const is = company.incomeStatement;
+        const latestIdx = is.years.length - 1;
+        const computed =
+          is.netIncome[latestIdx] +
+          is.depreciation[latestIdx] +
+          is.amortization[latestIdx] +
+          is.interestExpense[latestIdx];
+        expect(
+          Math.abs(computed - company.keyMetrics.ebitda),
+          `${company.name}: computed EBITDA ${computed.toFixed(2)} does not match reported ${company.keyMetrics.ebitda}`
+        ).toBeLessThan(0.05);
+      }
+    });
+
+    it("every company income statement foots to net income", () => {
+      for (const company of COMPANIES) {
+        const is = company.incomeStatement;
+        for (let i = 0; i < is.years.length; i++) {
+          const footed =
+            is.grossProfit[i] -
+            is.sgaExpense[i] -
+            is.ownerComp[i] -
+            is.depreciation[i] -
+            is.amortization[i] -
+            is.interestExpense[i] +
+            is.otherIncome[i];
+          expect(
+            Math.abs(footed - is.netIncome[i]),
+            `${company.name} ${is.years[i]}: footed net income ${footed.toFixed(2)} does not match reported ${is.netIncome[i]}`
+          ).toBeLessThan(0.05);
+        }
+      }
+    });
+
+    it("every company cash flow netIncome and da mirror the latest income statement", () => {
+      for (const company of COMPANIES) {
+        const is = company.incomeStatement;
+        const latestIdx = is.years.length - 1;
+        expect(
+          Math.abs(company.cashFlow.netIncome - is.netIncome[latestIdx]),
+          `${company.name}: cashFlow.netIncome ${company.cashFlow.netIncome} does not match income statement ${is.netIncome[latestIdx]}`
+        ).toBeLessThan(0.05);
+        expect(
+          Math.abs(company.cashFlow.da - (is.depreciation[latestIdx] + is.amortization[latestIdx])),
+          `${company.name}: cashFlow.da ${company.cashFlow.da} does not match D+A ${(is.depreciation[latestIdx] + is.amortization[latestIdx]).toFixed(2)}`
+        ).toBeLessThan(0.05);
+      }
     });
 
     it("Ironclad adjusted EBITDA matches EBITDA + add-backs", () => {
