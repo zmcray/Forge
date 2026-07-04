@@ -53,9 +53,8 @@ export default function usePracticeSession() {
     // Warmup ping to reduce cold-start latency on first evaluation
     fetch("/api/evaluate", { method: "OPTIONS" }).catch(() => {});
     setStatementView("income");
-    const url = scenarioId ? `/practice/${company.id}?scenario=${scenarioId}` : `/practice/${company.id}`;
-    navigate(url);
-  }, [timer, navigate]);
+    // URL is owned by the caller (PracticeRoute syncs it), not the session.
+  }, [timer]);
 
   // Depends on live state directly, so no ref-mirror workaround is needed;
   // every consumer re-subscribes per render anyway.
