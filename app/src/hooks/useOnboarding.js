@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 
 const STORAGE_KEY = "forge-onboarding";
 const MAX_INTRO_STEP = 4;
@@ -103,7 +103,9 @@ export default function useOnboarding() {
     setState(fresh);
   }, [state.firstVisit]);
 
-  return {
+  // Stable return identity: this object is the OnboardingContext value, so a
+  // fresh object every render would re-render every consumer.
+  return useMemo(() => ({
     isIntroComplete: state.introCompleted,
     currentIntroStep: state.introStep,
     advanceIntro,
@@ -112,7 +114,11 @@ export default function useOnboarding() {
     hasBypassedGate,
     bypassGate,
     resetOnboarding,
-  };
+  }), [
+    state.introCompleted, state.introStep,
+    advanceIntro, skipIntro, completeIntro,
+    hasBypassedGate, bypassGate, resetOnboarding,
+  ]);
 }
 
 export { loadOnboarding, saveOnboarding };
