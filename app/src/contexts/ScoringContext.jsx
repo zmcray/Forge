@@ -7,24 +7,27 @@ const ScoringDispatchContext = createContext(null);
 export function ScoringProvider({ children }) {
   const scoring = useScoring();
 
+  // Session-derived reads live in the state value (they change exactly when
+  // sessions change), so the dispatch value stays identity-stable forever.
   const state = useMemo(() => ({
     sessions: scoring.sessions,
     streak: scoring.streak,
     data: scoring.data,
-  }), [scoring.data, scoring.sessions, scoring.streak]);
+    allScores: scoring.allScores,
+    scoresByType: scoring.scoresByType,
+    weakSpots: scoring.weakSpots,
+    quantitativeAccuracy: scoring.quantitativeAccuracy,
+    attemptedCompanyIds: scoring.attemptedCompanyIds,
+  }), [scoring.data, scoring.sessions, scoring.streak, scoring.allScores,
+       scoring.scoresByType, scoring.weakSpots, scoring.quantitativeAccuracy,
+       scoring.attemptedCompanyIds]);
 
+  // Mutators only. Both are useCallback([]) in useScoring, so this value is
+  // created once and never re-renders dispatch-only consumers on writes.
   const dispatch = useMemo(() => ({
     addScore: scoring.addScore,
     updateSessionDuration: scoring.updateSessionDuration,
-    getAllScores: scoring.getAllScores,
-    getScoresByType: scoring.getScoresByType,
-    getWeakSpots: scoring.getWeakSpots,
-    getQuantitativeAccuracy: scoring.getQuantitativeAccuracy,
-    getAttemptedCompanyIds: scoring.getAttemptedCompanyIds,
-  }), [scoring.addScore, scoring.updateSessionDuration,
-       scoring.getAllScores, scoring.getScoresByType,
-       scoring.getWeakSpots, scoring.getQuantitativeAccuracy,
-       scoring.getAttemptedCompanyIds]);
+  }), [scoring.addScore, scoring.updateSessionDuration]);
 
   return (
     <ScoringStateContext value={state}>
