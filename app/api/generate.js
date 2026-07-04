@@ -1,4 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { rateLimitResponse } from "./_lib/rateLimit.js";
 
 function getEnv(name) {
   if (process.env[name]) return process.env[name];
@@ -194,6 +195,13 @@ export async function POST(request) {
     return Response.json({ error: "Method not allowed" }, { status: 405 });
   }
 
+  // Best-effort per-instance rate limit; Vercel WAF is the stronger layer.
+  // Generation is the most expensive call (8K tokens), so use a tighter budget.
+  const limited = rateLimitResponse(request, { limit: 5 });
+  if (limited) return limited;
+
+  // Optional shared-token gate. Obfuscation, not auth: the matching
+  // VITE_FORGE_AUTH_TOKEN ships in the public client bundle.
   if (process.env.FORGE_AUTH_TOKEN) {
     const token = request.headers.get("x-forge-token");
     if (token !== process.env.FORGE_AUTH_TOKEN) {

@@ -1,4 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { rateLimitResponse } from "./_lib/rateLimit.js";
+import { buildChatSystemPrompt, ChatValidationError } from "./_lib/chatPrompt.js";
 
 // Case-insensitive env lookup (Vercel dashboard may have non-standard casing)
 function getEnv(name) {
@@ -13,14 +15,19 @@ function getClient() {
 }
 
 const MAX_MESSAGES = 20;
-const MAX_SYSTEM_PROMPT_LENGTH = 5000;
 const MAX_MESSAGE_LENGTH = 2000;
 
 export const config = { maxDuration: 30 };
 
 export async function POST(request) {
-  // Auth check (same pattern as evaluate.js)
-  // Use exact match here -- auth is opt-in and client/server must agree on casing
+  // Best-effort per-instance rate limit; Vercel WAF is the stronger layer.
+  const limited = rateLimitResponse(request);
+  if (limited) return limited;
+
+  // Optional shared-token gate (same pattern as evaluate.js). Note this is
+  // obfuscation, not auth: the matching VITE_FORGE_AUTH_TOKEN ships in the
+  // public client bundle, so anyone can read it out of the deployed JS.
+  // Use exact match here -- gate is opt-in and client/server must agree on casing.
   if (process.env.FORGE_AUTH_TOKEN) {
     const token = request.headers.get("x-forge-token");
     if (token !== process.env.FORGE_AUTH_TOKEN) {
@@ -35,7 +42,16 @@ export async function POST(request) {
     return Response.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const { messages, systemPrompt } = body;
+  const { messages, mode, params } = body;
+
+  // MCR-390: system prompts are assembled server-side from `mode` + `params`.
+  // Reject any client attempting to supply its own prompt.
+  if ("systemPrompt" in body) {
+    return Response.json(
+      { error: "systemPrompt is not accepted; send mode and params" },
+      { status: 400 }
+    );
+  }
 
   if (!Array.isArray(messages) || messages.length === 0) {
     return Response.json({ error: "Invalid messages" }, { status: 400 });
@@ -54,8 +70,16 @@ export async function POST(request) {
       return Response.json({ error: "Message too long" }, { status: 400 });
     }
   }
-  if (!systemPrompt || typeof systemPrompt !== "string" || systemPrompt.length > MAX_SYSTEM_PROMPT_LENGTH) {
-    return Response.json({ error: "Invalid systemPrompt" }, { status: 400 });
+
+  let systemPrompt;
+  try {
+    systemPrompt = buildChatSystemPrompt({ mode, params, messageCount: messages.length });
+  } catch (err) {
+    if (err instanceof ChatValidationError) {
+      return Response.json({ error: err.message }, { status: 400 });
+    }
+    console.error("Chat prompt assembly failed:", err);
+    return Response.json({ error: "Chat unavailable" }, { status: 500 });
   }
 
   const stream = getClient().messages.stream({

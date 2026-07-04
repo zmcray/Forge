@@ -4,6 +4,7 @@ import { COMPANIES, DIFFICULTY_LABELS } from "./data/companies";
 import { SCENARIOS } from "./data/scenarios";
 import { shuffleArray } from "./utils/format";
 import { mergeScenario } from "./utils/scenarios";
+import { buildPracticeChatContext } from "./utils/chatPrompts";
 import { buildCompanyContext } from "./utils/buildCompanyContext";
 import FinancialTable from "./components/FinancialTable";
 import QuestionCard from "./components/QuestionCard";
@@ -603,35 +604,6 @@ function HomeScreen({ scenariosByCompany, startPractice, setView, learnProgress,
       </section>
     </>
   );
-}
-
-function buildPracticeChatContext(co) {
-  return {
-    companyName: co.name,
-    industry: co.industry,
-    revenue: co.revenue,
-    context: co.context,
-    description: co.description,
-    scenarioName: co._scenarioName || null,
-    scenarioDescription: co._scenarioDescription || null,
-    keyMetrics: co.keyMetrics,
-    incomeStatement: co.incomeStatement,
-    balanceSheet: co.balanceSheet,
-    cashFlow: co.cashFlow,
-    redFlags: co.redFlags,
-    greenFlags: co.greenFlags,
-    questions: co.questions.map(q => ({
-      id: q.id,
-      type: q.type,
-      question: q.q,
-      modelAnswer: q.answer,
-    })),
-    suggestedQuestions: [
-      `What are the top diligence priorities for ${co.name}?`,
-      `How would you frame the investment thesis for ${co.name}?`,
-      `Which metric should I pressure-test first?`,
-    ],
-  };
 }
 
 function PracticeScreen({ company: co, statementView, setStatementView, shuffledQuestions, handleScore, finishCompany, timer, showSummary, sessionQuestions, closeSummary }) {

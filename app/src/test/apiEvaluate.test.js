@@ -61,6 +61,16 @@ describe("api/evaluate", () => {
     delete process.env.ANTHROPIC_API_KEY;
   });
 
+  it("returns 429 with Retry-After after a per-IP burst", async () => {
+    mockParse.mockResolvedValue({ parsed_output: validFeedback });
+    let lastRes;
+    for (let i = 0; i < 21; i += 1) {
+      lastRes = await POST(makeRequest(validBody, { "x-forwarded-for": "203.0.113.50" }));
+    }
+    expect(lastRes.status).toBe(429);
+    expect(Number(lastRes.headers.get("Retry-After"))).toBeGreaterThan(0);
+  });
+
   it("returns parsed structured feedback for a valid qualitative answer", async () => {
     mockParse.mockResolvedValueOnce({ parsed_output: validFeedback });
 

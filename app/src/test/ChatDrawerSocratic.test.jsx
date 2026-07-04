@@ -5,11 +5,11 @@ import ChatDrawer from "../components/learn/ChatDrawer";
 import { CHAT_MODES } from "../hooks/useChatMode";
 
 // Mock useChatContext so we can observe which mode the drawer passes through.
-// systemPrompt encodes the mode so fetch-body assertions can verify which
-// prompt was active at fetch start (this is the load-bearing T1 invariant).
+// The fetch body's `mode` field verifies which mode was active at fetch start
+// (this is the load-bearing T1 invariant). Prompts are assembled server-side.
 vi.mock("../hooks/useChatContext", () => ({
-  default: ({ mode }) => ({
-    systemPrompt: `mock-prompt-mode=${mode}`,
+  default: () => ({
+    chatParams: { subsectionId: "test-sub" },
     suggestedQuestions: ["seed-q-a", "seed-q-b"],
   }),
 }));
@@ -348,7 +348,9 @@ describe("ChatDrawer — Socratic toggle", () => {
       // First fetch was made under Direct.
       expect(fetchMock).toHaveBeenCalledTimes(1);
       const firstBody = JSON.parse(fetchMock.mock.calls[0][1].body);
-      expect(firstBody.systemPrompt).toBe(`mock-prompt-mode=${CHAT_MODES.DIRECT}`);
+      expect(firstBody.mode).toBe(`learn-${CHAT_MODES.DIRECT}`);
+      expect(firstBody.params).toEqual({ subsectionId: "test-sub" });
+      expect(firstBody.systemPrompt).toBeUndefined();
 
       // Mid-stream, flip to Socratic. The in-flight fetch must NOT be re-issued.
       await act(async () => {
@@ -371,7 +373,7 @@ describe("ChatDrawer — Socratic toggle", () => {
       });
       expect(fetchMock).toHaveBeenCalledTimes(2);
       const secondBody = JSON.parse(fetchMock.mock.calls[1][1].body);
-      expect(secondBody.systemPrompt).toBe(`mock-prompt-mode=${CHAT_MODES.SOCRATIC}`);
+      expect(secondBody.mode).toBe(`learn-${CHAT_MODES.SOCRATIC}`);
     });
   });
 });

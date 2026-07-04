@@ -116,6 +116,16 @@ describe("api/generate", () => {
     delete process.env.ANTHROPIC_API_KEY;
   });
 
+  it("returns 429 with Retry-After after a per-IP burst", async () => {
+    mockCreate.mockResolvedValue(modelResponse(makeCompany()));
+    let lastRes;
+    for (let i = 0; i < 6; i += 1) {
+      lastRes = await POST(makeRequest({ headers: { "x-forwarded-for": "203.0.113.60" } }));
+    }
+    expect(lastRes.status).toBe(429);
+    expect(Number(lastRes.headers.get("Retry-After"))).toBeGreaterThan(0);
+  });
+
   it("returns 405 for non-POST requests", async () => {
     const res = await POST(makeRequest({ method: "GET" }));
     expect(res.status).toBe(405);
