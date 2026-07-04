@@ -1,6 +1,7 @@
 import { useState, useCallback, useMemo } from "react";
 import { isRecord } from "../utils/normalizeRecordMap";
 import { average, averageAbsDelta, attemptedCompanyIds } from "../utils/scoreMath";
+import { loadJSON, saveJSON } from "../utils/storage";
 
 const STORAGE_KEY = "forge-data";
 const V1_BACKUP_KEY = "forge-data-v1-backup";
@@ -94,48 +95,35 @@ function normalizeStreak(streak) {
 }
 
 function loadData() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return DEFAULT_STATE;
-    const parsed = JSON.parse(raw);
-    if (!isRecord(parsed) || !Array.isArray(parsed.sessions)) {
-      console.warn(`[Forge] Invalid shape in ${STORAGE_KEY}, resetting`);
-      return DEFAULT_STATE;
-    }
+  // storage.js owns the parse/validate/corrupt-backup layer; the v1 -> v2
+  // migration below is scoring-specific and stays here.
+  const parsed = loadJSON(STORAGE_KEY, {
+    validate: (data) => isRecord(data) && Array.isArray(data.sessions),
+    fallback: DEFAULT_STATE,
+  });
+  if (parsed === DEFAULT_STATE) return DEFAULT_STATE;
 
-    // Deep-sanitize before anything consumes the shape. A corrupt inner entry
-    // (sessions:[null], questions:null, streak:{}) behaves as if absent.
-    const sanitized = {
-      ...parsed,
-      sessions: normalizeSessions(parsed.sessions),
-      streak: normalizeStreak(parsed.streak),
-    };
+  // Deep-sanitize before anything consumes the shape. A corrupt inner entry
+  // (sessions:[null], questions:null, streak:{}) behaves as if absent.
+  const sanitized = {
+    ...parsed,
+    sessions: normalizeSessions(parsed.sessions),
+    streak: normalizeStreak(parsed.streak),
+  };
 
-    // Migrate v1 (no version field) to v2.
-    if (sanitized.version !== SCHEMA_VERSION) {
-      const migrated = migrateV1ToV2(sanitized);
-      // Persist migrated shape immediately so subsequent reads are fast and consistent.
-      saveData(migrated);
-      return migrated;
-    }
-
-    return sanitized;
-  } catch (err) {
-    console.warn(`[Forge] Corrupt data in ${STORAGE_KEY}, resetting:`, err.message);
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) localStorage.setItem(`${STORAGE_KEY}-corrupt-backup`, raw);
-    } catch {}
-    return DEFAULT_STATE;
+  // Migrate v1 (no version field) to v2.
+  if (sanitized.version !== SCHEMA_VERSION) {
+    const migrated = migrateV1ToV2(sanitized);
+    // Persist migrated shape immediately so subsequent reads are fast and consistent.
+    saveData(migrated);
+    return migrated;
   }
+
+  return sanitized;
 }
 
 function saveData(data) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  } catch (err) {
-    console.warn(`[Forge] Failed to save ${STORAGE_KEY}:`, err.message);
-  }
+  saveJSON(STORAGE_KEY, data);
 }
 
 export default function useScoring() {

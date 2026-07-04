@@ -1,36 +1,17 @@
 import { useMemo } from "react";
 import { createStore, useStore } from "./progressStore";
 import { isRecord } from "../utils/normalizeRecordMap";
+import { loadJSON, saveJSON } from "../utils/storage";
 
 const STORAGE_KEY = "forge-notes";
 const DEFAULT_STATE = {};
 
 function loadNotes() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return DEFAULT_STATE;
-    const parsed = JSON.parse(raw);
-    if (!isRecord(parsed)) {
-      console.warn(`[Forge] Invalid shape in ${STORAGE_KEY}, resetting`);
-      return DEFAULT_STATE;
-    }
-    return parsed;
-  } catch (err) {
-    console.warn(`[Forge] Corrupt data in ${STORAGE_KEY}, resetting:`, err.message);
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) localStorage.setItem(`${STORAGE_KEY}-corrupt-backup`, raw);
-    } catch {}
-    return DEFAULT_STATE;
-  }
+  return loadJSON(STORAGE_KEY, { validate: isRecord, fallback: DEFAULT_STATE });
 }
 
 function saveNotes(notes) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
-  } catch (err) {
-    console.warn(`[Forge] Failed to save ${STORAGE_KEY}:`, err.message);
-  }
+  saveJSON(STORAGE_KEY, notes);
 }
 
 // Shared module-level store: every useNotes instance reads and writes the same

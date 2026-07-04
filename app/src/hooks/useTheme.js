@@ -1,13 +1,15 @@
 import { useState, useCallback, useEffect } from "react";
+import { loadString, saveString } from "../utils/storage";
 
 const STORAGE_KEY = "forge-theme";
 
 function getInitialTheme() {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored === "dark" || stored === "light") return stored;
-  } catch {}
-  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  return loadString(STORAGE_KEY, {
+    validate: (v) => v === "dark" || v === "light",
+    // System preference is the fallback, not an error state.
+    fallback: () =>
+      window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light",
+  });
 }
 
 export default function useTheme() {
@@ -20,7 +22,7 @@ export default function useTheme() {
   const toggleTheme = useCallback(() => {
     setThemeState(prev => {
       const next = prev === "dark" ? "light" : "dark";
-      try { localStorage.setItem(STORAGE_KEY, next); } catch {}
+      saveString(STORAGE_KEY, next);
       return next;
     });
   }, []);
