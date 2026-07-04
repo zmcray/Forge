@@ -6,7 +6,7 @@ import ChatDrawer from "../components/learn/ChatDrawer";
 // Mock useChatContext
 vi.mock("../hooks/useChatContext", () => ({
   default: () => ({
-    systemPrompt: "You are a tutor.",
+    chatParams: { subsectionId: "test-sub" },
     suggestedQuestions: ["What is EBITDA?"],
   }),
 }));

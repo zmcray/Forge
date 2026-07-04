@@ -55,7 +55,7 @@ export default function ChatDrawer({
   // must not inflate the perceived turn count.
   const roleMessageCount = messages.filter(m => m.kind !== "mode-change").length;
 
-  const { systemPrompt, suggestedQuestions } = useChatContext({
+  const { chatParams, suggestedQuestions } = useChatContext({
     subsection,
     contextType,
     practiceContext,
@@ -112,9 +112,10 @@ export default function ChatDrawer({
     abortRef.current = ac;
 
     // Mode-change dividers are UI-only; strip them from the API payload so the
-    // LLM sees a clean role/content history. systemPrompt was captured above
-    // and reflects the mode at the time send was clicked (D8 — in-flight uses
-    // old prompt; mode flips during stream apply on next turn).
+    // LLM sees a clean role/content history. The server assembles the system
+    // prompt from `mode` + `chatParams` (MCR-390); mode was captured above and
+    // reflects the state when send was clicked (D8 — in-flight uses old mode;
+    // flips during stream apply on next turn).
     const apiMessages = updated
       .filter(m => m.kind !== "mode-change")
       .map(m => ({ role: m.role, content: m.content }));
@@ -124,9 +125,16 @@ export default function ChatDrawer({
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          // VITE_FORGE_AUTH_TOKEN is obfuscation, not auth: it ships in the
+          // public JS bundle. Real abuse protection is server-side (rate
+          // limiting + server-owned prompts).
           "x-forge-token": import.meta.env.VITE_FORGE_AUTH_TOKEN || "",
         },
-        body: JSON.stringify({ messages: apiMessages, systemPrompt }),
+        body: JSON.stringify({
+          messages: apiMessages,
+          mode: `${contextType === "practice" ? "practice" : "learn"}-${mode}`,
+          params: chatParams,
+        }),
         signal: ac.signal,
       });
 
@@ -198,7 +206,7 @@ export default function ChatDrawer({
       setStreamingText("");
       abortRef.current = null;
     }
-  }, [messages, setMessages, isStreaming, systemPrompt]);
+  }, [messages, setMessages, isStreaming, chatParams, mode, contextType]);
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {

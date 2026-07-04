@@ -1,5 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { jsonSchemaOutputFormat } from "@anthropic-ai/sdk/helpers/json-schema";
+import { rateLimitResponse } from "./_lib/rateLimit.js";
 
 // Case-insensitive env lookup (Vercel dashboard may have non-standard casing)
 function getEnv(name) {
@@ -75,8 +76,14 @@ function validateFeedback(feedback) {
 }
 
 export async function POST(request) {
-  // Skip auth check in dev (no FORGE_AUTH_TOKEN configured)
-  // Use exact match here -- auth is opt-in and client/server must agree on casing
+  // Best-effort per-instance rate limit; Vercel WAF is the stronger layer.
+  const limited = rateLimitResponse(request);
+  if (limited) return limited;
+
+  // Skip token gate in dev (no FORGE_AUTH_TOKEN configured). Note this is
+  // obfuscation, not auth: the matching VITE_FORGE_AUTH_TOKEN ships in the
+  // public client bundle.
+  // Use exact match here -- gate is opt-in and client/server must agree on casing
   if (process.env.FORGE_AUTH_TOKEN) {
     const token = request.headers.get("x-forge-token");
     if (token !== process.env.FORGE_AUTH_TOKEN) {
