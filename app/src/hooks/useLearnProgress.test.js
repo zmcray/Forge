@@ -1,5 +1,7 @@
+// @vitest-environment jsdom
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { loadProgress, saveProgress } from "./useLearnProgress";
+import { renderHook, act } from "@testing-library/react";
+import useLearnProgress, { loadProgress, saveProgress } from "./useLearnProgress";
 
 // Mock localStorage
 const localStorageMock = (() => {
@@ -90,40 +92,56 @@ describe("loadProgress + saveProgress roundtrip", () => {
   });
 });
 
-describe("exercise completion logic", () => {
-  it("prevents duplicate exercise IDs in completedExercises", () => {
-    const data = {
-      completedExercises: ["ex-1a-calc"],
-      visitedSubsections: [],
-    };
-    saveProgress(data);
+describe("markComplete / isComplete (hook)", () => {
+  it("marks an exercise complete and persists it", () => {
+    const { result } = renderHook(() => useLearnProgress());
 
-    const loaded = loadProgress();
-    // Simulate what markComplete does: check before adding
-    const exerciseId = "ex-1a-calc";
-    if (!loaded.completedExercises.includes(exerciseId)) {
-      loaded.completedExercises.push(exerciseId);
-    }
-    expect(loaded.completedExercises).toHaveLength(1);
-    expect(loaded.completedExercises).toEqual(["ex-1a-calc"]);
+    expect(result.current.isComplete("ex-1a-calc")).toBe(false);
+
+    act(() => {
+      result.current.markComplete("ex-1a-calc");
+    });
+
+    expect(result.current.isComplete("ex-1a-calc")).toBe(true);
+    expect(result.current.progress.completedExercises).toEqual(["ex-1a-calc"]);
+    expect(loadProgress().completedExercises).toEqual(["ex-1a-calc"]);
+  });
+
+  it("prevents duplicate exercise IDs in completedExercises", () => {
+    saveProgress({ completedExercises: ["ex-1a-calc"], visitedSubsections: [] });
+    const { result } = renderHook(() => useLearnProgress());
+
+    act(() => {
+      result.current.markComplete("ex-1a-calc");
+    });
+
+    expect(result.current.progress.completedExercises).toEqual(["ex-1a-calc"]);
   });
 });
 
-describe("visited subsection logic", () => {
-  it("prevents duplicate subsection IDs in visitedSubsections", () => {
-    const data = {
-      completedExercises: [],
-      visitedSubsections: ["s1a"],
-    };
-    saveProgress(data);
+describe("markVisited / isVisited (hook)", () => {
+  it("marks a subsection visited and persists it", () => {
+    const { result } = renderHook(() => useLearnProgress());
 
-    const loaded = loadProgress();
-    const subsectionId = "s1a";
-    if (!loaded.visitedSubsections.includes(subsectionId)) {
-      loaded.visitedSubsections.push(subsectionId);
-    }
-    expect(loaded.visitedSubsections).toHaveLength(1);
-    expect(loaded.visitedSubsections).toEqual(["s1a"]);
+    expect(result.current.isVisited("s1a")).toBe(false);
+
+    act(() => {
+      result.current.markVisited("s1a");
+    });
+
+    expect(result.current.isVisited("s1a")).toBe(true);
+    expect(loadProgress().visitedSubsections).toEqual(["s1a"]);
+  });
+
+  it("prevents duplicate subsection IDs in visitedSubsections", () => {
+    saveProgress({ completedExercises: [], visitedSubsections: ["s1a"] });
+    const { result } = renderHook(() => useLearnProgress());
+
+    act(() => {
+      result.current.markVisited("s1a");
+    });
+
+    expect(result.current.progress.visitedSubsections).toEqual(["s1a"]);
   });
 });
 
@@ -138,16 +156,13 @@ describe("subsection progress calculation", () => {
       ],
     };
 
-    const completedExercises = ["ex-1a-calc"];
-    const exercises = subsection.blocks.filter(
-      (b) => b.type === "exercise" || b.type === "calculationExercise"
-    );
-    const completed = exercises.filter((e) =>
-      completedExercises.includes(e.id)
-    ).length;
+    saveProgress({ completedExercises: ["ex-1a-calc"], visitedSubsections: [] });
+    const { result } = renderHook(() => useLearnProgress());
 
-    expect(completed).toBe(1);
-    expect(exercises.length).toBe(2);
+    expect(result.current.getSubsectionProgress(subsection)).toEqual({
+      completed: 1,
+      total: 2,
+    });
   });
 
   it("returns null for subsections with no exercises", () => {
@@ -156,61 +171,58 @@ describe("subsection progress calculation", () => {
       blocks: [{ type: "text", content: "Introduction" }],
     };
 
-    const exercises = (subsection.blocks || []).filter(
-      (b) => b.type === "exercise" || b.type === "calculationExercise"
-    );
-    const result = exercises.length === 0 ? null : { completed: 0, total: exercises.length };
-    expect(result).toBeNull();
+    const { result } = renderHook(() => useLearnProgress());
+    expect(result.current.getSubsectionProgress(subsection)).toBeNull();
   });
 });
 
-describe("subsection reset logic", () => {
+describe("resetSubsection (hook)", () => {
   it("clears only exercises from the target subsection", () => {
-    const data = {
+    saveProgress({
       completedExercises: ["ex-1a-calc", "ex-1b-calc", "ex-2a-1"],
       visitedSubsections: ["s1a", "s1b", "s2a"],
-    };
+    });
+    const { result } = renderHook(() => useLearnProgress());
 
-    // Simulate resetSubsection for s1a
     const subsection = {
       id: "s1a",
-      blocks: [
-        { type: "calculationExercise", id: "ex-1a-calc" },
-      ],
+      blocks: [{ type: "calculationExercise", id: "ex-1a-calc" }],
     };
 
-    const exerciseIds = subsection.blocks
-      .filter((b) => b.type === "exercise" || b.type === "calculationExercise")
-      .map((b) => b.id);
+    act(() => {
+      result.current.resetSubsection(subsection);
+    });
 
-    const next = {
-      ...data,
-      completedExercises: data.completedExercises.filter(
-        (id) => !exerciseIds.includes(id)
-      ),
-    };
-
-    expect(next.completedExercises).toEqual(["ex-1b-calc", "ex-2a-1"]);
-    expect(next.visitedSubsections).toEqual(["s1a", "s1b", "s2a"]);
+    expect(result.current.progress.completedExercises).toEqual([
+      "ex-1b-calc",
+      "ex-2a-1",
+    ]);
+    expect(result.current.progress.visitedSubsections).toEqual([
+      "s1a",
+      "s1b",
+      "s2a",
+    ]);
+    expect(loadProgress().completedExercises).toEqual(["ex-1b-calc", "ex-2a-1"]);
   });
 
   it("does nothing when subsection has no exercises", () => {
-    const data = {
+    saveProgress({
       completedExercises: ["ex-1a-calc"],
       visitedSubsections: ["s1a"],
-    };
+    });
+    const { result } = renderHook(() => useLearnProgress());
+    const before = result.current.progress;
 
     const subsection = {
       id: "intro",
       blocks: [{ type: "text", content: "No exercises here" }],
     };
 
-    const exerciseIds = (subsection.blocks || [])
-      .filter((b) => b.type === "exercise" || b.type === "calculationExercise")
-      .map((b) => b.id);
+    act(() => {
+      result.current.resetSubsection(subsection);
+    });
 
-    expect(exerciseIds).toHaveLength(0);
-    // No change expected
-    expect(data.completedExercises).toEqual(["ex-1a-calc"]);
+    expect(result.current.progress).toBe(before);
+    expect(result.current.progress.completedExercises).toEqual(["ex-1a-calc"]);
   });
 });
