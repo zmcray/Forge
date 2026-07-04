@@ -1,5 +1,5 @@
 import { useCallback, lazy, Suspense } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import AppShell from "./AppShell";
 import ProgressDashboard from "./ProgressDashboard";
 import RouteLoader from "./RouteLoader";
@@ -25,10 +25,10 @@ export default function AppShellWrapper({
   theme,
   toggleTheme,
   onSearchOpen,
-  session,
   generatedCompanies,
   onGeneratedCompany,
 }) {
+  const navigate = useNavigate();
   // Determine active view from current URL
   const activeView = viewFromPath(window.location.pathname);
 
@@ -38,6 +38,12 @@ export default function AppShellWrapper({
     },
     [setView],
   );
+
+  // Starting practice is just navigation; PracticeRoute owns the session so
+  // the timer mounts (and its interval dies) with the practice route.
+  const startPractice = useCallback((company, scenarioId) => {
+    navigate(scenarioId ? `/practice/${company.id}?scenario=${scenarioId}` : `/practice/${company.id}`);
+  }, [navigate]);
 
   return (
     <AppShell
@@ -53,7 +59,7 @@ export default function AppShellWrapper({
             index
             element={
               <HomeScreen
-                startPractice={session.startPractice}
+                startPractice={startPractice}
                 setView={setView}
                 generatedCompanies={generatedCompanies}
                 onGeneratedCompany={onGeneratedCompany}
@@ -63,7 +69,7 @@ export default function AppShellWrapper({
           <Route path="progress" element={<ProgressDashboard />} />
           <Route
             path="practice/:companyId"
-            element={<PracticeRoute session={session} />}
+            element={<PracticeRoute generatedCompanies={generatedCompanies} />}
           />
           <Route path="learn" element={<LearnModule />} />
           <Route path="learn/compare" element={<LearnModule />} />

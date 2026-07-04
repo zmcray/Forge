@@ -196,29 +196,28 @@ export default function useScoring() {
     });
   }, []);
 
-  const getAllScores = useCallback(() => {
-    return data.sessions.flatMap(s => s.questions);
-  }, [data.sessions]);
+  // All derived reads are memoized per sessions snapshot so consumers get
+  // referentially stable results and can hang further useMemo work off them.
+  const allScores = useMemo(
+    () => data.sessions.flatMap(s => s.questions),
+    [data.sessions],
+  );
 
-  const getScoresByType = useCallback(() => {
+  const scoresByType = useMemo(() => {
     const byType = {};
-    for (const session of data.sessions) {
-      for (const q of session.questions) {
-        if (!byType[q.type]) byType[q.type] = [];
-        byType[q.type].push(q.score);
-      }
+    for (const q of allScores) {
+      if (!byType[q.type]) byType[q.type] = [];
+      byType[q.type].push(q.score);
     }
     return byType;
-  }, [data.sessions]);
+  }, [allScores]);
 
-  const getWeakSpots = useCallback(() => {
-    const all = getAllScores();
+  const weakSpots = useMemo(() => {
     // Intentional minimum sample size: weak spots are noise until at least
     // 10 total scored questions exist, regardless of per-type counts.
-    if (all.length < 10) return null;
+    if (allScores.length < 10) return null;
 
-    const byType = getScoresByType();
-    const weaknesses = Object.entries(byType)
+    const weaknesses = Object.entries(scoresByType)
       .map(([type, scores]) => ({
         type,
         avg: average(scores),
@@ -228,23 +227,33 @@ export default function useScoring() {
       .sort((a, b) => a.avg - b.avg);
 
     return weaknesses.length > 0 ? weaknesses : null;
-  }, [getAllScores, getScoresByType]);
+  }, [allScores, scoresByType]);
 
-  const getQuantitativeAccuracy = useCallback(() => {
-    const questions = data.sessions.flatMap(s => s.questions);
-    const avgDelta = averageAbsDelta(questions);
+  const quantitativeAccuracy = useMemo(() => {
+    const avgDelta = averageAbsDelta(allScores);
     if (avgDelta === null) return null;
-    return { avgDelta: avgDelta.toFixed(1), count: questions.filter(q => q.delta != null).length };
-  }, [data.sessions]);
+    return { avgDelta: avgDelta.toFixed(1), count: allScores.filter(q => q.delta != null).length };
+  }, [allScores]);
 
-  // Memoized so consumers get a referentially stable Set per sessions snapshot.
   const attemptedIds = useMemo(() => attemptedCompanyIds(data.sessions), [data.sessions]);
+
+  // Getter API kept stable for existing callers/tests; each returns the
+  // memoized value for its sessions snapshot.
+  const getAllScores = useCallback(() => allScores, [allScores]);
+  const getScoresByType = useCallback(() => scoresByType, [scoresByType]);
+  const getWeakSpots = useCallback(() => weakSpots, [weakSpots]);
+  const getQuantitativeAccuracy = useCallback(() => quantitativeAccuracy, [quantitativeAccuracy]);
   const getAttemptedCompanyIds = useCallback(() => attemptedIds, [attemptedIds]);
 
   return {
     data,
     addScore,
     updateSessionDuration,
+    allScores,
+    scoresByType,
+    weakSpots,
+    quantitativeAccuracy,
+    attemptedCompanyIds: attemptedIds,
     getAllScores,
     getScoresByType,
     getWeakSpots,

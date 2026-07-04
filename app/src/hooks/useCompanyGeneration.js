@@ -1,4 +1,7 @@
 import { useReducer, useRef, useEffect, useCallback } from "react";
+import { forgeFetch, ApiError } from "../utils/api";
+
+const GENERATION_FAILED = "Generation failed, try again.";
 
 function generationReducer(state, action) {
   switch (action.type) {
@@ -40,21 +43,7 @@ export default function useCompanyGeneration({ onGeneratedCompany }) {
     dispatch({ type: "GENERATE_START" });
 
     try {
-      const response = await fetch("/api/generate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-forge-token": import.meta.env.VITE_FORGE_AUTH_TOKEN || "",
-        },
-        body: JSON.stringify({}),
-        signal: controller.signal,
-      });
-
-      if (!response.ok) {
-        throw new Error("Generation failed, try again.");
-      }
-
-      const company = await response.json();
+      const company = await forgeFetch("/api/generate", {}, { signal: controller.signal });
       if (controller.signal.aborted) return;
 
       onGeneratedCompany(company);
@@ -64,7 +53,9 @@ export default function useCompanyGeneration({ onGeneratedCompany }) {
       console.warn("[Forge] Company generation failed:", err);
       dispatch({
         type: "GENERATE_ERROR",
-        payload: err.message || "Generation failed, try again.",
+        // Non-OK API responses (e.g. 502 from generation retries exhausting)
+        // keep the friendly fixed message rather than surfacing server text.
+        payload: err instanceof ApiError ? GENERATION_FAILED : err.message || GENERATION_FAILED,
       });
     } finally {
       if (abortRef.current === controller) {

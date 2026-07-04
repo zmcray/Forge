@@ -3,6 +3,7 @@ import ChatMessage from "./ChatMessage";
 import useChatContext from "../../hooks/useChatContext";
 import useChatMode, { CHAT_MODES } from "../../hooks/useChatMode";
 import { useDialog } from "../../hooks/useDialog";
+import { forgeFetch } from "../../utils/api";
 
 const MAX_TURNS = 10;
 const MAX_MESSAGE_LENGTH = 2000;
@@ -123,27 +124,15 @@ export default function ChatDrawer({
       .map(m => ({ role: m.role, content: m.content }));
 
     try {
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          // VITE_FORGE_AUTH_TOKEN is obfuscation, not auth: it ships in the
-          // public JS bundle. Real abuse protection is server-side (rate
-          // limiting + server-owned prompts).
-          "x-forge-token": import.meta.env.VITE_FORGE_AUTH_TOKEN || "",
-        },
-        body: JSON.stringify({
+      const res = await forgeFetch(
+        "/api/chat",
+        {
           messages: apiMessages,
           mode: `${contextType === "practice" ? "practice" : "learn"}-${mode}`,
           params: chatParams,
-        }),
-        signal: ac.signal,
-      });
-
-      if (!res.ok) {
-        const errData = await res.json().catch(() => ({}));
-        throw new Error(errData.error || "Chat unavailable");
-      }
+        },
+        { stream: true, signal: ac.signal, fallbackError: "Chat unavailable" }
+      );
 
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
