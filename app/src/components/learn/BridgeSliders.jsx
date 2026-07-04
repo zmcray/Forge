@@ -1,9 +1,11 @@
+import { formatCurrency, formatPercent, formatMultiple } from "../../utils/format";
+
 const SLIDER_DEFS = [
   {
     key: "revenueCAGR",
     label: "Revenue CAGR",
     unit: "%",
-    format: (v) => `${v.toFixed(1)}%`,
+    format: (v) => formatPercent(v),
   },
   {
     key: "marginExpansion",
@@ -15,13 +17,13 @@ const SLIDER_DEFS = [
     key: "multipleExpansion",
     label: "Multiple Expansion",
     unit: "x",
-    format: (v) => `${v >= 0 ? "+" : ""}${v.toFixed(2)}x`,
+    format: (v) => formatMultiple(v, { decimals: 2, signed: true }),
   },
   {
     key: "debtPaydown",
     label: "Debt Paydown",
     unit: "$M",
-    format: (v) => `${v >= 0 ? "" : "-"}$${Math.abs(v).toFixed(1)}M`,
+    format: (v) => formatCurrency(v),
   },
 ];
 

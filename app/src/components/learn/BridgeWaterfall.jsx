@@ -1,3 +1,5 @@
+import { formatCurrency } from "../../utils/format";
+
 /**
  * Waterfall chart for a value creation bridge.
  * Five vertical bars: entry equity, three delta contributors, exit equity.
@@ -16,10 +18,10 @@ export default function BridgeWaterfall({ bridge }) {
           Value Destroyed
         </div>
         <div className="text-3xl font-bold font-mono text-on-error-container mb-2">
-          ${exitEquity.toFixed(1)}M
+          {formatCurrency(exitEquity)}
         </div>
         <p className="text-xs text-on-surface-variant max-w-sm mx-auto">
-          These assumptions wipe out the entry equity of ${entryEquity.toFixed(1)}M.
+          These assumptions wipe out the entry equity of {formatCurrency(entryEquity)}.
           Adjust the sliders to find a path to value creation.
         </p>
       </div>
@@ -40,7 +42,7 @@ export default function BridgeWaterfall({ bridge }) {
   const bars = [
     {
       label: "Entry Equity",
-      valueLabel: `$${entryEquity.toFixed(1)}M`,
+      valueLabel: formatCurrency(entryEquity),
       bottomPct: 0,
       heightPct: (entryEquity / scale) * 100,
       color: "bg-outline-variant",
@@ -48,7 +50,7 @@ export default function BridgeWaterfall({ bridge }) {
     },
     {
       label: "EBITDA Growth",
-      valueLabel: formatDelta(ebitdaGrowth),
+      valueLabel: formatCurrency(ebitdaGrowth, { signed: true }),
       bottomPct: ebitdaFloat.bottomPct,
       heightPct: ebitdaFloat.heightPct,
       color: ebitdaGrowth >= 0 ? "bg-primary" : "bg-error",
@@ -56,7 +58,7 @@ export default function BridgeWaterfall({ bridge }) {
     },
     {
       label: "Multiple Expansion",
-      valueLabel: formatDelta(multipleExpansion),
+      valueLabel: formatCurrency(multipleExpansion, { signed: true }),
       bottomPct: multipleFloat.bottomPct,
       heightPct: multipleFloat.heightPct,
       color: multipleExpansion >= 0 ? "bg-tertiary" : "bg-error",
@@ -64,7 +66,7 @@ export default function BridgeWaterfall({ bridge }) {
     },
     {
       label: "Debt Paydown",
-      valueLabel: formatDelta(debtPaydown),
+      valueLabel: formatCurrency(debtPaydown, { signed: true }),
       bottomPct: debtFloat.bottomPct,
       heightPct: debtFloat.heightPct,
       color: debtPaydown >= 0 ? "bg-secondary" : "bg-error",
@@ -72,7 +74,7 @@ export default function BridgeWaterfall({ bridge }) {
     },
     {
       label: "Exit Equity",
-      valueLabel: `$${exitEquity.toFixed(1)}M`,
+      valueLabel: formatCurrency(exitEquity),
       bottomPct: 0,
       heightPct: (exitEquity / scale) * 100,
       color: "bg-on-surface",
@@ -130,9 +132,4 @@ function deltaFloat(cumulative, delta, scale) {
     bottomPct: ((cumulative + delta) / scale) * 100,
     heightPct: (Math.abs(delta) / scale) * 100,
   };
-}
-
-function formatDelta(value) {
-  if (value >= 0) return `+$${value.toFixed(1)}M`;
-  return `-$${Math.abs(value).toFixed(1)}M`;
 }

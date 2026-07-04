@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { BRIDGE_SCENARIOS } from "../../data/valueBridge";
 import { COMPANIES } from "../../data/companies";
 import { calculateBridge } from "../../utils/bridgeMath";
+import { formatMultiple } from "../../utils/format";
 import useBridgeProgress from "../../hooks/useBridgeProgress";
 
 // Plan-case MOICs are static data. Compute once at module load, not per render.
@@ -69,7 +70,7 @@ export default function BridgeList() {
                 </div>
                 <div className="flex items-baseline gap-1">
                   <span className="text-lg font-bold font-mono text-on-surface">
-                    {planMoic.toFixed(1)}x
+                    {formatMultiple(planMoic)}
                   </span>
                   <span className="text-[10px] text-on-surface-variant">MOIC</span>
                 </div>

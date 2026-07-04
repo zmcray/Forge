@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { COMPANIES } from "../data/companies";
-import { formatCurrency, shuffleArray } from "../utils/format";
+import { formatCurrency, formatPercent, shuffleArray } from "../utils/format";
 import { useScoringState } from "../contexts/ScoringContext";
 import SoftGate from "./onboarding/SoftGate";
 
@@ -122,12 +122,12 @@ export default function QuickFireScreen() {
           <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm">
             {[
               ["Revenue", formatCurrency(company.revenue)],
-              ["Revenue Growth", `${km.revenueGrowth > 0 ? "+" : ""}${km.revenueGrowth.toFixed(1)}%`],
+              ["Revenue Growth", formatPercent(km.revenueGrowth, { signed: true })],
               ["Adj. EBITDA", formatCurrency(km.adjustedEbitda)],
-              ["Adj. EBITDA Margin", `${km.adjustedEbitdaMargin.toFixed(1)}%`],
-              ["Customer Concentration", `${km.customerConcentration}%`],
-              ["Recurring Revenue", `${km.recurringRevenuePct}%`],
-              ["Gross Margin", `${km.grossMargin.toFixed(1)}%`],
+              ["Adj. EBITDA Margin", formatPercent(km.adjustedEbitdaMargin)],
+              ["Customer Concentration", formatPercent(km.customerConcentration, { decimals: 0 })],
+              ["Recurring Revenue", formatPercent(km.recurringRevenuePct, { decimals: 0 })],
+              ["Gross Margin", formatPercent(km.grossMargin)],
             ].map(([label, value]) => (
               <div key={label} className="flex justify-between py-1 border-b border-outline-variant/20">
                 <span className="text-on-surface-variant">{label}</span>
