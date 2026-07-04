@@ -1,6 +1,8 @@
 import { describe, it, expect } from "vitest";
 import {
   formatCurrency,
+  formatPercent,
+  formatMultiple,
   extractNumericValue,
   formatUnit,
   formatDelta,
@@ -34,6 +36,77 @@ describe("formatCurrency", () => {
 
   it("returns fallback for NaN", () => {
     expect(formatCurrency(NaN)).toBe("$--");
+  });
+
+  it("renders negatives with the sign before the dollar", () => {
+    expect(formatCurrency(-2.0)).toBe("-$2.0M");
+    expect(formatCurrency(-12.34, 2)).toBe("-$12.34M");
+  });
+
+  it("accepts an options object with decimals", () => {
+    expect(formatCurrency(5.567, { decimals: 2 })).toBe("$5.57M");
+  });
+
+  it("adds a plus sign for positives when signed", () => {
+    expect(formatCurrency(2.5, { signed: true })).toBe("+$2.5M");
+  });
+
+  it("keeps negatives negative when signed", () => {
+    expect(formatCurrency(-2.5, { signed: true })).toBe("-$2.5M");
+  });
+
+  it("renders zero unsigned even when signed", () => {
+    expect(formatCurrency(0, { signed: true })).toBe("$0.0M");
+  });
+});
+
+describe("formatPercent", () => {
+  it("formats with one decimal by default", () => {
+    expect(formatPercent(16.94)).toBe("16.9%");
+  });
+
+  it("formats negatives", () => {
+    expect(formatPercent(-4.25)).toBe("-4.3%");
+  });
+
+  it("supports zero decimals", () => {
+    expect(formatPercent(70, { decimals: 0 })).toBe("70%");
+  });
+
+  it("adds a plus sign for positives when signed", () => {
+    expect(formatPercent(8.2, { signed: true })).toBe("+8.2%");
+  });
+
+  it("renders zero unsigned even when signed", () => {
+    expect(formatPercent(0, { signed: true })).toBe("0.0%");
+  });
+
+  it("returns fallback for null and NaN", () => {
+    expect(formatPercent(null)).toBe("--%");
+    expect(formatPercent(NaN)).toBe("--%");
+  });
+});
+
+describe("formatMultiple", () => {
+  it("formats with one decimal by default", () => {
+    expect(formatMultiple(6.5)).toBe("6.5x");
+  });
+
+  it("supports two decimals", () => {
+    expect(formatMultiple(2.347, { decimals: 2 })).toBe("2.35x");
+  });
+
+  it("adds a plus sign for positives when signed", () => {
+    expect(formatMultiple(0.5, { signed: true, decimals: 2 })).toBe("+0.50x");
+  });
+
+  it("formats negatives", () => {
+    expect(formatMultiple(-1.2)).toBe("-1.2x");
+  });
+
+  it("returns fallback for null and NaN", () => {
+    expect(formatMultiple(null)).toBe("--x");
+    expect(formatMultiple(NaN)).toBe("--x");
   });
 });
 
