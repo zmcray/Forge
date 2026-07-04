@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { COMPANIES } from "../data/companies";
 import { LEARN_CONTENT } from "../data/learnContent";
+import { formatCurrency } from "../utils/format";
 
 function buildIndex() {
   const items = [];
@@ -11,7 +12,7 @@ function buildIndex() {
       type: "company",
       id: co.id,
       title: co.name,
-      subtitle: `${co.industry} · $${(co.revenue / 1e6).toFixed(1)}M revenue`,
+      subtitle: `${co.industry} · ${formatCurrency(co.revenue)} revenue`,
       icon: "domain",
       keywords: [co.name, co.industry, co.id, co.description, co.context].join(" ").toLowerCase(),
     });
