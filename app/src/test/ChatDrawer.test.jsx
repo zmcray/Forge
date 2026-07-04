@@ -31,6 +31,15 @@ describe("ChatDrawer", () => {
     vi.clearAllMocks();
   });
 
+  it("renders as a dialog and closes on Escape", () => {
+    const onClose = vi.fn();
+    render(<ChatDrawer {...defaultProps} onClose={onClose} />);
+    const dialog = screen.getByRole("dialog");
+    expect(dialog.getAttribute("aria-modal")).toBe("true");
+    fireEvent.keyDown(document.activeElement, { key: "Escape" });
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
   it("renders header with subsection title", () => {
     render(<ChatDrawer {...defaultProps} />);
     expect(screen.getByText("Chat: Test Topic")).toBeInTheDocument();

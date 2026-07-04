@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import ChatMessage from "./ChatMessage";
 import useChatContext from "../../hooks/useChatContext";
 import useChatMode, { CHAT_MODES } from "../../hooks/useChatMode";
+import { useDialog } from "../../hooks/useDialog";
 
 const MAX_TURNS = 10;
 const MAX_MESSAGE_LENGTH = 2000;
@@ -43,6 +44,7 @@ export default function ChatDrawer({
   const [streamingText, setStreamingText] = useState("");
   const [error, setError] = useState(null);
   const { mode, setMode } = useChatMode();
+  const { dialogRef, dialogProps } = useDialog({ onClose });
   const abortRef = useRef(null);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
@@ -246,7 +248,11 @@ export default function ChatDrawer({
   const showCharWarning = charCount > 1500;
 
   return (
-    <div className="w-96 lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-7rem)] max-lg:fixed max-lg:inset-0 max-lg:z-50 flex flex-col bg-surface-container rounded-xl border border-outline-variant/30 overflow-hidden max-lg:rounded-none max-lg:border-0">
+    <div
+      ref={dialogRef}
+      {...dialogProps}
+      aria-label={contextTitle ? `Chat: ${contextTitle}` : "Chat"}
+      className="w-96 lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-7rem)] max-lg:fixed max-lg:inset-0 max-lg:z-50 flex flex-col bg-surface-container rounded-xl border border-outline-variant/30 overflow-hidden max-lg:rounded-none max-lg:border-0">
       {/* Backdrop for tablet/mobile overlay */}
       <div
         className="hidden max-lg:block fixed inset-0 bg-black/40 -z-10"
