@@ -1,16 +1,14 @@
 import { useState } from "react";
 import { QUESTION_TYPES } from "../data/questionTypes";
+import { average, averageScore, averageAbsDelta } from "../utils/scoreMath";
 
 export default function SessionSummary({ company, questions, elapsedMinutes, onClose }) {
   const [copied, setCopied] = useState(false);
 
   if (!questions || questions.length === 0) return null;
 
-  const avgScore = (questions.reduce((sum, q) => sum + q.score, 0) / questions.length).toFixed(1);
-  const quantitative = questions.filter(q => q.delta != null);
-  const avgDelta = quantitative.length > 0
-    ? (quantitative.reduce((sum, q) => sum + Math.abs(q.delta), 0) / quantitative.length).toFixed(1)
-    : null;
+  const avgScore = averageScore(questions).toFixed(1);
+  const avgDelta = averageAbsDelta(questions)?.toFixed(1) ?? null;
 
   const byType = {};
   for (const q of questions) {
@@ -27,7 +25,7 @@ export default function SessionSummary({ company, questions, elapsedMinutes, onC
     "By Category:",
     ...Object.entries(byType).map(([type, scores]) => {
       const info = QUESTION_TYPES[type];
-      const avg = (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1);
+      const avg = average(scores).toFixed(1);
       return `  ${info?.label || type}: ${avg}/5 (${scores.length} Qs)`;
     }),
   ].filter(Boolean).join("\n");
@@ -72,7 +70,7 @@ export default function SessionSummary({ company, questions, elapsedMinutes, onC
 
         {Object.entries(byType).map(([type, scores]) => {
           const info = QUESTION_TYPES[type];
-          const avg = (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1);
+          const avg = average(scores).toFixed(1);
           return (
             <div key={type} className="flex items-center gap-2 text-sm mb-1.5">
               <span>{info?.icon}</span>

@@ -4,6 +4,7 @@ import { COMPANIES } from "../../data/companies";
 import { LEARN_CONTENT } from "../../data/learnContent";
 import { useScoringState, useScoringDispatch } from "../../contexts/ScoringContext";
 import useLearnProgress from "../../hooks/useLearnProgress";
+import { attemptedCompanyIds as deriveAttemptedCompanyIds, averageScore } from "../../utils/scoreMath";
 
 function getRecommendations(sessions, streak, weakSpots, learnProgress) {
   const recs = [];
@@ -25,10 +26,7 @@ function getRecommendations(sessions, streak, weakSpots, learnProgress) {
   }
 
   // Compute practice state
-  const attemptedCompanyIds = new Set();
-  for (const session of sessions) {
-    if (session.questions.length > 0) attemptedCompanyIds.add(session.companyId);
-  }
+  const attemptedCompanyIds = deriveAttemptedCompanyIds(sessions);
 
   const practicedToday = sessions.some((s) => {
     const today = new Date().toLocaleDateString("en-CA");
@@ -67,7 +65,7 @@ function getRecommendations(sessions, streak, weakSpots, learnProgress) {
       const companyScores = {};
       for (const session of sessions) {
         if (session.questions.length === 0) continue;
-        const avg = session.questions.reduce((sum, q) => sum + q.score, 0) / session.questions.length;
+        const avg = averageScore(session.questions);
         if (!companyScores[session.companyId] || avg < companyScores[session.companyId]) {
           companyScores[session.companyId] = avg;
         }

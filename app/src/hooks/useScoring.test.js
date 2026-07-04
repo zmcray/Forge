@@ -456,6 +456,40 @@ describe("getQuantitativeAccuracy", () => {
   });
 });
 
+describe("getAttemptedCompanyIds", () => {
+  it("returns an empty set with no sessions", () => {
+    const result = renderScoring();
+    expect(result.current.getAttemptedCompanyIds()).toEqual(new Set());
+  });
+
+  it("includes only companies whose sessions have at least one question", () => {
+    seedSessions([
+      { date: "2026-06-01", companyId: "summit-hvac", duration: 0, questions: [question("metric", 4)] },
+      { date: "2026-06-01", companyId: "coastal-foods", duration: 0, questions: [] },
+      { date: "2026-06-02", companyId: "precision-cnc", duration: 0, questions: [question("risk", 3)] },
+    ]);
+    const result = renderScoring();
+    expect(result.current.getAttemptedCompanyIds()).toEqual(new Set(["summit-hvac", "precision-cnc"]));
+  });
+
+  it("dedupes multiple sessions for the same company", () => {
+    seedSessions([
+      { date: "2026-06-01", companyId: "summit-hvac", duration: 0, questions: [question("metric", 4)] },
+      { date: "2026-06-02", companyId: "summit-hvac", duration: 0, questions: [question("thesis", 5)] },
+    ]);
+    const result = renderScoring();
+    expect(result.current.getAttemptedCompanyIds()).toEqual(new Set(["summit-hvac"]));
+  });
+
+  it("returns a referentially stable set across calls for the same sessions", () => {
+    seedSessions([
+      { date: "2026-06-01", companyId: "summit-hvac", duration: 0, questions: [question("metric", 4)] },
+    ]);
+    const result = renderScoring();
+    expect(result.current.getAttemptedCompanyIds()).toBe(result.current.getAttemptedCompanyIds());
+  });
+});
+
 describe("updateStreak", () => {
   it("starts a new streak on first use", () => {
     const result = updateStreak({ current: 0, lastDate: null }, "2026-03-18");

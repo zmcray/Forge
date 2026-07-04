@@ -1,5 +1,6 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { isRecord } from "../utils/normalizeRecordMap";
+import { average, averageAbsDelta, attemptedCompanyIds } from "../utils/scoreMath";
 
 const STORAGE_KEY = "forge-data";
 const V1_BACKUP_KEY = "forge-data-v1-backup";
@@ -232,7 +233,7 @@ export default function useScoring() {
     const weaknesses = Object.entries(byType)
       .map(([type, scores]) => ({
         type,
-        avg: scores.reduce((a, b) => a + b, 0) / scores.length,
+        avg: average(scores),
         count: scores.length,
       }))
       .filter(w => w.avg < 3.5 && w.count >= 2)
@@ -242,13 +243,15 @@ export default function useScoring() {
   }, [getAllScores, getScoresByType]);
 
   const getQuantitativeAccuracy = useCallback(() => {
-    const quantitative = data.sessions
-      .flatMap(s => s.questions)
-      .filter(q => q.delta != null);
-    if (quantitative.length === 0) return null;
-    const avgDelta = quantitative.reduce((sum, q) => sum + Math.abs(q.delta), 0) / quantitative.length;
-    return { avgDelta: avgDelta.toFixed(1), count: quantitative.length };
+    const questions = data.sessions.flatMap(s => s.questions);
+    const avgDelta = averageAbsDelta(questions);
+    if (avgDelta === null) return null;
+    return { avgDelta: avgDelta.toFixed(1), count: questions.filter(q => q.delta != null).length };
   }, [data.sessions]);
+
+  // Memoized so consumers get a referentially stable Set per sessions snapshot.
+  const attemptedIds = useMemo(() => attemptedCompanyIds(data.sessions), [data.sessions]);
+  const getAttemptedCompanyIds = useCallback(() => attemptedIds, [attemptedIds]);
 
   return {
     data,
@@ -258,6 +261,7 @@ export default function useScoring() {
     getScoresByType,
     getWeakSpots,
     getQuantitativeAccuracy,
+    getAttemptedCompanyIds,
     streak: data.streak,
     sessions: data.sessions,
   };

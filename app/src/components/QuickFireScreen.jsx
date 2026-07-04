@@ -2,15 +2,15 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { COMPANIES } from "../data/companies";
 import { formatCurrency, formatPercent, shuffleArray } from "../utils/format";
-import { useScoringState } from "../contexts/ScoringContext";
+import { useScoringDispatch } from "../contexts/ScoringContext";
 import SoftGate from "./onboarding/SoftGate";
 
 const QUICK_FIRE_SECONDS = 60;
 
 export default function QuickFireScreen() {
   const navigate = useNavigate();
-  const { sessions } = useScoringState();
-  const attemptedCount = useMemo(() => new Set(sessions.filter(s => s.questions.length > 0).map(s => s.companyId)).size, [sessions]);
+  const { getAttemptedCompanyIds } = useScoringDispatch();
+  const attemptedCount = getAttemptedCompanyIds().size;
 
   const queue = useMemo(() => shuffleArray([...COMPANIES]), []);
   const [currentIndex, setCurrentIndex] = useState(0);
