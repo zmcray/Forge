@@ -45,7 +45,7 @@ export default function CommitInput({ mode, disabled, value, onChange, numericVa
         onChange={e => onChange(e.target.value)}
         disabled={disabled}
       />
-      <div className={`text-xs mt-1 ${meetsMinimum ? "text-green-600 dark:text-green-400" : "text-on-surface-variant/60"}`}>
+      <div className={`text-xs mt-1 ${meetsMinimum ? "text-success" : "text-on-surface-variant/60"}`}>
         {charCount}/{MIN_QUALITATIVE_CHARS} characters {meetsMinimum ? "... ready to reveal" : "minimum"}
       </div>
     </div>

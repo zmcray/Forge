@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { QUESTION_TYPES } from "../data/questionTypes";
-import { extractNumericValue } from "../utils/format";
+import { extractNumericValue, getScoreChipClass, STATUS_CHIP_COLORS } from "../utils/format";
 import { evaluateAnswer } from "../utils/evaluateAnswer";
 import { LLMGrading, LLMFeedbackSkeleton } from "./LLMFeedback";
 import CommitInput from "./CommitInput";
@@ -164,7 +164,7 @@ export default function QuestionCard({ question, index, onScore, companyContext 
         </div>
         {selfScore !== null && (
           <div
-            className={`text-sm font-semibold px-2 py-0.5 rounded ${selfScore >= 4 ? "bg-green-100 text-green-800" : selfScore >= 2 ? "bg-amber-100 text-amber-800" : "bg-red-100 text-red-800"}`}
+            className={`text-sm font-semibold px-2 py-0.5 rounded ${getScoreChipClass(selfScore, { warnAt: 2 })}`}
           >
             {selfScore}/5{!isQuantitative && " AI"}
           </div>
@@ -187,7 +187,7 @@ export default function QuestionCard({ question, index, onScore, companyContext 
             <div className="flex gap-2 mt-3">
               <button
                 onClick={() => setPhase("hint")}
-                className="px-3 py-1.5 text-sm bg-amber-100 text-amber-900 border border-amber-200 rounded-lg hover:bg-amber-200 transition-colors"
+                className="px-3 py-1.5 text-sm bg-warning-container text-on-warning-container border border-on-warning-container/20 rounded-lg hover:bg-warning-container/70 transition-colors"
               >
                 Show Hint
               </button>
@@ -205,7 +205,7 @@ export default function QuestionCard({ question, index, onScore, companyContext 
         {/* HINT phase */}
         {phase === "hint" && (
           <div>
-            <div className="bg-amber-100 border border-amber-200 rounded-lg p-3 mb-3 text-sm text-amber-900">
+            <div className="bg-warning-container border border-on-warning-container/20 rounded-lg p-3 mb-3 text-sm text-on-warning-container">
               <span className="font-semibold">Hint:</span> {question.hint}
             </div>
             <CommitInput
@@ -250,7 +250,7 @@ export default function QuestionCard({ question, index, onScore, companyContext 
             {!isQuantitative && !llmLoading && !llmResult && question.keywords && committedText && (
               <>
                 {llmError && (
-                  <p className="text-xs text-amber-600 mb-2">
+                  <p className="text-xs text-warning mb-2">
                     AI grading unavailable. Showing keyword match instead.
                   </p>
                 )}
@@ -308,7 +308,7 @@ export default function QuestionCard({ question, index, onScore, companyContext 
             {!isQuantitative && !llmResult && question.keywords && committedText && (
               <>
                 {llmError && (
-                  <p className="text-xs text-amber-600 mb-2">
+                  <p className="text-xs text-warning mb-2">
                     AI grading unavailable. Showing keyword match instead.
                   </p>
                 )}
@@ -345,7 +345,7 @@ function KeywordFeedback({ text, keywords }) {
         {keywords.map((k) => (
           <span
             key={k}
-            className={`text-xs px-2 py-0.5 rounded-full ${found.includes(k) ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}
+            className={`text-xs px-2 py-0.5 rounded-full ${found.includes(k) ? STATUS_CHIP_COLORS.success : STATUS_CHIP_COLORS.error}`}
           >
             {found.includes(k) ? "\u2713" : "\u2717"} {k}
           </span>

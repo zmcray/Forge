@@ -57,7 +57,7 @@ describe("LLMGrading", () => {
       />
     );
     const badge = screen.getByText("5/5");
-    expect(badge.className).toContain("bg-green-100");
+    expect(badge.className).toContain("bg-success-container");
   });
 
   it("applies red styling for low scores", () => {
@@ -67,7 +67,7 @@ describe("LLMGrading", () => {
       />
     );
     const badge = screen.getByText("1/5");
-    expect(badge.className).toContain("bg-red-100");
+    expect(badge.className).toContain("bg-error-container");
   });
 
   it("renders without crashing when strengths is missing", () => {

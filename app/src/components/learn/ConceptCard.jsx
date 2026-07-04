@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { CONCEPT_CARDS } from "../../data/conceptCards";
 import { COMPANIES } from "../../data/companies";
 import { resolveDataPath } from "../../utils/resolveDataPath";
-import { formatDataPoint } from "../../utils/format";
+import { formatDataPoint, getScoreChipClass } from "../../utils/format";
 import useConceptProgress from "../../hooks/useConceptProgress";
 import useNotes from "../../hooks/useNotes";
 import CommitInput from "../CommitInput";
@@ -216,7 +216,7 @@ export default function ConceptCard() {
               <span className="text-sm font-semibold text-on-surface">Exercise</span>
               {llmResult && (
                 <span
-                  className={`text-xs font-bold px-1.5 py-0.5 rounded ${llmResult.score >= 4 ? "bg-green-100 text-green-800" : llmResult.score >= 3 ? "bg-amber-100 text-amber-800" : "bg-red-100 text-red-800"}`}
+                  className={`text-xs font-bold px-1.5 py-0.5 rounded ${getScoreChipClass(llmResult.score)}`}
                 >
                   {llmResult.score}/5 AI
                 </span>
@@ -268,7 +268,7 @@ export default function ConceptCard() {
                 {llmLoading && <LLMFeedbackSkeleton />}
                 {llmResult && <LLMGrading result={llmResult} />}
                 {llmError && (
-                  <p className="text-xs text-amber-600 mb-2">AI grading unavailable.</p>
+                  <p className="text-xs text-warning mb-2">AI grading unavailable.</p>
                 )}
 
                 <div className="bg-secondary-container rounded-lg p-3 text-sm">

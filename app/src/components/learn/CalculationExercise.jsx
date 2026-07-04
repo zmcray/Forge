@@ -109,11 +109,11 @@ export default function CalculationExercise({ exercise, isComplete, onComplete }
                 onDrop={handleDrop}
               />
               {rejectFeedback && (
-                <div className="mt-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-300 dark:border-amber-700 rounded-lg p-3 text-sm text-amber-900 dark:text-amber-200">
+                <div className="mt-3 bg-warning-container/60 border border-warning/40 rounded-lg p-3 text-sm text-on-warning-container">
                   <div className="flex items-start gap-2">
-                    <span className="text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0">&#9888;</span>
+                    <span className="text-warning mt-0.5 flex-shrink-0">&#9888;</span>
                     <div>
-                      <span className="font-semibold text-xs uppercase tracking-wide text-amber-700 dark:text-amber-400">Not so fast</span>
+                      <span className="font-semibold text-xs uppercase tracking-wide text-warning">Not so fast</span>
                       <p className="mt-1 leading-relaxed">{rejectFeedback}</p>
                     </div>
                   </div>

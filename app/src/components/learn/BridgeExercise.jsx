@@ -1,4 +1,4 @@
-import { formatMultiple } from "../../utils/format";
+import { formatMultiple, STATUS_CHIP_COLORS } from "../../utils/format";
 
 export default function BridgeExercise({ exerciseTarget, userMoic, onCheck, lastResult }) {
   const handleSubmit = () => {
@@ -14,7 +14,7 @@ export default function BridgeExercise({ exerciseTarget, userMoic, onCheck, last
         </div>
         {lastResult && (
           <span
-            className={`text-xs font-bold px-2 py-0.5 rounded ${lastResult.passed ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}
+            className={`text-xs font-bold px-2 py-0.5 rounded ${lastResult.passed ? STATUS_CHIP_COLORS.success : STATUS_CHIP_COLORS.error}`}
           >
             {lastResult.passed ? "PASSED" : "MISS"}
           </span>
