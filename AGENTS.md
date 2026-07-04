@@ -30,6 +30,7 @@ Override per-task by saying "this is a tier [X] task" — does not change the pr
 | Styling | Tailwind v4 + design tokens | CSS modules | Consistent with McRay stack. Token-based theming. |
 | LLM eval | Claude Haiku via serverless | Client-side | API key security. Vercel function keeps key server-side. |
 | Routing | React Router 7 (URL-based) | Hash routing | Clean URLs, SPA rewrites via vercel.json. |
+| Line cap scope | Content/data files under `src/data/` exempt from the 300-line cap | Splitting playbooks.js per-playbook | Single-source content beats mechanical splitting; the cap targets code complexity, not content volume. |
 
 ## Code Standards
 
