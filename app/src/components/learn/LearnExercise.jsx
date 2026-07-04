@@ -2,7 +2,7 @@ import { useState } from "react";
 import CommitInput from "../CommitInput";
 import DeltaDisplay from "../DeltaDisplay";
 import { LLMGrading, LLMFeedbackSkeleton } from "../LLMFeedback";
-import { evaluateAnswer } from "../../utils/evaluateAnswer";
+import useLLMEvaluation from "../../hooks/useLLMEvaluation";
 import {
   extractNumericValue,
   getDeltaBand,
@@ -19,10 +19,9 @@ export default function LearnExercise({ exercise, isComplete, onComplete, onOpen
   const [committedNumeric, setCommittedNumeric] = useState(null);
   const [expanded, setExpanded] = useState(!isComplete);
 
-  // LLM evaluation state (qualitative only)
-  const [llmResult, setLlmResult] = useState(null);
-  const [llmLoading, setLlmLoading] = useState(false);
-  const [llmError, setLlmError] = useState(null);
+  // LLM evaluation state (qualitative only); resets when the exercise changes
+  const { llmResult, llmLoading, llmError, evaluate, reset: resetLLM } =
+    useLLMEvaluation({ resetKey: exercise.id });
 
   const mode = exercise.inputMode || "qualitative";
   const isQuantitative = mode === "quantitative";
@@ -39,21 +38,13 @@ export default function LearnExercise({ exercise, isComplete, onComplete, onOpen
 
     // Fire LLM evaluation for qualitative exercises
     if (!isQuantitative && textAnswer.trim().length >= CommitInput.MIN_QUALITATIVE_CHARS) {
-      setLlmLoading(true);
-      setLlmError(null);
-      evaluateAnswer({
+      evaluate({
         userAnswer: textAnswer,
         modelAnswer: exercise.answer,
         questionText: exercise.q,
         questionType: "diagnostic",
         companyContext: "",
-      })
-        .then(setLlmResult)
-        .catch((err) => {
-          console.warn("[Forge] LLM evaluation failed:", err);
-          setLlmError(true);
-        })
-        .finally(() => setLlmLoading(false));
+      });
     }
   };
 
@@ -62,9 +53,7 @@ export default function LearnExercise({ exercise, isComplete, onComplete, onOpen
     setNumericAnswer(null);
     setCommittedText("");
     setCommittedNumeric(null);
-    setLlmResult(null);
-    setLlmLoading(false);
-    setLlmError(null);
+    resetLLM();
     setPhase("commit");
     setExpanded(true);
   };

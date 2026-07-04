@@ -5,7 +5,7 @@ import { COMPANIES } from "../../data/companies";
 import usePlaybookProgress from "../../hooks/usePlaybookProgress";
 import PhaseBlock from "./PhaseBlock";
 import { LLMGrading } from "../LLMFeedback";
-import { evaluateAnswer } from "../../utils/evaluateAnswer";
+import useLLMEvaluation from "../../hooks/useLLMEvaluation";
 
 const PHASE_KEYS = ["months-1-6", "months-7-18", "months-19-36"];
 
@@ -27,25 +27,24 @@ export default function PlaybookDetail() {
 
   const progress = playbook ? getPlaybook(playbook.id) : null;
 
-  // Exercise state
+  // Exercise state; LLM state resets and inflight requests abort when
+  // playbookId changes, so a mid-request Prev/Next nav can no longer set
+  // state on a stale target
   const [answer, setAnswer] = useState("");
   const [revealed, setRevealed] = useState(false);
-  const [llmResult, setLlmResult] = useState(null);
-  const [llmLoading, setLlmLoading] = useState(false);
-  const [llmError, setLlmError] = useState(null);
+  const { llmResult, llmLoading, llmError, evaluate } = useLLMEvaluation({
+    resetKey: playbookId,
+  });
 
   // Notes state
   const [notes, setNotes] = useState(progress?.notes || "");
 
-  // Reset all route-local state when playbookId changes (P1+P2 fix:
+  // Reset route-local state when playbookId changes (P1+P2 fix:
   // React Router reuses this component on Prev/Next nav, so local
   // state leaks across playbooks without this reset)
   useEffect(() => {
     setAnswer("");
     setRevealed(false);
-    setLlmResult(null);
-    setLlmLoading(false);
-    setLlmError(null);
   }, [playbookId]);
 
   // Sync notes from progress when playbookId changes
@@ -67,33 +66,28 @@ export default function PlaybookDetail() {
     }
   }, [playbookId]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleReveal = useCallback(async () => {
+  const handleReveal = useCallback(() => {
     setRevealed(true);
-    setLlmLoading(true);
-    setLlmError(null);
 
     const modelAnswer = playbook.exercise.acceptanceCriteria
       .map((c, i) => `${i + 1}) ${c}`)
       .join("\n");
 
-    try {
-      const result = await evaluateAnswer({
-        userAnswer: answer,
-        modelAnswer,
-        questionText: playbook.exercise.prompt,
-        questionType: "thesis",
-        companyContext: `${company?.name} (${company?.industry}). ${playbook.description}`,
-      });
-      setLlmResult(result);
-      markExerciseAttempted(playbook.id, result.score);
-    } catch (err) {
-      setLlmError(err.message || "Evaluation failed");
-      // Still mark attempted even if LLM fails
-      markExerciseAttempted(playbook.id, null);
-    } finally {
-      setLlmLoading(false);
-    }
-  }, [answer, playbook, company, markExerciseAttempted]);
+    evaluate({
+      userAnswer: answer,
+      modelAnswer,
+      questionText: playbook.exercise.prompt,
+      questionType: "thesis",
+      companyContext: `${company?.name} (${company?.industry}). ${playbook.description}`,
+    }).then((outcome) => {
+      if (outcome.status === "success") {
+        markExerciseAttempted(playbook.id, outcome.data.score);
+      } else if (outcome.status === "error") {
+        // Still mark attempted even if LLM fails
+        markExerciseAttempted(playbook.id, null);
+      }
+    });
+  }, [answer, playbook, company, evaluate, markExerciseAttempted]);
 
   const handleNotesChange = useCallback(
     (e) => {
@@ -295,7 +289,9 @@ export default function PlaybookDetail() {
             )}
             {llmError && (
               <div className="bg-error-container/30 border border-error/30 rounded-lg p-3">
-                <p className="text-sm text-error">{llmError}</p>
+                <p className="text-sm text-error">
+                  {llmError?.message || "Evaluation failed"}
+                </p>
               </div>
             )}
             {llmResult && <LLMGrading result={llmResult} />}

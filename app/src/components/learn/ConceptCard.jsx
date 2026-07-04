@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { CONCEPT_CARDS } from "../../data/conceptCards";
 import { COMPANIES } from "../../data/companies";
@@ -8,7 +8,7 @@ import useConceptProgress from "../../hooks/useConceptProgress";
 import useNotes from "../../hooks/useNotes";
 import CommitInput from "../CommitInput";
 import { LLMGrading, LLMFeedbackSkeleton } from "../LLMFeedback";
-import { evaluateAnswer } from "../../utils/evaluateAnswer";
+import useLLMEvaluation from "../../hooks/useLLMEvaluation";
 
 export default function ConceptCard() {
   const { cardId } = useParams();
@@ -22,21 +22,15 @@ export default function ConceptCard() {
   const [textAnswer, setTextAnswer] = useState("");
   const [phase, setPhase] = useState("commit"); // commit, done
   const [committedText, setCommittedText] = useState("");
-  const [llmResult, setLlmResult] = useState(null);
-  const [llmLoading, setLlmLoading] = useState(false);
-  const [llmError, setLlmError] = useState(null);
-
-  const abortRef = useRef(null);
-  useEffect(() => () => { abortRef.current?.abort(); }, []);
+  // LLM state resets and inflight requests abort when cardId changes
+  const { llmResult, llmLoading, llmError, evaluate, reset: resetLLM } =
+    useLLMEvaluation({ resetKey: cardId });
 
   // Reset practice state when navigating between cards
   useEffect(() => {
     setTextAnswer("");
     setCommittedText("");
     setPhase("commit");
-    setLlmResult(null);
-    setLlmLoading(false);
-    setLlmError(null);
   }, [cardId]);
 
   // Mark studied on view
@@ -69,38 +63,19 @@ export default function ConceptCard() {
     setPhase("done");
     markPracticeAttempted(cardId);
 
-    abortRef.current?.abort();
-    const ctrl = new AbortController();
-    abortRef.current = ctrl;
-
-    setLlmLoading(true);
-    setLlmError(null);
-    evaluateAnswer({
+    evaluate({
       userAnswer: textAnswer,
       modelAnswer: card.practicePrompt.modelAnswer,
       questionText: card.practicePrompt.question,
       questionType: card.practicePrompt.type,
       companyContext: "",
-    })
-      .then((data) => {
-        if (!ctrl.signal.aborted) setLlmResult(data);
-      })
-      .catch((err) => {
-        if (ctrl.signal.aborted) return;
-        console.warn("[Forge] LLM evaluation failed:", err);
-        setLlmError(true);
-      })
-      .finally(() => {
-        if (!ctrl.signal.aborted) setLlmLoading(false);
-      });
+    });
   };
 
   const handleRedo = () => {
     setTextAnswer("");
     setCommittedText("");
-    setLlmResult(null);
-    setLlmLoading(false);
-    setLlmError(null);
+    resetLLM();
     setPhase("commit");
   };
 
