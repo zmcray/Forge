@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { evaluateAnswer } from "../utils/evaluateAnswer";
+import { ApiError } from "../utils/api";
 
 describe("evaluateAnswer", () => {
   beforeEach(() => {
@@ -36,20 +37,23 @@ describe("evaluateAnswer", () => {
     expect(result).toEqual(mockResponse);
   });
 
-  it("rejects on non-ok response", async () => {
+  it("rejects with a typed ApiError on non-ok response", async () => {
     global.fetch = vi.fn().mockResolvedValue({
       ok: false,
       status: 500,
+      json: () => Promise.resolve({ error: "Evaluation failed" }),
     });
 
-    await expect(
-      evaluateAnswer({
-        userAnswer: "test",
-        modelAnswer: "test",
-        questionText: "test",
-        questionType: "diagnostic",
-      })
-    ).rejects.toBe(500);
+    const err = await evaluateAnswer({
+      userAnswer: "test",
+      modelAnswer: "test",
+      questionText: "test",
+      questionType: "diagnostic",
+    }).catch((e) => e);
+
+    expect(err).toBeInstanceOf(ApiError);
+    expect(err.status).toBe(500);
+    expect(err.message).toBe("Evaluation failed");
   });
 
   it("includes auth header", async () => {
