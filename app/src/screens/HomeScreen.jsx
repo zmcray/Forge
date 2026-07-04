@@ -1,4 +1,4 @@
-import { useMemo, useCallback } from "react";
+import { useMemo, useCallback, lazy, Suspense } from "react";
 import { COMPANIES, DIFFICULTY_LABELS } from "../data/companies";
 import { SCENARIOS } from "../data/scenarios";
 import CompanyCard from "../components/CompanyCard";
@@ -6,26 +6,39 @@ import WeakSpotCard from "../components/WeakSpotCard";
 import StatCard from "../components/StatCard";
 import MasteryCard from "../components/MasteryCard";
 import ModuleCard from "../components/ModuleCard";
-import IntroSequence from "../components/onboarding/IntroSequence";
-import SmartHomeRecommendations from "../components/onboarding/SmartHomeRecommendations";
 import { useScoringState } from "../contexts/ScoringContext";
 import { useOnboarding } from "../contexts/OnboardingContext";
 import useLearnProgress from "../hooks/useLearnProgress";
 import useCompanyGeneration from "../hooks/useCompanyGeneration";
+
+// Onboarding is lazy: the intro overlay only renders for first-run users, and
+// the recommendations panel pulls learn content that shouldn't gate first paint.
+const IntroSequence = lazy(() => import("../components/onboarding/IntroSequence"));
+const SmartHomeRecommendations = lazy(
+  () => import("../components/onboarding/SmartHomeRecommendations"),
+);
 
 function getOverallLearnProgress(learnProgress) {
   return {
     completed: learnProgress.overallStats.completedExercises,
     total: learnProgress.overallStats.totalExercises,
     currentStepName: learnProgress.getCurrentStep()?.title || "Learn",
-    hasStarted: learnProgress.overallStats.completedExercises > 0 ||
+    hasStarted:
+      learnProgress.overallStats.completedExercises > 0 ||
       learnProgress.progress.visitedSubsections.length > 0,
   };
 }
 
-export default function HomeScreen({ startPractice, setView, generatedCompanies, onGeneratedCompany }) {
-  const { sessions, streak, weakSpots, quantitativeAccuracy, attemptedCompanyIds } = useScoringState();
-  const { isIntroComplete, currentIntroStep, advanceIntro, skipIntro, completeIntro } = useOnboarding();
+export default function HomeScreen({
+  startPractice,
+  setView,
+  generatedCompanies,
+  onGeneratedCompany,
+}) {
+  const { sessions, streak, weakSpots, quantitativeAccuracy, attemptedCompanyIds } =
+    useScoringState();
+  const { isIntroComplete, currentIntroStep, advanceIntro, skipIntro, completeIntro } =
+    useOnboarding();
   const learnProgress = useLearnProgress();
   const generation = useCompanyGeneration({ onGeneratedCompany });
 
@@ -61,10 +74,13 @@ export default function HomeScreen({ startPractice, setView, generatedCompanies,
     return groups;
   }, []);
 
-  const startPracticeById = useCallback((companyId) => {
-    const company = COMPANIES.find((c) => c.id === companyId);
-    if (company) startPractice(company);
-  }, [startPractice]);
+  const startPracticeById = useCallback(
+    (companyId) => {
+      const company = COMPANIES.find((c) => c.id === companyId);
+      if (company) startPractice(company);
+    },
+    [startPractice],
+  );
 
   const handleIntroStartPractice = useCallback(() => {
     const summit = COMPANIES.find((c) => c.id === "summit-hvac");
@@ -75,20 +91,25 @@ export default function HomeScreen({ startPractice, setView, generatedCompanies,
     <>
       {/* Intro overlay for first-time users */}
       {!isIntroComplete && (
-        <IntroSequence
-          currentStep={currentIntroStep}
-          onAdvance={advanceIntro}
-          onSkip={skipIntro}
-          onComplete={completeIntro}
-          startPractice={handleIntroStartPractice}
-        />
+        <Suspense fallback={null}>
+          <IntroSequence
+            currentStep={currentIntroStep}
+            onAdvance={advanceIntro}
+            onSkip={skipIntro}
+            onComplete={completeIntro}
+            startPractice={handleIntroStartPractice}
+          />
+        </Suspense>
       )}
 
       {/* Page header */}
       <section className="mb-8">
-        <h2 className="text-4xl font-extrabold font-headline text-on-surface tracking-tight">PE Financial Analyst</h2>
+        <h2 className="text-4xl font-extrabold font-headline text-on-surface tracking-tight">
+          PE Financial Analyst
+        </h2>
         <p className="text-sm text-on-surface-variant mt-2 max-w-xl">
-          Practice analyzing lower-middle-market companies through a PE lens. Review financials, commit your analysis, and track progress.
+          Practice analyzing lower-middle-market companies through a PE lens. Review
+          financials, commit your analysis, and track progress.
         </p>
         <div className="mt-4 flex flex-wrap gap-3">
           <button
@@ -104,7 +125,9 @@ export default function HomeScreen({ startPractice, setView, generatedCompanies,
           >
             <span className="inline-flex items-center gap-1.5">
               <span className="material-symbols-outlined text-[16px]">auto_awesome</span>
-              {generation.status === "loading" ? "Generating..." : "Generate Random Company"}
+              {generation.status === "loading"
+                ? "Generating..."
+                : "Generate Random Company"}
             </span>
           </button>
         </div>
@@ -117,9 +140,12 @@ export default function HomeScreen({ startPractice, setView, generatedCompanies,
       {totalQuestions === 0 && streak.current === 0 ? (
         <section className="mb-8">
           <div className="bg-surface-container-lowest ghost-border rounded-xl p-8">
-            <h3 className="text-2xl font-bold font-headline text-on-surface mb-2">Welcome to Forge</h3>
+            <h3 className="text-2xl font-bold font-headline text-on-surface mb-2">
+              Welcome to Forge
+            </h3>
             <p className="text-sm text-on-surface-variant max-w-lg mb-6">
-              Build your PE deal analysis skills through realistic LMM company scenarios. Start with the fundamentals or jump straight into a quick screen.
+              Build your PE deal analysis skills through realistic LMM company scenarios.
+              Start with the fundamentals or jump straight into a quick screen.
             </p>
             <div className="flex gap-3">
               <button
@@ -160,7 +186,9 @@ export default function HomeScreen({ startPractice, setView, generatedCompanies,
       )}
 
       {/* Smart recommendations */}
-      <SmartHomeRecommendations startPracticeById={startPracticeById} />
+      <Suspense fallback={null}>
+        <SmartHomeRecommendations startPracticeById={startPracticeById} />
+      </Suspense>
 
       {/* Learning modules */}
       <section className="grid grid-cols-2 gap-4 mb-8">
@@ -168,10 +196,19 @@ export default function HomeScreen({ startPractice, setView, generatedCompanies,
           icon="menu_book"
           title="Learn the Fundamentals"
           description="Financial statements, screening metrics, and due diligence frameworks for PE analysis."
-          badges={[`${learnStats.completed}/${learnStats.total} Exercises`, "Interactive"]}
-          ctaLabel={learnStats.hasStarted ? `Continue: ${learnStats.currentStepName}` : "Start Learning"}
+          badges={[
+            `${learnStats.completed}/${learnStats.total} Exercises`,
+            "Interactive",
+          ]}
+          ctaLabel={
+            learnStats.hasStarted
+              ? `Continue: ${learnStats.currentStepName}`
+              : "Start Learning"
+          }
           onClick={() => setView("learn")}
-          progress={learnStats.total > 0 ? (learnStats.completed / learnStats.total) * 100 : 0}
+          progress={
+            learnStats.total > 0 ? (learnStats.completed / learnStats.total) * 100 : 0
+          }
         />
         <ModuleCard
           icon="bolt"
@@ -186,7 +223,10 @@ export default function HomeScreen({ startPractice, setView, generatedCompanies,
       {/* Weak spots (if any) */}
       {(weakSpots || quantitativeAccuracy) && (
         <section className="mb-8">
-          <WeakSpotCard weakSpots={weakSpots} quantitativeAccuracy={quantitativeAccuracy} />
+          <WeakSpotCard
+            weakSpots={weakSpots}
+            quantitativeAccuracy={quantitativeAccuracy}
+          />
         </section>
       )}
 
@@ -200,7 +240,7 @@ export default function HomeScreen({ startPractice, setView, generatedCompanies,
               </h3>
             </div>
             <div className="grid grid-cols-2 gap-4">
-              {generatedCompanies.map(company => (
+              {generatedCompanies.map((company) => (
                 <CompanyCard
                   key={company.id}
                   company={company}
@@ -223,7 +263,7 @@ export default function HomeScreen({ startPractice, setView, generatedCompanies,
                 </h3>
               </div>
               <div className="grid grid-cols-2 gap-4">
-                {companies.map(company => (
+                {companies.map((company) => (
                   <div key={company.id}>
                     <CompanyCard
                       company={company}
@@ -232,7 +272,7 @@ export default function HomeScreen({ startPractice, setView, generatedCompanies,
                     />
                     {scenariosByCompany[company.id] && (
                       <div className="mt-2 flex gap-2 flex-wrap px-2">
-                        {scenariosByCompany[company.id].map(scenario => (
+                        {scenariosByCompany[company.id].map((scenario) => (
                           <button
                             key={scenario.id}
                             onClick={() => startPractice(company, scenario.id)}

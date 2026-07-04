@@ -130,7 +130,7 @@ describe("Practice chat integration", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /ask ai/i }));
 
-    const drawer = screen.getByTestId("practice-chat-drawer");
+    const drawer = await screen.findByTestId("practice-chat-drawer");
     expect(within(drawer).getByTestId("chat-title").textContent).toBe("Summit Mechanical Services");
     expect(within(drawer).getByTestId("chat-context-type").textContent).toBe("practice");
     expect(within(drawer).getByTestId("chat-company-name").textContent).toBe("Summit Mechanical Services");
@@ -143,7 +143,7 @@ describe("Practice chat integration", () => {
     expect(await screen.findByText("Coastal Fresh Foods")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /ask ai/i }));
 
-    const drawer = screen.getByTestId("practice-chat-drawer");
+    const drawer = await screen.findByTestId("practice-chat-drawer");
     expect(within(drawer).getByTestId("chat-title").textContent).toBe("Coastal Fresh Foods");
     expect(within(drawer).getByTestId("chat-context-type").textContent).toBe("practice");
     expect(within(drawer).getByTestId("chat-company-name").textContent).toBe("Coastal Fresh Foods");
