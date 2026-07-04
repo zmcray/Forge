@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { isRecord } from "../utils/normalizeRecordMap";
 
 const STORAGE_KEY = "forge-data";
 const V1_BACKUP_KEY = "forge-data-v1-backup";
@@ -70,29 +71,54 @@ function migrateV1ToV2(parsed) {
   };
 }
 
+/**
+ * Deep-sanitize a parsed payload's sessions: drop non-object session entries,
+ * coerce each session's questions to an array of object entries. Consumers
+ * (`getAllScores`, dashboards, QuickFire) assume every session is an object
+ * with an array of object questions, so this is the single trust boundary.
+ */
+function normalizeSessions(sessions) {
+  return sessions.filter(isRecord).map((session) => ({
+    ...session,
+    questions: (Array.isArray(session.questions) ? session.questions : []).filter(isRecord),
+  }));
+}
+
+/** Coerce streak to `{current: number, lastDate: string|null}` with safe defaults. */
+function normalizeStreak(streak) {
+  return {
+    current: isRecord(streak) && typeof streak.current === "number" ? streak.current : 0,
+    lastDate: isRecord(streak) && typeof streak.lastDate === "string" ? streak.lastDate : null,
+  };
+}
+
 function loadData() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return DEFAULT_STATE;
     const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed.sessions)) {
-      console.warn(`[Forge] Invalid shape in ${STORAGE_KEY}, resetting`);
-      return DEFAULT_STATE;
-    }
-    if (!parsed.streak || typeof parsed.streak !== "object") {
+    if (!isRecord(parsed) || !Array.isArray(parsed.sessions)) {
       console.warn(`[Forge] Invalid shape in ${STORAGE_KEY}, resetting`);
       return DEFAULT_STATE;
     }
 
+    // Deep-sanitize before anything consumes the shape. A corrupt inner entry
+    // (sessions:[null], questions:null, streak:{}) behaves as if absent.
+    const sanitized = {
+      ...parsed,
+      sessions: normalizeSessions(parsed.sessions),
+      streak: normalizeStreak(parsed.streak),
+    };
+
     // Migrate v1 (no version field) to v2.
-    if (parsed.version !== SCHEMA_VERSION) {
-      const migrated = migrateV1ToV2(parsed);
+    if (sanitized.version !== SCHEMA_VERSION) {
+      const migrated = migrateV1ToV2(sanitized);
       // Persist migrated shape immediately so subsequent reads are fast and consistent.
       saveData(migrated);
       return migrated;
     }
 
-    return parsed;
+    return sanitized;
   } catch (err) {
     console.warn(`[Forge] Corrupt data in ${STORAGE_KEY}, resetting:`, err.message);
     try {

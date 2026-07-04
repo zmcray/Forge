@@ -141,3 +141,22 @@ describe("useLeverProgress", () => {
     expect(result.current.getExerciseCount()).toBe(0);
   });
 });
+
+describe("useLeverProgress corrupt inner values", () => {
+  it("loads null lever entries without throwing and counts skip them", () => {
+    localStorageMock.setItem(
+      "forge-levers",
+      JSON.stringify({ levers: { bad: null, alsoBad: "junk", good: { lastStudied: "2026-07-01", exerciseAttempted: true } } }),
+    );
+
+    const { result } = renderHook(() => useLeverProgress());
+    expect(result.current.getStudiedCount()).toBe(1);
+    expect(result.current.getExerciseCount()).toBe(1);
+    expect(result.current.getLever("bad")).toEqual({
+      notes: "",
+      lastStudied: null,
+      exerciseAttempted: false,
+      exerciseScore: null,
+    });
+  });
+});

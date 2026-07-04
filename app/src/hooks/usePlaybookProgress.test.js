@@ -180,3 +180,16 @@ describe("usePlaybookProgress", () => {
     expect(result.current.getExerciseCount()).toBe(0);
   });
 });
+
+describe("usePlaybookProgress corrupt inner values", () => {
+  it("loads null playbook entries without throwing and counts skip them", () => {
+    localStorageMock.setItem(
+      "forge-playbooks",
+      JSON.stringify({ playbooks: { bad: null, good: { lastVisited: "2026-07-01", exerciseAttempted: true } } }),
+    );
+
+    const { result } = renderHook(() => usePlaybookProgress());
+    expect(result.current.getVisitedCount()).toBe(1);
+    expect(result.current.getExerciseCount()).toBe(1);
+  });
+});

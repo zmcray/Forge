@@ -57,6 +57,102 @@ describe("loadData", () => {
   });
 });
 
+describe("loadData deep sanitization", () => {
+  const validSession = {
+    date: "2026-07-01",
+    companyId: "summit-hvac",
+    duration: 60,
+    questions: [{ type: "metric", score: 4, delta: 0, unit: "%", atomId: null, atomType: null, feedback: null, timestamp: null }],
+  };
+
+  it("drops null and non-object session entries", () => {
+    localStorageMock.setItem(STORAGE_KEY, JSON.stringify({
+      version: 2,
+      sessions: [null, validSession, "junk", 42],
+      streak: { current: 1, lastDate: "2026-07-01" },
+    }));
+
+    const data = loadData();
+    expect(data.sessions).toHaveLength(1);
+    expect(data.sessions[0].companyId).toBe("summit-hvac");
+    // Downstream consumers must not crash
+    expect(() => data.sessions.flatMap((s) => s.questions)).not.toThrow();
+  });
+
+  it("coerces a session's non-array questions to an empty array", () => {
+    localStorageMock.setItem(STORAGE_KEY, JSON.stringify({
+      version: 2,
+      sessions: [{ ...validSession, questions: null }],
+      streak: { current: 0, lastDate: null },
+    }));
+
+    const data = loadData();
+    expect(data.sessions[0].questions).toEqual([]);
+  });
+
+  it("drops null question entries inside a session", () => {
+    localStorageMock.setItem(STORAGE_KEY, JSON.stringify({
+      version: 2,
+      sessions: [{ ...validSession, questions: [null, validSession.questions[0], "x"] }],
+      streak: { current: 0, lastDate: null },
+    }));
+
+    const data = loadData();
+    expect(data.sessions[0].questions).toHaveLength(1);
+    expect(data.sessions[0].questions[0].type).toBe("metric");
+  });
+
+  it("normalizes an empty streak object to safe defaults", () => {
+    localStorageMock.setItem(STORAGE_KEY, JSON.stringify({
+      version: 2,
+      sessions: [validSession],
+      streak: {},
+    }));
+
+    const data = loadData();
+    expect(data.streak).toEqual({ current: 0, lastDate: null });
+    expect(data.sessions).toHaveLength(1);
+  });
+
+  it("normalizes a null streak without discarding sessions", () => {
+    localStorageMock.setItem(STORAGE_KEY, JSON.stringify({
+      version: 2,
+      sessions: [validSession],
+      streak: null,
+    }));
+
+    const data = loadData();
+    expect(data.streak).toEqual({ current: 0, lastDate: null });
+    expect(data.sessions).toHaveLength(1);
+  });
+
+  it("normalizes wrong-typed streak fields to safe defaults", () => {
+    localStorageMock.setItem(STORAGE_KEY, JSON.stringify({
+      version: 2,
+      sessions: [],
+      streak: { current: "five", lastDate: 12345 },
+    }));
+
+    const data = loadData();
+    expect(data.streak).toEqual({ current: 0, lastDate: null });
+  });
+
+  it("falls back to DEFAULT_STATE when sessions is not an array", () => {
+    localStorageMock.setItem(STORAGE_KEY, JSON.stringify({ version: 2, sessions: "nope", streak: {} }));
+
+    const data = loadData();
+    expect(data).toEqual({ version: 2, sessions: [], streak: { current: 0, lastDate: null } });
+  });
+
+  it("still backs up unrecoverable garbage to the corrupt-backup key", () => {
+    localStorageMock.setItem(STORAGE_KEY, "not valid json{{{");
+
+    const data = loadData();
+    expect(data).toEqual({ version: 2, sessions: [], streak: { current: 0, lastDate: null } });
+    expect(localStorageMock.getItem(`${STORAGE_KEY}-corrupt-backup`)).toBe("not valid json{{{");
+  });
+});
+
 describe("saveData", () => {
   it("serializes data to localStorage", () => {
     const data = {
