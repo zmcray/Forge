@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { COMPANIES } from "../../data/companies";
 import { LEARN_CONTENT } from "../../data/learnContent";
-import { useScoringState, useScoringDispatch } from "../../contexts/ScoringContext";
+import { useScoringState } from "../../contexts/ScoringContext";
 import useLearnProgress from "../../hooks/useLearnProgress";
 import { attemptedCompanyIds as deriveAttemptedCompanyIds, averageScore } from "../../utils/scoreMath";
 
@@ -153,14 +153,11 @@ function getRecommendations(sessions, streak, weakSpots, learnProgress) {
 }
 
 export default function SmartHomeRecommendations({ startPracticeById }) {
-  const { sessions, streak } = useScoringState();
-  const { getWeakSpots } = useScoringDispatch();
+  // weakSpots comes pre-memoized from the state context (stable per sessions snapshot).
+  const { sessions, streak, weakSpots } = useScoringState();
   const learnProgress = useLearnProgress();
   const navigate = useNavigate();
 
-  // Memoize the derived array: getWeakSpots() returns a fresh array each call,
-  // which would invalidate the recommendations memo on every render.
-  const weakSpots = useMemo(() => getWeakSpots(), [getWeakSpots]);
   const recommendations = useMemo(
     () => getRecommendations(sessions, streak, weakSpots, learnProgress),
     [sessions, streak, weakSpots, learnProgress],

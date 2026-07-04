@@ -8,7 +8,7 @@ import MasteryCard from "../components/MasteryCard";
 import ModuleCard from "../components/ModuleCard";
 import IntroSequence from "../components/onboarding/IntroSequence";
 import SmartHomeRecommendations from "../components/onboarding/SmartHomeRecommendations";
-import { useScoringState, useScoringDispatch } from "../contexts/ScoringContext";
+import { useScoringState } from "../contexts/ScoringContext";
 import { useOnboarding } from "../contexts/OnboardingContext";
 import useLearnProgress from "../hooks/useLearnProgress";
 import useCompanyGeneration from "../hooks/useCompanyGeneration";
@@ -24,13 +24,10 @@ function getOverallLearnProgress(learnProgress) {
 }
 
 export default function HomeScreen({ startPractice, setView, generatedCompanies, onGeneratedCompany }) {
-  const { sessions, streak } = useScoringState();
-  const { getWeakSpots, getQuantitativeAccuracy, getAttemptedCompanyIds } = useScoringDispatch();
+  const { sessions, streak, weakSpots, quantitativeAccuracy, attemptedCompanyIds } = useScoringState();
   const { isIntroComplete, currentIntroStep, advanceIntro, skipIntro, completeIntro } = useOnboarding();
   const learnProgress = useLearnProgress();
   const generation = useCompanyGeneration({ onGeneratedCompany });
-
-  const completedCompanies = getAttemptedCompanyIds();
 
   const scenariosByCompany = useMemo(() => {
     const map = {};
@@ -53,8 +50,6 @@ export default function HomeScreen({ startPractice, setView, generatedCompanies,
     return "Beginner";
   }, [totalQuestions]);
 
-  const weakSpots = getWeakSpots();
-  const quantitativeAccuracy = getQuantitativeAccuracy();
   const learnStats = getOverallLearnProgress(learnProgress);
 
   const companiesByDifficulty = useMemo(() => {
@@ -209,7 +204,7 @@ export default function HomeScreen({ startPractice, setView, generatedCompanies,
                 <CompanyCard
                   key={company.id}
                   company={company}
-                  completed={completedCompanies.has(company.id)}
+                  completed={attemptedCompanyIds.has(company.id)}
                   onSelect={() => startPractice(company)}
                 />
               ))}
@@ -232,7 +227,7 @@ export default function HomeScreen({ startPractice, setView, generatedCompanies,
                   <div key={company.id}>
                     <CompanyCard
                       company={company}
-                      completed={completedCompanies.has(company.id)}
+                      completed={attemptedCompanyIds.has(company.id)}
                       onSelect={() => startPractice(company)}
                     />
                     {scenariosByCompany[company.id] && (
