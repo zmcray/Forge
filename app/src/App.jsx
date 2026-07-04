@@ -23,6 +23,7 @@ import SearchModal from "./components/SearchModal";
 import IntroSequence from "./components/onboarding/IntroSequence";
 import SmartHomeRecommendations from "./components/onboarding/SmartHomeRecommendations";
 import SoftGate from "./components/onboarding/SoftGate";
+import GeneratedWarningsBanner from "./components/GeneratedWarningsBanner";
 import ChatDrawer from "./components/learn/ChatDrawer";
 import { useScoringState, useScoringDispatch } from "./contexts/ScoringContext";
 import useTimer from "./hooks/useTimer";
@@ -633,6 +634,11 @@ function PracticeScreen({ company: co, statementView, setStatementView, shuffled
           recommendedAction={() => navigate("/learn")}
           recommendedLabel="Go to Learn"
         />
+      )}
+
+      {/* AI-generated companies can ship with flagged inconsistencies; surface them */}
+      {co._generated && (
+        <GeneratedWarningsBanner key={co.id} warnings={co._warnings} />
       )}
 
       {/* Header */}
