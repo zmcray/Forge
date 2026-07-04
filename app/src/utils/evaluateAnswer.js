@@ -1,22 +1,20 @@
+import { forgeFetch } from "./api";
+
 /**
  * Shared LLM evaluation fetch for qualitative answers.
  * Returns: Promise<{ score, strengths, gaps, suggestion }>
+ * Rejects with a typed ApiError (`.status`) on non-OK responses.
  */
 export function evaluateAnswer({ userAnswer, modelAnswer, questionText, questionType, companyContext }) {
-  return fetch("/api/evaluate", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-forge-token": import.meta.env.VITE_FORGE_AUTH_TOKEN || "",
-    },
-    body: JSON.stringify({
+  return forgeFetch(
+    "/api/evaluate",
+    {
       userAnswer,
       modelAnswer,
       questionText,
       questionType,
       companyContext: companyContext || "",
-    }),
-    signal: AbortSignal.timeout(15000),
-  })
-    .then((r) => (r.ok ? r.json() : Promise.reject(r.status)));
+    },
+    { timeoutMs: 15000 }
+  );
 }
