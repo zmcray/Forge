@@ -3,12 +3,10 @@ import { Routes, Route, useNavigate } from "react-router-dom";
 import { COMPANIES } from "./data/companies";
 import SearchModal from "./components/SearchModal";
 import AppShellWrapper from "./components/AppShellWrapper";
-import usePracticeSession from "./hooks/usePracticeSession";
 import useTheme from "./hooks/useTheme";
 
 export default function App() {
   const navigate = useNavigate();
-  const session = usePracticeSession();
   const { theme, toggleTheme } = useTheme();
   const [searchOpen, setSearchOpen] = useState(false);
   // Lives here (not HomeScreen) so generated companies survive navigation.
@@ -31,12 +29,12 @@ export default function App() {
     navigate(routes[v] || "/");
   }, [navigate]);
 
-  const { startPractice } = session;
-
+  // Navigation only; PracticeRoute owns the session (timer + questions), so
+  // ticks re-render just the practice subtree and stop when the route unmounts.
   const handleSearchCompany = useCallback((companyId) => {
     const company = COMPANIES.find(c => c.id === companyId);
-    if (company) startPractice(company);
-  }, [startPractice]);
+    if (company) navigate(`/practice/${company.id}`);
+  }, [navigate]);
 
   const handleSearchLearn = useCallback(() => {
     navigate("/learn");
@@ -65,7 +63,6 @@ export default function App() {
             theme={theme}
             toggleTheme={toggleTheme}
             onSearchOpen={() => setSearchOpen(true)}
-            session={session}
             generatedCompanies={generatedCompanies}
             onGeneratedCompany={handleGeneratedCompany}
           />

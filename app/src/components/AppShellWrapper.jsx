@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import AppShell from "./AppShell";
 import ProgressDashboard from "./ProgressDashboard";
 import LearnModule from "./learn/LearnModule";
@@ -15,7 +15,8 @@ function viewFromPath(pathname) {
   return "home";
 }
 
-export default function AppShellWrapper({ setView, theme, toggleTheme, onSearchOpen, session, generatedCompanies, onGeneratedCompany }) {
+export default function AppShellWrapper({ setView, theme, toggleTheme, onSearchOpen, generatedCompanies, onGeneratedCompany }) {
+  const navigate = useNavigate();
   // Determine active view from current URL
   const activeView = viewFromPath(window.location.pathname);
 
@@ -23,12 +24,18 @@ export default function AppShellWrapper({ setView, theme, toggleTheme, onSearchO
     setView(v);
   }, [setView]);
 
+  // Starting practice is just navigation; PracticeRoute owns the session so
+  // the timer mounts (and its interval dies) with the practice route.
+  const startPractice = useCallback((company, scenarioId) => {
+    navigate(scenarioId ? `/practice/${company.id}?scenario=${scenarioId}` : `/practice/${company.id}`);
+  }, [navigate]);
+
   return (
     <AppShell activeView={activeView} onNavigate={handleNavigate} theme={theme} onToggleTheme={toggleTheme} onSearchOpen={onSearchOpen}>
       <Routes>
         <Route index element={
           <HomeScreen
-            startPractice={session.startPractice}
+            startPractice={startPractice}
             setView={setView}
             generatedCompanies={generatedCompanies}
             onGeneratedCompany={onGeneratedCompany}
@@ -38,7 +45,7 @@ export default function AppShellWrapper({ setView, theme, toggleTheme, onSearchO
           <ProgressDashboard />
         } />
         <Route path="practice/:companyId" element={
-          <PracticeRoute session={session} />
+          <PracticeRoute generatedCompanies={generatedCompanies} />
         } />
         <Route path="learn" element={<LearnModule />} />
         <Route path="learn/compare" element={<LearnModule />} />
