@@ -1,5 +1,7 @@
+// @vitest-environment jsdom
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { loadData, saveData, updateStreak, migrateV1ToV2, SCHEMA_VERSION, STORAGE_KEY, V1_BACKUP_KEY } from "./useScoring";
+import { renderHook } from "@testing-library/react";
+import useScoring, { loadData, saveData, updateStreak, migrateV1ToV2, SCHEMA_VERSION, STORAGE_KEY, V1_BACKUP_KEY } from "./useScoring";
 
 // Mock localStorage
 const localStorageMock = (() => {
@@ -216,6 +218,145 @@ describe("loadData migration integration", () => {
     const data = loadData();
 
     expect(data.streak).toEqual({ current: 12, lastDate: "2026-04-05" });
+  });
+});
+
+// --- Analytics selectors (getScoresByType, getWeakSpots, getQuantitativeAccuracy) ---
+
+function question(type, score, { delta = null, unit = null } = {}) {
+  return { type, score, delta, unit, atomId: null, atomType: null, feedback: null, timestamp: null };
+}
+
+function seedSessions(sessions) {
+  localStorageMock.setItem(
+    STORAGE_KEY,
+    JSON.stringify({ version: SCHEMA_VERSION, sessions, streak: { current: 0, lastDate: null } })
+  );
+}
+
+function renderScoring() {
+  return renderHook(() => useScoring()).result;
+}
+
+describe("getScoresByType", () => {
+  it("returns an empty object with no sessions", () => {
+    const result = renderScoring();
+    expect(result.current.getScoresByType()).toEqual({});
+  });
+
+  it("groups scores by question type across sessions", () => {
+    seedSessions([
+      {
+        date: "2026-06-01", companyId: "summit-hvac", duration: 0,
+        questions: [question("metric", 4), question("risk", 2)],
+      },
+      {
+        date: "2026-06-02", companyId: "coastal-foods", duration: 0,
+        questions: [question("metric", 5), question("thesis", 3)],
+      },
+    ]);
+    const result = renderScoring();
+    expect(result.current.getScoresByType()).toEqual({
+      metric: [4, 5],
+      risk: [2],
+      thesis: [3],
+    });
+  });
+});
+
+describe("getWeakSpots", () => {
+  const day = (i) => `2026-06-${String(i + 1).padStart(2, "0")}`;
+  // One question per session so total count is easy to control.
+  const seedScores = (entries) =>
+    seedSessions(
+      entries.map(([type, score], i) => ({
+        date: day(i), companyId: `co-${i}`, duration: 0, questions: [question(type, score)],
+      }))
+    );
+
+  it("returns null below the 10-score minimum sample size (9 scores)", () => {
+    seedScores(Array.from({ length: 9 }, () => ["metric", 1]));
+    const result = renderScoring();
+    expect(result.current.getWeakSpots()).toBeNull();
+  });
+
+  it("surfaces weak spots at exactly 10 scores", () => {
+    seedScores(Array.from({ length: 10 }, () => ["metric", 1]));
+    const result = renderScoring();
+    expect(result.current.getWeakSpots()).toEqual([{ type: "metric", avg: 1, count: 10 }]);
+  });
+
+  it("only surfaces types with avg < 3.5 and 2+ attempts", () => {
+    seedScores([
+      // metric: avg 2 with 2 attempts → weak
+      ["metric", 2], ["metric", 2],
+      // risk: avg 4 → not weak
+      ["risk", 4], ["risk", 4],
+      // thesis: avg 3.5 exactly → not weak (strict <)
+      ["thesis", 3], ["thesis", 4],
+      // diagnostic: only 1 attempt at score 1 → excluded despite low avg
+      ["diagnostic", 1],
+      // filler to clear the 10-score gate
+      ["valuation", 5], ["valuation", 5], ["valuation", 5],
+    ]);
+    const result = renderScoring();
+    expect(result.current.getWeakSpots()).toEqual([{ type: "metric", avg: 2, count: 2 }]);
+  });
+
+  it("sorts weak spots ascending by average (weakest first)", () => {
+    seedScores([
+      ["risk", 3], ["risk", 3],           // avg 3
+      ["metric", 1], ["metric", 2],       // avg 1.5
+      ["thesis", 2], ["thesis", 3],       // avg 2.5
+      ["valuation", 5], ["valuation", 5], ["valuation", 5], ["valuation", 5],
+    ]);
+    const result = renderScoring();
+    expect(result.current.getWeakSpots().map(w => w.type)).toEqual(["metric", "thesis", "risk"]);
+  });
+
+  it("returns null when no type qualifies as weak", () => {
+    seedScores(Array.from({ length: 10 }, () => ["metric", 5]));
+    const result = renderScoring();
+    expect(result.current.getWeakSpots()).toBeNull();
+  });
+});
+
+describe("getQuantitativeAccuracy", () => {
+  it("returns null when there are no quantitative scores", () => {
+    seedSessions([
+      {
+        date: "2026-06-01", companyId: "summit-hvac", duration: 0,
+        questions: [question("risk", 3), question("thesis", 4)],
+      },
+    ]);
+    const result = renderScoring();
+    expect(result.current.getQuantitativeAccuracy()).toBeNull();
+  });
+
+  it("averages absolute deltas and skips delta == null entries", () => {
+    seedSessions([
+      {
+        date: "2026-06-01", companyId: "summit-hvac", duration: 0,
+        questions: [
+          question("metric", 4, { delta: -2, unit: "%" }),   // |−2| = 2
+          question("valuation", 3, { delta: 1, unit: "x" }),  // 1
+          question("risk", 3),                                 // delta null → skipped
+        ],
+      },
+    ]);
+    const result = renderScoring();
+    expect(result.current.getQuantitativeAccuracy()).toEqual({ avgDelta: "1.5", count: 2 });
+  });
+
+  it("has no minimum sample size gate (returns a result with a single delta)", () => {
+    seedSessions([
+      {
+        date: "2026-06-01", companyId: "summit-hvac", duration: 0,
+        questions: [question("metric", 4, { delta: 0.25, unit: "%" })],
+      },
+    ]);
+    const result = renderScoring();
+    expect(result.current.getQuantitativeAccuracy()).toEqual({ avgDelta: "0.3", count: 1 });
   });
 });
 

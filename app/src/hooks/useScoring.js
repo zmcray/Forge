@@ -198,6 +198,8 @@ export default function useScoring() {
 
   const getWeakSpots = useCallback(() => {
     const all = getAllScores();
+    // Intentional minimum sample size: weak spots are noise until at least
+    // 10 total scored questions exist, regardless of per-type counts.
     if (all.length < 10) return null;
 
     const byType = getScoresByType();
