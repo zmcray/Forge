@@ -1,4 +1,4 @@
-import { formatCurrency } from "../utils/format";
+import { formatCurrency, formatPercent } from "../utils/format";
 import { DIFFICULTY_LABELS } from "../data/companies";
 
 const DIFFICULTY_STYLES = {
@@ -11,8 +11,8 @@ export default function CompanyCard({ company, completed, onSelect }) {
   const metrics = [
     { label: "Revenue", value: formatCurrency(company.revenue), positive: true },
     { label: "EBITDA", value: formatCurrency(company.keyMetrics.adjustedEbitda), positive: true },
-    { label: "Margin", value: `${company.keyMetrics.adjustedEbitdaMargin.toFixed(1)}%`, positive: company.keyMetrics.adjustedEbitdaMargin > 0 },
-    { label: "Growth", value: `${company.keyMetrics.revenueGrowth > 0 ? "+" : ""}${company.keyMetrics.revenueGrowth.toFixed(1)}%`, positive: company.keyMetrics.revenueGrowth >= 0 },
+    { label: "Margin", value: formatPercent(company.keyMetrics.adjustedEbitdaMargin), positive: company.keyMetrics.adjustedEbitdaMargin > 0 },
+    { label: "Growth", value: formatPercent(company.keyMetrics.revenueGrowth, { signed: true }), positive: company.keyMetrics.revenueGrowth >= 0 },
   ];
 
   const traits = [company.industry];

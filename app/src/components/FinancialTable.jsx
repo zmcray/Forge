@@ -1,4 +1,4 @@
-import { formatCurrency, formatCurrencyK } from "../utils/format";
+import { formatCurrency, formatCurrencyK, formatPercent } from "../utils/format";
 
 const ADDBACK_LABELS = {
   ownerPerks: "Owner Perks",
@@ -53,7 +53,7 @@ export default function FinancialTable({ company, view }) {
                     </td>
                   ))}
                   <td className={`text-right py-1.5 px-3 font-mono text-sm ${change > 0 ? "text-green-600 dark:text-green-400" : change < 0 ? "text-red-600 dark:text-red-400" : "text-on-surface-variant"}`}>
-                    {change !== 0 ? `${change > 0 ? "+" : ""}${change.toFixed(1)}%` : "\u2014"}
+                    {change !== 0 ? formatPercent(change, { signed: true }) : "\u2014"}
                   </td>
                 </tr>
               );
@@ -139,12 +139,12 @@ export default function FinancialTable({ company, view }) {
       { title: "Profitability", items: [
         ["EBITDA", formatCurrency(km.ebitda)],
         ["Adjusted EBITDA", formatCurrency(km.adjustedEbitda)],
-        ["Gross Margin", `${km.grossMargin.toFixed(1)}%`],
-        ["EBITDA Margin", `${km.ebitdaMargin.toFixed(1)}%`],
-        ["Adj. EBITDA Margin", `${km.adjustedEbitdaMargin.toFixed(1)}%`],
+        ["Gross Margin", formatPercent(km.grossMargin)],
+        ["EBITDA Margin", formatPercent(km.ebitdaMargin)],
+        ["Adj. EBITDA Margin", formatPercent(km.adjustedEbitdaMargin)],
       ]},
       { title: "Growth & Scale", items: [
-        ["Revenue Growth", `${km.revenueGrowth > 0 ? "+" : ""}${km.revenueGrowth.toFixed(1)}%`],
+        ["Revenue Growth", formatPercent(km.revenueGrowth, { signed: true })],
         ["Revenue", formatCurrency(company.revenue)],
         ["Employees", km.employeeCount.toString()],
         ["Rev / Employee", formatCurrencyK(km.avgRevenuePerEmployee)],

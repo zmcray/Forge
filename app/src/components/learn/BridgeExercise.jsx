@@ -1,3 +1,5 @@
+import { formatMultiple } from "../../utils/format";
+
 export default function BridgeExercise({ exerciseTarget, userMoic, onCheck, lastResult }) {
   const handleSubmit = () => {
     onCheck();
@@ -8,7 +10,7 @@ export default function BridgeExercise({ exerciseTarget, userMoic, onCheck, last
       <div className="bg-primary-container text-on-primary-container px-4 py-2 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="text-sm font-semibold">Exercise</span>
-          <span className="text-xs font-mono">Target: {exerciseTarget.moic.toFixed(1)}x MOIC</span>
+          <span className="text-xs font-mono">Target: {formatMultiple(exerciseTarget.moic)} MOIC</span>
         </div>
         {lastResult && (
           <span
@@ -27,7 +29,7 @@ export default function BridgeExercise({ exerciseTarget, userMoic, onCheck, last
               Your MOIC
             </div>
             <div className="text-2xl font-bold font-mono text-on-surface">
-              {userMoic.toFixed(2)}x
+              {formatMultiple(userMoic, { decimals: 2 })}
             </div>
           </div>
           <div className="text-right">
@@ -35,7 +37,7 @@ export default function BridgeExercise({ exerciseTarget, userMoic, onCheck, last
               Target
             </div>
             <div className="text-2xl font-bold font-mono text-on-surface-variant">
-              {exerciseTarget.moic.toFixed(2)}x
+              {formatMultiple(exerciseTarget.moic, { decimals: 2 })}
             </div>
           </div>
         </div>
@@ -53,13 +55,13 @@ export default function BridgeExercise({ exerciseTarget, userMoic, onCheck, last
           >
             {lastResult.passed ? (
               <p>
-                Hit it. Your MOIC of {lastResult.userMoic.toFixed(2)}x is within
-                {" "}{(lastResult.delta).toFixed(2)} of the {lastResult.targetMoic.toFixed(1)}x target.
+                Hit it. Your MOIC of {formatMultiple(lastResult.userMoic, { decimals: 2 })} is within
+                {" "}{(lastResult.delta).toFixed(2)} of the {formatMultiple(lastResult.targetMoic)} target.
               </p>
             ) : (
               <p>
-                You are at {lastResult.userMoic.toFixed(2)}x vs the {lastResult.targetMoic.toFixed(1)}x target.
-                Gap: {lastResult.delta.toFixed(2)}x. Adjust the sliders and try again.
+                You are at {formatMultiple(lastResult.userMoic, { decimals: 2 })} vs the {formatMultiple(lastResult.targetMoic)} target.
+                Gap: {formatMultiple(lastResult.delta, { decimals: 2 })}. Adjust the sliders and try again.
               </p>
             )}
             <p className="mt-2 text-xs opacity-90">

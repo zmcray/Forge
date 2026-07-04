@@ -1,4 +1,5 @@
 import { computeAttribution } from "../../utils/bridgeMath";
+import { formatCurrency, formatPercent } from "../../utils/format";
 
 const ROW_STYLES = {
   entryEquity: { label: "Entry Equity", color: "bg-outline-variant" },
@@ -47,10 +48,10 @@ export default function BridgeAttribution({ bridge }) {
               </div>
               <div className="flex items-baseline gap-2 w-32 shrink-0 justify-end">
                 <span className="text-xs text-on-surface-variant font-mono">
-                  {`${value >= 0 ? "" : "-"}$${Math.abs(value).toFixed(1)}M`}
+                  {formatCurrency(value)}
                 </span>
                 <span className="text-xs font-semibold text-on-surface font-mono">
-                  {pct.toFixed(1)}%
+                  {formatPercent(pct)}
                 </span>
               </div>
             </div>

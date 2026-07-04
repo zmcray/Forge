@@ -13,6 +13,7 @@ import BridgeSliders from "./BridgeSliders";
 import BridgeWaterfall from "./BridgeWaterfall";
 import BridgeAttribution from "./BridgeAttribution";
 import BridgeExercise from "./BridgeExercise";
+import { formatCurrency, formatPercent, formatMultiple } from "../../utils/format";
 
 export default function BridgeCalculator() {
   const { scenarioId } = useParams();
@@ -164,12 +165,12 @@ export default function BridgeCalculator() {
           Entry (Year 0)
         </h3>
         <div className="bg-surface-container-low border border-outline-variant/40 rounded-lg p-4 grid grid-cols-2 md:grid-cols-3 gap-3">
-          <Metric label="Revenue" value={`$${scenario.entry.revenue.toFixed(1)}M`} />
-          <Metric label="EBITDA" value={`$${scenario.entry.ebitda.toFixed(1)}M`} />
-          <Metric label="EBITDA Margin" value={`${scenario.entry.ebitdaMargin.toFixed(1)}%`} />
-          <Metric label="Multiple" value={`${scenario.entry.multiple.toFixed(1)}x`} />
-          <Metric label="Enterprise Value" value={`$${scenario.entry.enterpriseValue.toFixed(1)}M`} />
-          <Metric label="Net Debt" value={`$${scenario.entry.netDebt.toFixed(1)}M`} />
+          <Metric label="Revenue" value={formatCurrency(scenario.entry.revenue)} />
+          <Metric label="EBITDA" value={formatCurrency(scenario.entry.ebitda)} />
+          <Metric label="EBITDA Margin" value={formatPercent(scenario.entry.ebitdaMargin)} />
+          <Metric label="Multiple" value={formatMultiple(scenario.entry.multiple)} />
+          <Metric label="Enterprise Value" value={formatCurrency(scenario.entry.enterpriseValue)} />
+          <Metric label="Net Debt" value={formatCurrency(scenario.entry.netDebt)} />
         </div>
       </section>
 
@@ -187,14 +188,14 @@ export default function BridgeCalculator() {
       {/* Key metrics bar */}
       <section className="mb-6">
         <div className="bg-surface-container-low border border-outline-variant/40 rounded-lg p-4 flex items-center justify-around">
-          <BigMetric label="MOIC" value={`${bridge.moic.toFixed(2)}x`} />
+          <BigMetric label="MOIC" value={formatMultiple(bridge.moic, { decimals: 2 })} />
           <BigMetric
             label="IRR"
-            value={bridge.irr != null ? `${(bridge.irr * 100).toFixed(1)}%` : "—"}
+            value={bridge.irr != null ? formatPercent(bridge.irr * 100) : "—"}
           />
           <BigMetric
             label="Equity Gain"
-            value={`$${(bridge.exitEquity - bridge.entryEquity).toFixed(1)}M`}
+            value={formatCurrency(bridge.exitEquity - bridge.entryEquity)}
           />
         </div>
       </section>

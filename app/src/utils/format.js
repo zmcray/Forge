@@ -1,6 +1,29 @@
-export function formatCurrency(val, decimals = 1) {
+// Second arg accepts a bare number (legacy decimals positional) or an options object.
+function normalizeOpts(opts) {
+  return typeof opts === "number" ? { decimals: opts } : opts;
+}
+
+// Sign convention shared by all formatters: negatives always carry "-",
+// `signed: true` adds "+" for strictly positive values, zero stays unsigned.
+function signPrefix(val, signed) {
+  if (val < 0) return "-";
+  return signed && val > 0 ? "+" : "";
+}
+
+export function formatCurrency(val, opts = {}) {
+  const { decimals = 1, signed = false } = normalizeOpts(opts);
   if (val == null || isNaN(val)) return "$--";
-  return `$${val.toFixed(decimals)}M`;
+  return `${signPrefix(val, signed)}$${Math.abs(val).toFixed(decimals)}M`;
+}
+
+export function formatPercent(val, { decimals = 1, signed = false } = {}) {
+  if (val == null || isNaN(val)) return "--%";
+  return `${signPrefix(val, signed)}${Math.abs(val).toFixed(decimals)}%`;
+}
+
+export function formatMultiple(val, { decimals = 1, signed = false } = {}) {
+  if (val == null || isNaN(val)) return "--x";
+  return `${signPrefix(val, signed)}${Math.abs(val).toFixed(decimals)}x`;
 }
 
 export function formatCurrencyK(valInMillions, decimals = 0) {
