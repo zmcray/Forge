@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from "react";
 import { isRecord, stripNonRecords } from "../utils/normalizeRecordMap";
+import { loadJSON, saveJSON } from "../utils/storage";
 
 /**
  * Module-level shared store over a localStorage key.
@@ -61,23 +62,16 @@ export function createProgressStore({ storageKey, containerKey }) {
   const DEFAULT_STATE = { [containerKey]: {} };
 
   const load = () => {
-    try {
-      const parsed = JSON.parse(localStorage.getItem(storageKey));
-      if (!isRecord(parsed) || !isRecord(parsed[containerKey])) return DEFAULT_STATE;
-      // Null/garbage inner values crash count consumers; strip once at load.
-      return { ...parsed, [containerKey]: stripNonRecords(parsed[containerKey]) };
-    } catch {
-      return DEFAULT_STATE;
-    }
+    const parsed = loadJSON(storageKey, {
+      validate: (data) => isRecord(data) && isRecord(data[containerKey]),
+      fallback: DEFAULT_STATE,
+    });
+    if (parsed === DEFAULT_STATE) return DEFAULT_STATE;
+    // Null/garbage inner values crash count consumers; strip once at load.
+    return { ...parsed, [containerKey]: stripNonRecords(parsed[containerKey]) };
   };
 
-  const save = (data) => {
-    try {
-      localStorage.setItem(storageKey, JSON.stringify(data));
-    } catch {
-      // localStorage may be unavailable (private browsing, quota exceeded)
-    }
-  };
+  const save = (data) => saveJSON(storageKey, data);
 
   const store = createStore({ load, save });
 

@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo } from "react";
+import { loadJSON, saveJSON } from "../utils/storage";
 
 const STORAGE_KEY = "forge-onboarding";
 const MAX_INTRO_STEP = 4;
@@ -12,31 +13,20 @@ const DEFAULT_STATE = {
 };
 
 function loadOnboarding() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return { ...DEFAULT_STATE, firstVisit: new Date().toISOString(), lastVisit: new Date().toISOString() };
-    const parsed = JSON.parse(raw);
-    if (typeof parsed !== "object" || parsed === null || !Array.isArray(parsed.softGateBypasses)) {
-      console.warn(`[Forge] Invalid shape in ${STORAGE_KEY}, resetting`);
-      return { ...DEFAULT_STATE, firstVisit: new Date().toISOString(), lastVisit: new Date().toISOString() };
-    }
-    return parsed;
-  } catch (err) {
-    console.warn(`[Forge] Corrupt data in ${STORAGE_KEY}, resetting:`, err.message);
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) localStorage.setItem(`${STORAGE_KEY}-corrupt-backup`, raw);
-    } catch {}
-    return { ...DEFAULT_STATE, firstVisit: new Date().toISOString(), lastVisit: new Date().toISOString() };
-  }
+  return loadJSON(STORAGE_KEY, {
+    validate: (parsed) =>
+      typeof parsed === "object" && parsed !== null && Array.isArray(parsed.softGateBypasses),
+    // Lazy factory: visit timestamps must be minted at load time, not module init.
+    fallback: () => ({
+      ...DEFAULT_STATE,
+      firstVisit: new Date().toISOString(),
+      lastVisit: new Date().toISOString(),
+    }),
+  });
 }
 
 function saveOnboarding(state) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  } catch (err) {
-    console.warn(`[Forge] Failed to save ${STORAGE_KEY}:`, err.message);
-  }
+  saveJSON(STORAGE_KEY, state);
 }
 
 export default function useOnboarding() {

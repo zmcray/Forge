@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
+import { loadString, saveString } from "../utils/storage";
 
 const STORAGE_KEY = "forge-chat-mode";
 
@@ -11,23 +12,18 @@ const VALID_MODES = [CHAT_MODES.DIRECT, CHAT_MODES.SOCRATIC];
 const DEFAULT_MODE = CHAT_MODES.DIRECT;
 
 export default function useChatMode() {
-  const [mode, setModeState] = useState(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      return VALID_MODES.includes(stored) ? stored : DEFAULT_MODE;
-    } catch {
-      return DEFAULT_MODE;
-    }
-  });
+  const [mode, setModeState] = useState(() =>
+    loadString(STORAGE_KEY, {
+      validate: (v) => VALID_MODES.includes(v),
+      fallback: DEFAULT_MODE,
+    }),
+  );
 
   const setMode = useCallback((next) => {
     if (!VALID_MODES.includes(next)) return;
     setModeState(next);
-    try {
-      localStorage.setItem(STORAGE_KEY, next);
-    } catch {
-      // localStorage quota or denied; mode persists in memory only
-    }
+    // saveString warns on failure; mode still persists in memory.
+    saveString(STORAGE_KEY, next);
   }, []);
 
   // Cross-tab sync: storage events only fire on tabs OTHER than the writer.

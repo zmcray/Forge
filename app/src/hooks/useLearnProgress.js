@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { LEARN_CONTENT } from "../data/learnContent";
 import { createStore, useStore } from "./progressStore";
+import { loadJSON, saveJSON } from "../utils/storage";
 
 const STORAGE_KEY = "forge-learn-progress";
 const DEFAULT_STATE = { completedExercises: [], visitedSubsections: [] };
@@ -20,31 +21,15 @@ function flattenSubsections() {
 const ALL_STEPS = flattenSubsections();
 
 function loadProgress() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return DEFAULT_STATE;
-    const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed.completedExercises) || !Array.isArray(parsed.visitedSubsections)) {
-      console.warn(`[Forge] Invalid shape in ${STORAGE_KEY}, resetting`);
-      return DEFAULT_STATE;
-    }
-    return parsed;
-  } catch (err) {
-    console.warn(`[Forge] Corrupt data in ${STORAGE_KEY}, resetting:`, err.message);
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) localStorage.setItem(`${STORAGE_KEY}-corrupt-backup`, raw);
-    } catch {}
-    return DEFAULT_STATE;
-  }
+  return loadJSON(STORAGE_KEY, {
+    validate: (parsed) =>
+      Array.isArray(parsed?.completedExercises) && Array.isArray(parsed?.visitedSubsections),
+    fallback: DEFAULT_STATE,
+  });
 }
 
 function saveProgress(progress) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
-  } catch (err) {
-    console.warn(`[Forge] Failed to save ${STORAGE_KEY}:`, err.message);
-  }
+  saveJSON(STORAGE_KEY, progress);
 }
 
 function exercisesOf(subsection) {
