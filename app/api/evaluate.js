@@ -16,6 +16,9 @@ function getClient() {
 
 const VALID_TYPES = ["risk", "diagnostic", "thesis"];
 const MAX_FIELD_LENGTH = 5000;
+// buildCompanyContext produces ~60 chars ("Name (industry, $XM revenue)");
+// 500 is generous headroom while still blocking prompt-stuffing abuse.
+const MAX_CONTEXT_LENGTH = 500;
 
 const feedbackSchema = {
   type: "object",
@@ -114,8 +117,18 @@ export async function POST(request) {
   ) {
     return Response.json({ error: "Invalid modelAnswer" }, { status: 400 });
   }
-  if (!questionText || typeof questionText !== "string") {
+  if (
+    !questionText ||
+    typeof questionText !== "string" ||
+    questionText.length > MAX_FIELD_LENGTH
+  ) {
     return Response.json({ error: "Invalid questionText" }, { status: 400 });
+  }
+  if (
+    companyContext !== undefined &&
+    (typeof companyContext !== "string" || companyContext.length > MAX_CONTEXT_LENGTH)
+  ) {
+    return Response.json({ error: "Invalid companyContext" }, { status: 400 });
   }
   if (!VALID_TYPES.includes(questionType)) {
     return Response.json({ error: "Invalid questionType" }, { status: 400 });

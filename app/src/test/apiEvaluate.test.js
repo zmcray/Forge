@@ -101,6 +101,40 @@ describe("api/evaluate", () => {
     expect(mockParse).not.toHaveBeenCalled();
   });
 
+  it("returns 400 for oversized questionText", async () => {
+    const res = await POST(
+      makeRequest({ ...validBody, questionText: "q".repeat(5001) }),
+    );
+
+    expect(res.status).toBe(400);
+    expect(mockParse).not.toHaveBeenCalled();
+  });
+
+  it("returns 400 for non-string companyContext", async () => {
+    const res = await POST(makeRequest({ ...validBody, companyContext: { name: "x" } }));
+
+    expect(res.status).toBe(400);
+    expect(mockParse).not.toHaveBeenCalled();
+  });
+
+  it("returns 400 for oversized companyContext", async () => {
+    const res = await POST(
+      makeRequest({ ...validBody, companyContext: "c".repeat(501) }),
+    );
+
+    expect(res.status).toBe(400);
+    expect(mockParse).not.toHaveBeenCalled();
+  });
+
+  it("accepts a request with companyContext omitted", async () => {
+    mockParse.mockResolvedValueOnce({ parsed_output: validFeedback });
+    const { companyContext: _omit, ...bodyWithoutContext } = validBody;
+
+    const res = await POST(makeRequest(bodyWithoutContext));
+
+    expect(res.status).toBe(200);
+  });
+
   it("returns 401 when auth token is configured but missing", async () => {
     process.env.FORGE_AUTH_TOKEN = "secret-token";
 
