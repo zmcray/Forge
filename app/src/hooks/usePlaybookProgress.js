@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { isRecord, stripNonRecords } from "../utils/normalizeRecordMap";
 
 const STORAGE_KEY = "forge-playbooks";
 const DEFAULT_STATE = { playbooks: {} };
@@ -10,10 +11,6 @@ const DEFAULT_PLAYBOOK = {
   goldenYearGuess: null,
 };
 
-function isRecord(value) {
-  return value !== null && typeof value === "object" && !Array.isArray(value);
-}
-
 function getPlaybooks(progress) {
   return isRecord(progress?.playbooks) ? progress.playbooks : {};
 }
@@ -21,7 +18,9 @@ function getPlaybooks(progress) {
 function loadProgress() {
   try {
     const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    return isRecord(parsed) && isRecord(parsed.playbooks) ? parsed : DEFAULT_STATE;
+    if (!isRecord(parsed) || !isRecord(parsed.playbooks)) return DEFAULT_STATE;
+    // Null/garbage inner values crash count consumers; strip once at load.
+    return { ...parsed, playbooks: stripNonRecords(parsed.playbooks) };
   } catch {
     return DEFAULT_STATE;
   }

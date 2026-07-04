@@ -1,12 +1,9 @@
 import { useState, useCallback } from "react";
+import { isRecord, stripNonRecords } from "../utils/normalizeRecordMap";
 
 const STORAGE_KEY = "forge-concepts";
 const DEFAULT_STATE = { cards: {} };
 const DEFAULT_CARD = { notes: "", lastStudied: null, practiceAttempted: false };
-
-function isRecord(value) {
-  return value !== null && typeof value === "object" && !Array.isArray(value);
-}
 
 function getCards(progress) {
   return isRecord(progress?.cards) ? progress.cards : {};
@@ -15,7 +12,9 @@ function getCards(progress) {
 function loadProgress() {
   try {
     const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    return isRecord(parsed) && isRecord(parsed.cards) ? parsed : DEFAULT_STATE;
+    if (!isRecord(parsed) || !isRecord(parsed.cards)) return DEFAULT_STATE;
+    // Null/garbage inner values crash count consumers; strip once at load.
+    return { ...parsed, cards: stripNonRecords(parsed.cards) };
   } catch {
     return DEFAULT_STATE;
   }
