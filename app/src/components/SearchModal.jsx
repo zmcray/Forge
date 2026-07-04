@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { COMPANIES } from "../data/companies";
 import { LEARN_CONTENT } from "../data/learnContent";
 import { formatCurrency } from "../utils/format";
+import { useDialog } from "../hooks/useDialog";
 
 function buildIndex() {
   const items = [];
@@ -63,6 +64,7 @@ export default function SearchModal({ open, onClose, onNavigateCompany, onNaviga
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef(null);
   const index = useMemo(buildIndex, []);
+  const { dialogRef, dialogProps } = useDialog({ open, onClose });
 
   const results = useMemo(() => {
     if (!query.trim()) return index.slice(0, 8);
@@ -98,7 +100,6 @@ export default function SearchModal({ open, onClose, onNavigateCompany, onNaviga
   useEffect(() => {
     if (!open) return;
     const handleKey = (e) => {
-      if (e.key === "Escape") { onClose(); return; }
       if (e.key === "ArrowDown") { e.preventDefault(); setSelectedIndex(i => Math.min(i + 1, results.length - 1)); return; }
       if (e.key === "ArrowUp") { e.preventDefault(); setSelectedIndex(i => Math.max(i - 1, 0)); return; }
       if (e.key === "Enter" && results[selectedIndex]) { e.preventDefault(); selectResult(results[selectedIndex]); }
@@ -115,6 +116,9 @@ export default function SearchModal({ open, onClose, onNavigateCompany, onNaviga
     <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[15vh]" onClick={onClose}>
       <div className="fixed inset-0 bg-black/40" />
       <div
+        ref={dialogRef}
+        {...dialogProps}
+        aria-label="Search"
         className="relative bg-surface-container-lowest rounded-xl shadow-2xl w-full max-w-lg ghost-border overflow-hidden"
         onClick={e => e.stopPropagation()}
       >

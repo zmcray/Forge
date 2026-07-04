@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { QUESTION_TYPES } from "../data/questionTypes";
+import { useDialog } from "../hooks/useDialog";
 import { average, averageScore, averageAbsDelta } from "../utils/scoreMath";
 
 export default function SessionSummary({ company, questions, elapsedMinutes, onClose }) {
   const [copied, setCopied] = useState(false);
+  const { dialogRef, dialogProps } = useDialog({ onClose });
 
   if (!questions || questions.length === 0) return null;
 
@@ -50,7 +52,12 @@ export default function SessionSummary({ company, questions, elapsedMinutes, onC
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-      <div className="bg-surface-container-lowest rounded-2xl shadow-xl max-w-md w-full p-6">
+      <div
+        ref={dialogRef}
+        {...dialogProps}
+        aria-label="Session summary"
+        className="bg-surface-container-lowest rounded-2xl shadow-xl max-w-md w-full p-6"
+      >
         <h2 className="text-lg font-bold text-on-surface mb-4">Session Summary</h2>
 
         <div className="grid grid-cols-3 gap-3 mb-4">
