@@ -1,5 +1,12 @@
 // @vitest-environment node
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import {
+  deltaFrame,
+  doneFrame,
+  errorFrame,
+  CHAT_ERROR_MESSAGES,
+  readSSEBody,
+} from "./fixtures/chatSSE.js";
 
 // Capture the args passed to messages.stream so tests can assert the system
 // prompt is assembled server-side.
@@ -9,28 +16,22 @@ const { streamMock } = vi.hoisted(() => ({ streamMock: vi.fn() }));
 vi.mock("@anthropic-ai/sdk", () => {
   return {
     default: class MockAnthropic {
-      messages = {
-        stream: streamMock.mockReturnValue({
-          [Symbol.asyncIterator]() {
-            let done = false;
-            return {
-              next() {
-                if (!done) {
-                  done = true;
-                  return Promise.resolve({
-                    value: { type: "content_block_delta", delta: { text: "Hello" } },
-                    done: false,
-                  });
-                }
-                return Promise.resolve({ done: true, value: undefined });
-              },
-            };
-          },
-        }),
-      };
+      messages = { stream: streamMock };
     },
   };
 });
+
+// Build a fake SDK stream: yields `events`, then optionally throws.
+function sdkStream(events, { throwAfter } = {}) {
+  return {
+    async *[Symbol.asyncIterator]() {
+      for (const event of events) yield event;
+      if (throwAfter) throw throwAfter;
+    },
+  };
+}
+
+const delta = text => ({ type: "content_block_delta", delta: { text } });
 
 const VALID_LEARN = {
   messages: [{ role: "user", content: "hi" }],
@@ -50,7 +51,8 @@ describe("api/chat", () => {
   beforeEach(async () => {
     // Clear module cache to get fresh env + rate limiter each test
     vi.resetModules();
-    streamMock.mockClear();
+    streamMock.mockReset();
+    streamMock.mockImplementation(() => sdkStream([delta("Hello")]));
     delete process.env.FORGE_AUTH_TOKEN;
     const mod = await import("../../api/chat.js");
     POST = mod.POST;
@@ -285,6 +287,49 @@ describe("api/chat", () => {
       const res = await POST(makeRequest(VALID_LEARN));
       expect(res.status).toBe(200);
       expect(res.headers.get("Content-Type")).toBe("text/event-stream");
+    });
+  });
+
+  describe("SSE frame contract (MCR-468)", () => {
+    it("emits one delta frame per text delta, terminated by a done frame, verbatim", async () => {
+      streamMock.mockImplementation(() =>
+        sdkStream([
+          { type: "message_start" }, // non-delta SDK events must not produce frames
+          delta("Hello"),
+          delta(" world"),
+          { type: "content_block_stop" },
+        ])
+      );
+      const res = await POST(makeRequest(VALID_LEARN));
+      expect(res.status).toBe(200);
+      const raw = await readSSEBody(res);
+      expect(raw).toBe(deltaFrame("Hello") + deltaFrame(" world") + doneFrame());
+    });
+
+    it("maps an upstream 429 to the rate-limited error frame", async () => {
+      const upstream = Object.assign(new Error("overloaded"), { status: 429 });
+      streamMock.mockImplementation(() => sdkStream([delta("Hi")], { throwAfter: upstream }));
+      const res = await POST(makeRequest(VALID_LEARN));
+      expect(res.status).toBe(200);
+      const raw = await readSSEBody(res);
+      expect(raw).toBe(deltaFrame("Hi") + errorFrame(CHAT_ERROR_MESSAGES.rateLimited));
+    });
+
+    it("maps any other upstream failure to the generic error frame", async () => {
+      streamMock.mockImplementation(() =>
+        sdkStream([], { throwAfter: new Error("upstream exploded") })
+      );
+      const res = await POST(makeRequest(VALID_LEARN));
+      const raw = await readSSEBody(res);
+      expect(raw).toBe(errorFrame(CHAT_ERROR_MESSAGES.unavailable));
+    });
+
+    it("closes without an error frame when the client aborts", async () => {
+      const abort = Object.assign(new Error("aborted"), { name: "AbortError" });
+      streamMock.mockImplementation(() => sdkStream([], { throwAfter: abort }));
+      const res = await POST(makeRequest(VALID_LEARN));
+      const raw = await readSSEBody(res);
+      expect(raw).toBe("");
     });
   });
 
