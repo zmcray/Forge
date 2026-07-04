@@ -5,6 +5,7 @@ import { evaluateAnswer } from "../utils/evaluateAnswer";
 import { LLMGrading, LLMFeedbackSkeleton } from "./LLMFeedback";
 import CommitInput from "./CommitInput";
 import DeltaDisplay from "./DeltaDisplay";
+import useKeyboardShortcuts from "../hooks/useKeyboardShortcuts";
 
 export default function QuestionCard({ question, index, onScore, companyContext }) {
   const [phase, setPhase] = useState("commit"); // commit, hint, reveal, scored
@@ -109,6 +110,18 @@ export default function QuestionCard({ question, index, onScore, companyContext 
   const modelExtracted = isQuantitative
     ? extractNumericValue(question.answer)
     : null;
+
+  // Keyboard shortcuts: Enter reveals a committable answer; 1-5 self-scores
+  // when the self-score UI is showing (quantitative always, qualitative only
+  // on LLM failure). The hook ignores keys while typing in inputs/textareas.
+  const canReveal = (phase === "commit" || phase === "hint") && hasValidInput;
+  const canSelfScore =
+    phase === "reveal" && (isQuantitative || (!isQuantitative && llmError));
+  useKeyboardShortcuts({
+    enabled: canReveal || canSelfScore,
+    onReveal: canReveal ? handleReveal : null,
+    onScore: canSelfScore ? handleSelfScore : null,
+  });
 
   // Shared answer comparison grid
   const answerComparison = (
