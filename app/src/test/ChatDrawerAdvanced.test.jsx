@@ -2,6 +2,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, act, waitFor } from "@testing-library/react";
 import ChatDrawer from "../components/learn/ChatDrawer";
+import { deltaFrame, doneFrame, errorFrame, CHAT_ERROR_MESSAGES } from "./fixtures/chatSSE.js";
 
 // Mock useChatContext
 vi.mock("../hooks/useChatContext", () => ({
@@ -88,11 +89,9 @@ describe("ChatDrawer Advanced", () => {
 
   it("parses SSE events correctly from streamed response", async () => {
     const setMessages = vi.fn();
-    const events = [
-      'data: {"type":"delta","text":"Hello"}\n\n',
-      'data: {"type":"delta","text":" world"}\n\n',
-      'data: {"type":"done"}\n\n',
-    ];
+    // Frames come from the shared server contract fixture; if api/chat.js
+    // renames an event type, this test breaks alongside apiChat.test.js.
+    const events = [deltaFrame("Hello"), deltaFrame(" world"), doneFrame()];
     global.fetch = createMockStreamFetch(events);
 
     render(<ChatDrawer {...defaultProps} setMessages={setMessages} />);
@@ -104,11 +103,12 @@ describe("ChatDrawer Advanced", () => {
       fireEvent.click(screen.getByTitle("Send"));
     });
 
-    // Wait for streaming to complete and final message to be set
+    // The final setMessages call is a functional updater that appends the
+    // fully-accumulated assistant message.
     await waitFor(() => {
-      const lastCall = setMessages.mock.calls[setMessages.mock.calls.length - 1];
-      // The last call should be the functional updater that adds the assistant message
-      expect(lastCall).toBeDefined();
+      const updater = setMessages.mock.calls.at(-1)[0];
+      expect(typeof updater).toBe("function");
+      expect(updater([])).toEqual([{ role: "assistant", content: "Hello world" }]);
     });
 
     delete global.fetch;
@@ -117,10 +117,10 @@ describe("ChatDrawer Advanced", () => {
   it("handles malformed JSON in SSE event gracefully", async () => {
     const setMessages = vi.fn();
     const events = [
-      'data: {"type":"delta","text":"Good"}\n\n',
-      'data: not-valid-json\n\n',
-      'data: {"type":"delta","text":" response"}\n\n',
-      'data: {"type":"done"}\n\n',
+      deltaFrame("Good"),
+      "data: not-valid-json\n\n",
+      deltaFrame(" response"),
+      doneFrame(),
     ];
     global.fetch = createMockStreamFetch(events);
 
@@ -133,18 +133,19 @@ describe("ChatDrawer Advanced", () => {
       fireEvent.click(screen.getByTitle("Send"));
     });
 
-    // Should not crash, should still render normally
+    // Should not crash; malformed frame is skipped and valid deltas still accumulate
     await waitFor(() => {
-      expect(setMessages).toHaveBeenCalled();
+      const updater = setMessages.mock.calls.at(-1)[0];
+      expect(typeof updater).toBe("function");
+      expect(updater([])).toEqual([{ role: "assistant", content: "Good response" }]);
     });
 
     delete global.fetch;
   });
 
   it("handles SSE error event from server", async () => {
-    const events = [
-      'data: {"type":"error","message":"Rate limited"}\n\n',
-    ];
+    // Exact error frame the server emits on upstream 429 (shared fixture).
+    const events = [errorFrame(CHAT_ERROR_MESSAGES.rateLimited)];
     global.fetch = createMockStreamFetch(events);
 
     render(<ChatDrawer {...defaultProps} />);
@@ -157,7 +158,7 @@ describe("ChatDrawer Advanced", () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByText("Rate limited")).toBeInTheDocument();
+      expect(screen.getByText(CHAT_ERROR_MESSAGES.rateLimited)).toBeInTheDocument();
     });
 
     delete global.fetch;

@@ -20,9 +20,11 @@ export function ScoringProvider({ children }) {
     getScoresByType: scoring.getScoresByType,
     getWeakSpots: scoring.getWeakSpots,
     getQuantitativeAccuracy: scoring.getQuantitativeAccuracy,
+    getAttemptedCompanyIds: scoring.getAttemptedCompanyIds,
   }), [scoring.addScore, scoring.updateSessionDuration,
        scoring.getAllScores, scoring.getScoresByType,
-       scoring.getWeakSpots, scoring.getQuantitativeAccuracy]);
+       scoring.getWeakSpots, scoring.getQuantitativeAccuracy,
+       scoring.getAttemptedCompanyIds]);
 
   return (
     <ScoringStateContext value={state}>

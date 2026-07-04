@@ -1,112 +1,28 @@
-import { useState, useCallback } from "react";
-import { isRecord, stripNonRecords } from "../utils/normalizeRecordMap";
+import { useMemo } from "react";
+import { createProgressStore, useStore } from "./progressStore";
 
-const STORAGE_KEY = "forge-concepts";
-const DEFAULT_STATE = { cards: {} };
 const DEFAULT_CARD = { notes: "", lastStudied: null, practiceAttempted: false };
 
-function getCards(progress) {
-  return isRecord(progress?.cards) ? progress.cards : {};
-}
+const store = createProgressStore({ storageKey: "forge-concepts", containerKey: "cards" });
 
-function loadProgress() {
-  try {
-    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    if (!isRecord(parsed) || !isRecord(parsed.cards)) return DEFAULT_STATE;
-    // Null/garbage inner values crash count consumers; strip once at load.
-    return { ...parsed, cards: stripNonRecords(parsed.cards) };
-  } catch {
-    return DEFAULT_STATE;
-  }
-}
-
-function saveProgress(data) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  } catch {
-    // localStorage may be unavailable (private browsing, quota exceeded)
-  }
-}
+// Module-stable mutators: safe in effect deps, shared across all instances.
+const markStudied = (cardId) => store.patchRecord(cardId, { lastStudied: new Date().toISOString() });
+const markPracticeAttempted = (cardId) => store.patchRecord(cardId, { practiceAttempted: true });
+const setCardNotes = (cardId, text) =>
+  store.patchRecord(cardId, { notes: text, lastUpdated: new Date().toISOString() });
 
 export default function useConceptProgress() {
-  const [progress, setProgress] = useState(loadProgress);
+  const progress = useStore(store);
 
-  const getCard = useCallback(
-    (cardId) => getCards(progress)[cardId] || DEFAULT_CARD,
-    [progress],
-  );
-
-  const markStudied = useCallback((cardId) => {
-    setProgress((prev) => {
-      const cards = getCards(prev);
-      const next = {
-        ...prev,
-        cards: {
-          ...cards,
-          [cardId]: {
-            ...cards[cardId],
-            lastStudied: new Date().toISOString(),
-          },
-        },
-      };
-      saveProgress(next);
-      return next;
-    });
-  }, []);
-
-  const markPracticeAttempted = useCallback((cardId) => {
-    setProgress((prev) => {
-      const cards = getCards(prev);
-      const next = {
-        ...prev,
-        cards: {
-          ...cards,
-          [cardId]: {
-            ...cards[cardId],
-            practiceAttempted: true,
-          },
-        },
-      };
-      saveProgress(next);
-      return next;
-    });
-  }, []);
-
-  const setCardNotes = useCallback((cardId, text) => {
-    setProgress((prev) => {
-      const cards = getCards(prev);
-      const next = {
-        ...prev,
-        cards: {
-          ...cards,
-          [cardId]: {
-            ...cards[cardId],
-            notes: text,
-            lastUpdated: new Date().toISOString(),
-          },
-        },
-      };
-      saveProgress(next);
-      return next;
-    });
-  }, []);
-
-  const getStudiedCount = useCallback(
-    () => Object.values(getCards(progress)).filter((c) => c.lastStudied).length,
-    [progress],
-  );
-
-  const getPracticeCount = useCallback(
-    () => Object.values(getCards(progress)).filter((c) => c.practiceAttempted).length,
-    [progress],
-  );
-
-  return {
-    getCard,
-    markStudied,
-    markPracticeAttempted,
-    setCardNotes,
-    getStudiedCount,
-    getPracticeCount,
-  };
+  return useMemo(() => {
+    const cards = store.getRecords(progress);
+    return {
+      getCard: (cardId) => cards[cardId] || DEFAULT_CARD,
+      markStudied,
+      markPracticeAttempted,
+      setCardNotes,
+      getStudiedCount: () => Object.values(cards).filter((c) => c.lastStudied).length,
+      getPracticeCount: () => Object.values(cards).filter((c) => c.practiceAttempted).length,
+    };
+  }, [progress]);
 }
