@@ -11,6 +11,9 @@ import PracticeRoute from "../screens/PracticeRoute";
 // here keep them out of the entry chunk.
 const LearnModule = lazy(() => import("./learn/LearnModule"));
 const QuickFireScreen = lazy(() => import("./QuickFireScreen"));
+// ReviewScreen resolves atoms against the full learn data surface, so it
+// stays lazy like the Learn tree.
+const ReviewScreen = lazy(() => import("./ReviewScreen"));
 
 function viewFromPath(pathname) {
   if (pathname.startsWith("/practice")) return "practice";
@@ -83,6 +86,7 @@ export default function AppShellWrapper({
           <Route path="learn/playbooks" element={<LearnModule />} />
           <Route path="learn/playbooks/:playbookId" element={<LearnModule />} />
           <Route path="quickfire" element={<QuickFireScreen />} />
+          <Route path="review" element={<ReviewScreen />} />
         </Routes>
       </Suspense>
     </AppShell>
