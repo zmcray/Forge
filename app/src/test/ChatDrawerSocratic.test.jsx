@@ -28,6 +28,9 @@ const defaultProps = () => ({
 describe("ChatDrawer — Socratic toggle", () => {
   beforeEach(() => {
     localStorage.clear();
+    // Learn now defaults to Socratic (MCR-101). These tests exercise toggle
+    // mechanics from a Direct starting point, so seed an explicit choice.
+    localStorage.setItem("forge-chat-mode-learn", CHAT_MODES.DIRECT);
     vi.restoreAllMocks();
   });
 
@@ -45,7 +48,7 @@ describe("ChatDrawer — Socratic toggle", () => {
       fireEvent.click(screen.getByRole("button", { name: "Socratic" }));
       expect(screen.getByRole("button", { name: "Direct" })).toHaveAttribute("aria-pressed", "false");
       expect(screen.getByRole("button", { name: "Socratic" })).toHaveAttribute("aria-pressed", "true");
-      expect(localStorage.getItem("forge-chat-mode")).toBe(CHAT_MODES.SOCRATIC);
+      expect(localStorage.getItem("forge-chat-mode-learn")).toBe(CHAT_MODES.SOCRATIC);
     });
 
     it("clicking the already-active mode is a no-op (no divider inserted)", () => {
@@ -105,7 +108,7 @@ describe("ChatDrawer — Socratic toggle", () => {
     });
 
     it("Socratic mode shows the guided-by-questions copy", () => {
-      localStorage.setItem("forge-chat-mode", CHAT_MODES.SOCRATIC);
+      localStorage.setItem("forge-chat-mode-learn", CHAT_MODES.SOCRATIC);
       render(<ChatDrawer {...defaultProps()} />);
       expect(screen.getByText(/I'll guide you with questions\. Ask me to test you on Test Topic/)).toBeInTheDocument();
     });

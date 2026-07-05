@@ -1,17 +1,19 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import ChatMessage from "./ChatMessage";
+import ChatDrawerHeader from "./ChatDrawerHeader";
+import ChatComposer from "./ChatComposer";
 import useChatContext from "../../hooks/useChatContext";
-import useChatMode, { CHAT_MODES } from "../../hooks/useChatMode";
+import useChatMode, { CHAT_MODES, MODE_LABEL } from "../../hooks/useChatMode";
 import { useDialog } from "../../hooks/useDialog";
 import { forgeFetch } from "../../utils/api";
 
 const MAX_TURNS = 10;
-const MAX_MESSAGE_LENGTH = 2000;
 
-const MODE_LABEL = {
-  [CHAT_MODES.DIRECT]: "Direct",
-  [CHAT_MODES.SOCRATIC]: "Socratic",
-};
+// Escape hatch: a fixed user-visible message keeps the server contract
+// unchanged (no new param, no validation surface) while reliably flipping
+// the model into direct teaching for one concept.
+export const ESCAPE_HATCH_MESSAGE =
+  "Please switch to direct teaching for this concept and explain the reasoning.";
 
 const resolvePracticeTitle = (practiceContext) => {
   if (!practiceContext) return "";
@@ -44,7 +46,8 @@ export default function ChatDrawer({
   const [isStreaming, setIsStreaming] = useState(false);
   const [streamingText, setStreamingText] = useState("");
   const [error, setError] = useState(null);
-  const { mode, setMode } = useChatMode();
+  const surface = contextType === "practice" ? "practice" : "learn";
+  const { mode, setMode } = useChatMode(surface);
   const { dialogRef, dialogProps } = useDialog({ onClose });
   const abortRef = useRef(null);
   const messagesEndRef = useRef(null);
@@ -114,11 +117,12 @@ export default function ChatDrawer({
     const ac = new AbortController();
     abortRef.current = ac;
 
-    // Mode-change dividers are UI-only; strip them from the API payload so the
-    // LLM sees a clean role/content history. The server assembles the system
-    // prompt from `mode` + `chatParams` (MCR-390); mode was captured above and
-    // reflects the state when send was clicked (D8 — in-flight uses old mode;
-    // flips during stream apply on next turn).
+    // Mode-change dividers are UI-only; strip them (and the per-message mode
+    // stamp) from the API payload so the LLM sees a clean role/content
+    // history. The server assembles the system prompt from `mode` +
+    // `chatParams` (MCR-390); mode was captured above and reflects the state
+    // when send was clicked (D8 — in-flight uses old mode; flips during
+    // stream apply on next turn).
     const apiMessages = updated
       .filter(m => m.kind !== "mode-change")
       .map(m => ({ role: m.role, content: m.content }));
@@ -128,7 +132,7 @@ export default function ChatDrawer({
         "/api/chat",
         {
           messages: apiMessages,
-          mode: `${contextType === "practice" ? "practice" : "learn"}-${mode}`,
+          mode: `${surface}-${mode}`,
           params: chatParams,
         },
         { stream: true, signal: ac.signal, fallbackError: "Chat unavailable" }
@@ -165,10 +169,12 @@ export default function ChatDrawer({
         // deferred so the visible transcript stays chronologically honest:
         // the in-flight assistant reply was generated under the OLD prompt,
         // so it must render BEFORE the divider that announces the new mode.
+        // The reply is stamped with the mode it was GENERATED under (the one
+        // captured at send), which drives the per-message mode pill.
         const pending = pendingModeRef.current;
         pendingModeRef.current = null;
         setMessages(prev => {
-          const next = [...prev, { role: "assistant", content: fullText }];
+          const next = [...prev, { role: "assistant", content: fullText, mode }];
           if (pending) {
             next.push({
               role: "assistant",
@@ -197,14 +203,7 @@ export default function ChatDrawer({
       setStreamingText("");
       abortRef.current = null;
     }
-  }, [messages, setMessages, isStreaming, chatParams, mode, contextType]);
-
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage(input);
-    }
-  };
+  }, [messages, setMessages, isStreaming, chatParams, mode, surface]);
 
   const handleSuggestedClick = (question) => {
     sendMessage(question);
@@ -233,8 +232,13 @@ export default function ChatDrawer({
     ]);
   };
 
-  const charCount = input.length;
-  const showCharWarning = charCount > 1500;
+  // Escape hatch: after 2+ Socratic assistant turns the user has earned a
+  // direct explanation on demand. Dividers don't count as turns.
+  const assistantTurnCount = messages.filter(
+    m => m.role === "assistant" && m.kind !== "mode-change"
+  ).length;
+  const showEscapeHatch =
+    mode === CHAT_MODES.SOCRATIC && assistantTurnCount >= 2 && !isStreaming;
 
   return (
     <div
@@ -248,43 +252,12 @@ export default function ChatDrawer({
         onClick={onClose}
       />
 
-      {/* Header */}
-      <div className="flex items-center gap-2 px-4 py-3 border-b border-outline-variant/30 bg-surface-container-low">
-        <h3 className="text-sm font-semibold text-on-surface truncate flex-1 min-w-0">
-          {contextTitle ? `Chat: ${contextTitle}` : "Chat"}
-        </h3>
-        <div
-          role="group"
-          aria-label="Chat mode"
-          className="flex items-center gap-0.5 rounded-full bg-surface-container p-0.5 flex-shrink-0"
-        >
-          {[CHAT_MODES.DIRECT, CHAT_MODES.SOCRATIC].map(m => {
-            const active = mode === m;
-            return (
-              <button
-                key={m}
-                type="button"
-                onClick={() => handleModeChange(m)}
-                aria-pressed={active}
-                className={`text-xs px-2.5 py-0.5 rounded-full transition-colors ${
-                  active
-                    ? "bg-primary text-on-primary"
-                    : "text-on-surface-variant hover:opacity-80"
-                }`}
-              >
-                {MODE_LABEL[m]}
-              </button>
-            );
-          })}
-        </div>
-        <button
-          onClick={onClose}
-          className="p-1 rounded-lg hover:bg-surface-container transition-colors flex-shrink-0"
-          title="Close chat"
-        >
-          <span className="material-symbols-outlined text-on-surface-variant text-xl">close</span>
-        </button>
-      </div>
+      <ChatDrawerHeader
+        contextTitle={contextTitle}
+        mode={mode}
+        onModeChange={handleModeChange}
+        onClose={onClose}
+      />
 
       {/* Suggested questions */}
       {messages.length === 0 && suggestedQuestions.length > 0 && (
@@ -348,42 +321,25 @@ export default function ChatDrawer({
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input area */}
-      <div className="border-t border-outline-variant/30 p-3">
-        <div className="flex gap-2 items-end">
-          <div className="flex-1 relative">
-            <textarea
-              ref={inputRef}
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Type a question..."
-              disabled={isStreaming}
-              rows={1}
-              maxLength={MAX_MESSAGE_LENGTH}
-              className="w-full resize-none rounded-lg border border-outline-variant/30 bg-surface-container-low px-3 py-2 text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:border-primary disabled:opacity-50"
-              style={{ minHeight: "36px", maxHeight: "96px" }}
-              onInput={e => {
-                e.target.style.height = "36px";
-                e.target.style.height = Math.min(e.target.scrollHeight, 96) + "px";
-              }}
-            />
-            {showCharWarning && (
-              <span className="absolute right-2 bottom-1 text-[10px] text-on-surface-variant">
-                {charCount}/{MAX_MESSAGE_LENGTH}
-              </span>
-            )}
-          </div>
+      {showEscapeHatch && (
+        <div className="px-3 pb-1">
           <button
-            onClick={() => sendMessage(input)}
-            disabled={!input.trim() || isStreaming}
-            className="p-2 rounded-lg bg-primary text-on-primary hover:opacity-90 transition-opacity disabled:opacity-40 flex-shrink-0"
-            title="Send"
+            type="button"
+            onClick={() => sendMessage(ESCAPE_HATCH_MESSAGE)}
+            className="text-xs px-2.5 py-1 rounded-full bg-secondary-container text-on-secondary-container hover:opacity-80 transition-opacity"
           >
-            <span className="material-symbols-outlined text-lg">send</span>
+            Show me the reasoning
           </button>
         </div>
-      </div>
+      )}
+
+      <ChatComposer
+        input={input}
+        setInput={setInput}
+        isStreaming={isStreaming}
+        onSend={sendMessage}
+        inputRef={inputRef}
+      />
     </div>
   );
 }
