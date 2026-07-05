@@ -551,4 +551,41 @@ describe("Data Integrity", () => {
       }
     });
   });
+
+  describe("Learn module exercise coverage", () => {
+    const EXERCISE_TYPES = ["exercise", "calculationExercise"];
+    const allSubsections = LEARN_CONTENT.flatMap((s) => s.subsections);
+
+    it("every subsection has at least one exercise", () => {
+      for (const sub of allSubsections) {
+        const exercises = sub.blocks.filter((b) => EXERCISE_TYPES.includes(b.type));
+        expect(
+          exercises.length,
+          `Subsection "${sub.id}" (${sub.title}) has no exercise or calculationExercise block`
+        ).toBeGreaterThan(0);
+      }
+    });
+
+    it("exercise IDs are unique across the whole learn module", () => {
+      const ids = allSubsections
+        .flatMap((sub) => sub.blocks)
+        .filter((b) => EXERCISE_TYPES.includes(b.type))
+        .map((b) => b.id);
+      const dupes = ids.filter((id, i) => ids.indexOf(id) !== i);
+      expect(dupes, `Duplicate exercise IDs: ${dupes.join(", ")}`).toHaveLength(0);
+    });
+
+    it("every exercise has a non-empty string id", () => {
+      for (const sub of allSubsections) {
+        for (const block of sub.blocks) {
+          if (EXERCISE_TYPES.includes(block.type)) {
+            expect(
+              typeof block.id === "string" && block.id.length > 0,
+              `Exercise in subsection "${sub.id}" is missing an id`
+            ).toBe(true);
+          }
+        }
+      }
+    });
+  });
 });
