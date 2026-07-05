@@ -246,3 +246,19 @@ describe("useBridgeProgress passed-vs-attempted semantics", () => {
     expect(() => renderList()).not.toThrow();
   });
 });
+
+describe("BridgeExercise practice links", () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  it("renders a practice link per relatedQuestions entry and navigates on click", () => {
+    renderDetail("services-platform");
+    const links = screen.getAllByRole("button", { name: /Practice this/i });
+    expect(links).toHaveLength(
+      BRIDGE_SCENARIOS.find((s) => s.id === "services-platform").relatedQuestions.length
+    );
+    fireEvent.click(links[0]);
+    expect(screen.getByText("Practice page")).toBeInTheDocument();
+  });
+});
