@@ -144,7 +144,7 @@ forge/
       data/
         companies.js              # 9 company profiles with full financials + questions
         questionTypes.js          # 6 question types (metric, adjustment, valuation, risk, diagnostic, thesis)
-        learnContent.js           # Learn module content (3 sections, 10 subsections)
+        learnContent.js           # Learn module content (5 sections, 25 subsections: financial statements, screening, DD + QoE, key concepts + LBO/financing, deal process)
         conceptCards.js           # Concept card content for the Learn module
         valueLevers.js            # Value creation lever content
         valueBridge.js            # Value bridge exercise data
@@ -230,7 +230,7 @@ Users must enter an answer before revealing the model answer:
 ### LLM Chat (Learn + Practice)
 - Endpoint: `app/api/chat.js` (POST). Model: claude-haiku-4-5, max 1024 tokens.
 - Streams responses as SSE (`data: {type: "delta", text}` events, terminated by `{type: "done"}`).
-- Request: `{ messages: [{role, content}], systemPrompt }`. Validation limits: 20 messages max, 2000 chars per message, 5000 chars system prompt. System prompt is cached via `cache_control: ephemeral`.
+- Request: `{ messages: [{role, content}], mode, params }`. Since MCR-390 the system prompt is assembled SERVER-SIDE in `api/_lib/chatPrompt.js` from mode + params (client-supplied `systemPrompt` is rejected with 400); learn-mode lesson content is resolved server-side from `subsectionId`. Validation limits: 20 messages max, 2000 chars per message, per-field caps on params (e.g. 2000-char text fields). System prompt is cached via `cache_control: ephemeral`. `src/test/socraticPrompt.test.js` soft-budgets the built prompt at 5200 chars via the longest subsection.
 - Client: `ChatDrawer.jsx` renders the drawer; `useChatContext` builds company/lesson context into the system prompt; `useChatMode` toggles socratic vs direct mode.
 - Same `FORGE_AUTH_TOKEN` gate as evaluate/generate.
 
