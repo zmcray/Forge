@@ -38,6 +38,7 @@ export default function App() {
         progress: "/progress",
         learn: "/learn",
         quickfire: "/quickfire",
+        consult: "/consult",
       };
       navigate(routes[v] || "/");
     },

@@ -6,6 +6,7 @@ const NAV_ITEMS = [
   { id: "learn", label: "Fundamentals", icon: "menu_book" },
   { id: "quickfire", label: "Quick Screen", icon: "bolt" },
   { id: "practice", label: "Practice", icon: "analytics" },
+  { id: "consult", label: "Consult", icon: "handshake" },
   { id: "progress", label: "Progress", icon: "trending_up" },
 ];
 

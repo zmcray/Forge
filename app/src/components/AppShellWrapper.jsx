@@ -11,12 +11,17 @@ import PracticeRoute from "../screens/PracticeRoute";
 // here keep them out of the entry chunk.
 const LearnModule = lazy(() => import("./learn/LearnModule"));
 const QuickFireScreen = lazy(() => import("./QuickFireScreen"));
+// Consult (Stage 2 consulting wedge) lazy-imports companyOperations.js
+// (~1.6K lines of content data), keeping it out of the eager bundle.
+const ConsultScreen = lazy(() => import("../screens/ConsultScreen"));
+const ConsultSession = lazy(() => import("../screens/ConsultSession"));
 
 function viewFromPath(pathname) {
   if (pathname.startsWith("/practice")) return "practice";
   if (pathname.startsWith("/progress")) return "progress";
   if (pathname.startsWith("/learn")) return "learn";
   if (pathname.startsWith("/quickfire")) return "quickfire";
+  if (pathname.startsWith("/consult")) return "consult";
   return "home";
 }
 
@@ -83,6 +88,8 @@ export default function AppShellWrapper({
           <Route path="learn/playbooks" element={<LearnModule />} />
           <Route path="learn/playbooks/:playbookId" element={<LearnModule />} />
           <Route path="quickfire" element={<QuickFireScreen />} />
+          <Route path="consult" element={<ConsultScreen />} />
+          <Route path="consult/:companyId" element={<ConsultSession />} />
         </Routes>
       </Suspense>
     </AppShell>
