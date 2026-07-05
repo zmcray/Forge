@@ -206,6 +206,7 @@ forge/
     vite.config.js
     vercel.json                   # SPA rewrite config
   docs/plans/                     # Feature planning docs
+  docs/solutions/                 # documented solutions to past problems (bugs, patterns, workflow practices), organized by category with YAML frontmatter (module, tags, problem_type)
   docs/ideation/                  # Raw brainstorming notes
   mockups/                        # UI/UX reference mockups
   .github/workflows/ci.yml       # GitHub Actions: test + build on push/PR
