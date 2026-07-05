@@ -652,6 +652,81 @@ export const LEARN_CONTENT = [
             answer: "Precision CNC: Total debt $2.1M ($0.3M current + $1.8M LT) / $4.15M Adj. EBITDA = 0.5x leverage. Extremely conservative. You could add $10-12M of additional debt to reach 3.0x, giving significant acquisition firepower. Precision's 32.4% EBITDA margins and 43% gross margins mean strong debt service coverage. Risk: customer concentration at 28% means a customer loss could impair the ability to service debt. Apex: Total debt $8.6M ($2.1M + $6.5M) / $4.55M Adj. EBITDA = 1.9x leverage. Already moderate. Theoretical capacity to 3.5x = $15.9M total, so ~$7.3M more. But you should NOT lever up Apex further. Revenue is declining 8.6%, and FCF conversion is weak: Cash from Operations of $3.4M (NI $0.6M + D&A $2.0M + ΔWC $0.8M) less CapEx of $2.5M leaves only $0.9M of FCF, or roughly 20% of $4.55M Adj. EBITDA. Combine that with 35% customer concentration and EBITDA could collapse. Adding more debt to a declining-revenue, capital-intensive business with a concentrated customer base is a recipe for distress."
           }
         ]
+      },
+      {
+        id: "s3e",
+        title: "3E. Quality of Earnings",
+        objectives: [
+          "Understand what a QoE is and is not, and who commissions it",
+          "Use proof of cash as the spine of every earnings analysis",
+          "Spot the other-income trap hiding inside reported EBITDA",
+          "Run a QoE-style haircut on Coastal's claimed adjusted EBITDA",
+        ],
+        skillTags: ["Quality of Earnings", "QoE", "Proof of Cash", "EBITDA Quality", "Coastal Foods"],
+        timeEstimate: 14,
+        suggestedQuestions: [
+          "What is the difference between a sell-side and a buy-side QoE?",
+          "Why does other income distort EBITDA even though nobody added it back?",
+        ],
+        blocks: [
+          {
+            type: "text",
+            content: "A quality-of-earnings analysis is not an audit. An audit checks whether the financials comply with accounting standards. A QoE asks a narrower, sharper question: do the reported earnings reflect sustainable, recurring economics, or are they propped up by items that will not repeat under new ownership? It is the single most important piece of financial diligence in an LMM deal, and it is where most price renegotiations start."
+          },
+          {
+            type: "text",
+            content: "Two flavors, and knowing which one you are reading matters. A sell-side QoE is commissioned by the seller before market. It controls the narrative, frames the add-backs favorably, and gives the banker a number to anchor on. A buy-side QoE is commissioned by the buyer during exclusivity; it feeds directly into the final price and the reps the seller signs. Both are run by the transaction advisory groups inside accounting firms, not the deal team. In the LMM, budget roughly $40-100K and 3-5 weeks, usually inside the exclusivity window."
+          },
+          {
+            type: "text",
+            content: "Proof of cash is the spine of every QoE. You tie reported revenue and EBITDA back to actual bank deposits and disbursements, month by month, and reconcile the difference. It catches channel stuffing, undisclosed side agreements, revenue-recognition games, and outright fabrication. This matters most in the LMM, where financials are usually reviewed or compiled rather than audited. When the books have never had a hard external check, proof of cash is where the surprises surface."
+          },
+          {
+            type: "lineItemTable",
+            headers: ["QoE Focus Area", "What It Tests", "Classic Finding"],
+            rows: [
+              ["Proof of cash", "Reported revenue and EBITDA tie to bank deposits and disbursements month by month", "Revenue on the P&L that never shows up in the bank"],
+              ["Revenue recognition", "Timing, bill-and-hold arrangements, percentage-of-completion assumptions", "Revenue pulled forward or booked before it is earned"],
+              ["Non-operating and one-time items", "Whether gains and windfalls have crept into operating earnings", "A litigation recovery sitting inside EBITDA"],
+              ["Add-back validation", "Whether each claimed add-back is truly non-recurring and supportable", "'One-time' costs that appear every year"],
+              ["Related-party transactions", "Rent, wages, or fees paid to owners, family, or affiliated entities", "Below-market rent that will reset to market post-close"],
+              ["D&A and capitalization policy", "Whether costs are capitalized to keep them off the P&L", "Repairs capitalized as assets to inflate earnings"],
+              ["Cutoff testing", "Whether transactions land in the correct period around period ends", "December sales dated into a strong Q4, returns dated into Q1"]
+            ]
+          },
+          {
+            type: "text",
+            content: "The other-income trap is the one that catches trained analysts. EBITDA is built up from net income (NI plus interest, taxes, depreciation, and amortization). It is not built up from operating income. That means anything sitting in other income rides along inside EBITDA unless someone deliberately strips it out. Asset-sale gains, insurance recoveries, legal settlements, and pandemic-era windfalls all inflate EBITDA silently. A CIM will rarely volunteer that one of these is in the number, because doing so would lower the headline. You have to go looking."
+          },
+          {
+            type: "companyData",
+            companyId: "coastal-foods",
+            view: "income"
+          },
+          {
+            type: "text",
+            content: "Work Coastal. Net income fell from $0.9M to $0.2M, a $0.7M drop, while revenue grew 5.2%. Walk the bridge: SGA rose $0.5M, depreciation rose $1.0M, interest rose $0.1M, and other income rose $0.9M. Net the four and you get the $0.7M decline exactly ($0.9M of new income minus $1.6M of new costs). A falling bottom line against rising revenue is the flag that pulls a QoE toward two specific line items."
+          },
+          {
+            type: "text",
+            content: "Anomaly one, the other-income trap. Coastal booked $0.9M of other income in 2025 against zero in 2024, and it sits inside the reported $2.9M EBITDA. Strip it and operating EBITDA is $2.0M. Add the $1.0M of legitimate add-backs and QoE-adjusted EBITDA is roughly $3.0M, against the $3.9M the CIM claims, a 23% haircut. At 5x, the claim implies $19.5M of enterprise value; the QoE number implies $15.0M. One unexamined line item is a $4.5M price gap."
+          },
+          {
+            type: "text",
+            content: "Anomaly two, the depreciation jump. Depreciation doubled from $1.1M to $2.1M against only $0.8M of capex and $5.5M of gross PP&E. That is unexplained: a useful-life change, a catch-up on prior-year capex expensed late, or book-versus-tax conflation. A QoE demands the fixed asset register either way. Note the irony: the D&A jump does not touch EBITDA (it gets added back), so it does not move the valuation. But it is exactly the kind of unexplained movement that tells you the books need scrutiny before you trust any number on them."
+          },
+          {
+            type: "exercise",
+            id: "ex-3e-1",
+            q: "The Coastal CIM presents $3.9M of adjusted EBITDA ($2.9M reported plus $1.0M of add-backs). Run your own quality-of-earnings check on that number. What do you find, and what does it do to the price at 5x?",
+            inputMode: "qualitative",
+            answer: "The reported $2.9M EBITDA contains $0.9M of other income that first appeared in 2025 (zero in 2024). Because EBITDA is built from net income, that non-operating gain rode in without ever being added back. Strip it: operating EBITDA is $2.0M. Add the $1.0M of legitimate add-backs and QoE-adjusted EBITDA is roughly $3.0M, not $3.9M, a 23% haircut. At 5x, that is $15.0M of enterprise value against the $19.5M the CIM implies, a $4.5M price gap from one line. Separately, depreciation doubled ($1.1M to $2.1M) against only $0.8M of capex, which is unexplained and demands the fixed asset register even though it does not move EBITDA. What to demand in diligence: a full breakout of the $0.9M other income (what it is and whether it recurs), the fixed asset register, monthly P&L and proof of cash, and the prior-year add-back history to test whether the 'one-time' costs are actually recurring. Negotiating posture: price off the $3.0M number, or if the seller insists the gain is being misunderstood, structure the disputed turn as an earnout so they carry the burden of proving it recurs."
+          },
+          {
+            type: "notes",
+            id: "notes-3e"
+          }
+        ]
       }
     ]
   },
@@ -780,6 +855,32 @@ export const LEARN_CONTENT = [
               { id: "exit-ev", label: "Exit EV", value: "$49.8M", note: "Reference only." },
               { id: "purchase-price", label: "Total Purchase Price", value: "$18.0M", note: "Reference only." }
             ]
+          },
+          {
+            type: "text",
+            content: "Reality check: the equity check is bigger than the slide says. The 60/40 split prices only the purchase; real deals also fund transaction fees, financing fees, and minimum operating cash, and none of those finance themselves. The table rebuilds TrueNorth as a proper sources and uses."
+          },
+          {
+            type: "metricTable",
+            headers: ["Uses", "$M", "Sources", "$M"],
+            rows: [
+              ["Purchase enterprise value", "18.0", "Senior debt (60%)", "10.8"],
+              ["Transaction fees (legal, QoE, advisory, ~2.75%)", "0.5", "Sponsor equity", "8.2"],
+              ["Financing fees (~2% of debt)", "0.2", "", ""],
+              ["Minimum cash at close", "0.3", "", ""],
+              ["Total uses", "19.0", "Total sources", "19.0"]
+            ]
+          },
+          {
+            type: "text",
+            content: "The same $47.0M exit equity now sits on an $8.2M check, not $7.2M, so MOIC is $47.0M / $8.2M = 5.7x, not 6.5x. Fees cost most of a turn before the deal starts, which is why disciplined buyers model sources and uses on day one and push every fee line. Two other lines often appear: rollover equity (the seller reinvesting alongside, cutting the sponsor check but diluting the upside) and working capital true-ups at close."
+          },
+          {
+            type: "exercise",
+            id: "ex-4b-bear",
+            q: "Rerun the TrueNorth deal as the bear case: growth stalls at zero and the exit market pays only 5x. Same $10.8M of debt, same $2M per year of paydown. What is the MOIC, and what does the comparison to the 6.5x bull case teach you about where the risk actually lives?",
+            inputMode: "qualitative",
+            answer: "Year 4 EBITDA stays $3.0M (no growth). Exit EV = 5 x $3.0M = $15.0M. Remaining debt = $10.8M - ($2M x 4) = $2.8M. Exit equity = $15.0M - $2.8M = $12.2M. MOIC = $12.2M / $7.2M = 1.7x on the stylized check (1.5x on the real $8.2M check from the sources and uses). Still positive, because debt paydown alone creates equity even when growth and multiple do nothing. But a 4-year 1.7x is roughly a 14% IRR, below most funds' hurdle. The spread between 6.5x and 1.7x is almost entirely growth and multiple, which is why underwriting focuses on how durable the growth is and who the exit buyer is, not on the paydown math that works in every scenario."
           },
           {
             type: "text",
@@ -1319,6 +1420,17 @@ export const LEARN_CONTENT = [
             answer: "(a) Exit EV = $7.5M x 6 = $45M. Remaining debt = $15M - $7M = $8M. Exit equity = $45M - $8M = $37M. (b) MOIC = $37M / $15M = ~2.5x. Right at the bottom of the typical PE target band. (c) IRR: 2.5x over 5 years = (2.5)^(1/5) - 1 = ~20% annualized. Right at the lower bound of the 20-25% target. (d) Decomposing the $22M of equity gain: EBITDA growth contribution = $2.5M of growth x 6x multiple = $15M (~68% of the gain). Debt paydown contribution = $7M directly to equity (~32%). Multiple expansion contribution = $0 (held flat at 6x). What this tells you: the deal is a base case. Returns sit right at the target band, driven by operating improvement and debt paydown, with no help from the market. The thesis is honest because it does not depend on multiple expansion. If the buyer needed a 3x+ MOIC to clear their fund's hurdle, they would need either faster EBITDA growth, an exit at a higher multiple, or a shorter hold. The broader lesson: the same purchase price can produce a 2.5x or a 4x MOIC depending on which levers actually move during the hold. A thesis that requires multiple expansion to clear the hurdle is a thesis that depends on the market staying favorable at exit."
           },
           {
+            type: "text",
+            content: "The downside drill. Every model has a bear-case tab; the discipline is deciding in advance what breaks the deal, and what you would write in the post-mortem if it did. A broken-deal post-mortem asks three questions: which assumption failed, was it knowable in diligence, and did the structure (leverage, covenants, reserves) turn a bad year into a permanent loss."
+          },
+          {
+            type: "exercise",
+            id: "ex-4-rtn-bear",
+            q: "Take the base-case deal you just modeled ($30M EV, $15M debt, $15M equity, $5M EBITDA at entry, 6x). Now run the bear case: EBITDA falls 20% to $4M by exit and the market pays 5x. You still managed to pay down $7M of debt. Compute exit equity and MOIC, then answer: what broke the deal, was it knowable, and what structural choice at entry would have changed the outcome?",
+            inputMode: "qualitative",
+            answer: "Exit EV = $4M x 5 = $20M. Remaining debt = $15M - $7M = $8M. Exit equity = $20M - $8M = $12M. MOIC = $12M / $15M = 0.8x. The equity LOSES 20% even though the business only declined 20% and debt was serviced throughout. Leverage is symmetric: the same 50/50 structure that amplified the base case to 2.5x amplifies a modest downturn into an impaired position, and one turn of multiple compression does as much damage as the EBITDA decline. Post-mortem answers: the failed assumptions are EBITDA durability and the exit multiple; both are knowable in diligence (customer concentration, cyclicality, and what the NEXT buyer will pay are day-one questions). Structurally, less leverage does not rescue this deal the way intuition suggests. At 40% leverage the check is bigger ($18M equity vs $12M debt), paydown of $7M leaves $5M of debt, exit equity = $20M - $5M = $15M, and MOIC = $15M / $18M = 0.8x, essentially unchanged, because a bigger check offsets the smaller debt claim. The real protection is not a lower multiple, it is entry price (pay less than 6x so multiple compression starts from a lower base) and covenant headroom plus a longer-hold option that preserves the ability to wait out the multiple rather than being forced to sell into the trough. The lesson: leverage cuts both ways, and in a bear case the durable defenses are what you paid and whether the structure lets you avoid selling at the bottom."
+          },
+          {
             type: "notes",
             id: "notes-4-rtn"
           }
@@ -1383,6 +1495,279 @@ export const LEARN_CONTENT = [
           {
             type: "notes",
             id: "notes-4h"
+          }
+        ]
+      },
+      {
+        id: "s4-debt",
+        title: "4J. Financing the Deal",
+        objectives: [
+          "Map the LMM capital stack and know where each instrument sits",
+          "Read the covenants that govern a deal after close",
+          "Compute a DSCR and see why amortization, not leverage, binds",
+          "Structure a Summit stack that clears a fixed-charge covenant",
+        ],
+        skillTags: ["Debt Structuring", "DSCR", "Capital Stack", "Summit HVAC"],
+        timeEstimate: 15,
+        suggestedQuestions: [
+          "Why is the amortization schedule usually a tighter constraint than the leverage multiple?",
+          "What does a seller note signal to a senior lender, and why do they like seeing it?",
+        ],
+        blocks: [
+          {
+            type: "text",
+            content: "The leverage multiple gets the headlines, but deals live or die on the structure of the debt: who sits where in the stack, what it costs, how fast it amortizes, and what covenants it carries. In the LMM the menu is different from large-cap PE: banks are more conservative, mezzanine is expensive, and seller paper does real work."
+          },
+          {
+            type: "metricTable",
+            headers: ["Instrument", "Typical LMM Terms", "Position / Notes"],
+            rows: [
+              ["Senior bank debt", "SOFR + 300-450 bps, 5-7 yr, amortizing", "First lien on all assets. Cheapest money, tightest covenants, slowest to say yes."],
+              ["Unitranche (private credit)", "SOFR + 550-700 bps, bullet or light am", "One lender replaces senior + mezz. Faster, more leverage, more expensive."],
+              ["Mezzanine", "12-14% (often 10% cash + PIK), warrants sometimes", "Subordinated. Fills the gap when senior maxes out. Priced like it."],
+              ["Seller note", "6-9%, subordinated, 3-5 yr", "Signals seller confidence, bridges valuation gaps, and lenders love seeing it behind them."],
+              ["SBA 7(a)", "Prime + spread, 10 yr, $5M cap", "Personal guarantee required. The workhorse for sub-$5M deals and searchers, irrelevant above it."],
+              ["Rollover equity", "10-30% of seller proceeds", "Not debt, but part of every sources conversation. Aligns the seller with the new owner's outcome."]
+            ]
+          },
+          {
+            type: "text",
+            content: "Covenants are the tripwires: a maximum leverage covenant (debt/EBITDA below a ceiling that steps down over time) and a fixed charge coverage covenant (cash generated must cover debt service, capex, and taxes by a margin, typically 1.2-1.25x minimum). Breach does not usually mean default and seizure; it means the lender is now inside your tent, with fees, rate bumps, and veto power over cash."
+          },
+          {
+            type: "text",
+            content: "Work Summit. Use adjusted EBITDA $5.5M, maintenance capex ~$1.5M, and treat it as a pass-through so entity taxes are ignored. At 3.0x leverage ($16.5M senior debt, 9% rate, 7-year straight-line amortization), year-one debt service is $2.36M principal + $1.49M interest = $3.85M. Cash available is $5.5M less $1.5M capex = $4.0M. DSCR = $4.0M / $3.85M = 1.04x. The deal FAILS a 1.25x covenant even though '3x leverage on an HVAC business' sounds conservative. At 2.5x ($13.75M debt), service is $1.96M + $1.24M = $3.20M and DSCR = exactly 1.25x, right at the line. The lesson: the amortization schedule, not the leverage multiple, is usually the binding constraint in the LMM, where banks want their money back in 5-7 years."
+          },
+          {
+            type: "companyData",
+            companyId: "summit-hvac",
+            view: "metrics"
+          },
+          {
+            type: "exercise",
+            id: "ex-4j-dscr",
+            q: "Summit at 2.5x leverage: $13.75M of senior debt at 9% with 7-year straight-line amortization. Adjusted EBITDA $5.5M, maintenance capex $1.5M, no entity-level taxes. What is the year-one DSCR?",
+            inputMode: "quantitative",
+            unit: "x",
+            answer: "Debt service = $13.75M / 7 = $1.96M principal + $13.75M x 9% = $1.24M interest = $3.20M. Cash available = $5.5M - $1.5M = $4.0M. DSCR = $4.0M / $3.20M = 1.25x, exactly at the standard covenant minimum. No cushion: one soft quarter and Summit trips the covenant. A buyer who wants margin for error either borrows less, negotiates a longer amortization, or layers in a seller note whose payments can flex."
+          },
+          {
+            type: "exercise",
+            id: "ex-4j-stack",
+            q: "Design a capital stack for the $33M Summit acquisition (6x on $5.5M) that gets to at least 50% total debt without failing a 1.25x fixed charge covenant. Which instruments do you use and why?",
+            inputMode: "qualitative",
+            answer: "Senior sized to what the DSCR supports (about $13.75M, roughly 2.5x, per the worked example), then a $3-4M seller note at 7-8% interest-only for 3 years (its deferred principal barely touches year-one fixed charges and it keeps the seller invested in the transition), optionally with the note's cash interest toggled to PIK if a covenant gets tight. That reaches roughly $17M of debt, above 50% of the price, while year-one fixed charges stay near the senior-only case. Rounding out sources: sponsor equity plus 10-20% seller rollover. What NOT to do: stack mezzanine at 13% on a 16.9% margin services business; the coverage math dies. The general principle: in the LMM you buy leverage capacity with structure (seller paper, amortization holidays, rollover) rather than with junior debt pricing."
+          },
+          {
+            type: "notes",
+            id: "notes-4j"
+          }
+        ]
+      }
+    ]
+  },
+
+  // ===== SECTION 5: DEAL PROCESS & EXECUTION =====
+  {
+    id: "s5",
+    title: "5. Deal Process & Execution",
+    subsections: [
+      {
+        id: "s5a",
+        title: "5A. Sourcing & Screening",
+        objectives: [
+          "Distinguish brokered flow from proprietary flow and know the tradeoffs of each",
+          "Read a teaser and CIM for what they are, and are not, telling you",
+          "Understand what an IOI commits you to and what it does not",
+          "Apply funnel discipline to a real sourcing decision",
+        ],
+        skillTags: ["Sourcing", "Screening", "CIM", "IOI", "Deal Funnel"],
+        timeEstimate: 12,
+        suggestedQuestions: [
+          "Why would a fund pay a higher multiple for a brokered deal instead of finding it themselves?",
+          "What should you assume a CIM is hiding?",
+        ],
+        blocks: [
+          {
+            type: "text",
+            content: "Where LMM deals come from: brokered processes (business brokers, regional investment banks running limited auctions), proprietary outreach (direct mail, buy-side searchers, industry relationships), and intermediary networks. Proprietary flow means less competition and a better price, but longer cycles and more dead ends. Most funds run both channels at once because neither alone fills a pipeline."
+          },
+          {
+            type: "text",
+            content: "Teaser and CIM anatomy. The teaser is one or two anonymous pages: industry, size, and a few headline numbers, nothing that identifies the company. Sign an NDA and you get the CIM, the confidential information memorandum. Read a CIM as a sales document, not a data room. The add-backs are aggressive until proven otherwise (see 3E), the projections are the seller's best case, and what is NOT shown (customer names, monthly P&L, cohort detail) is your diligence list before you ever sign an LOI."
+          },
+          {
+            type: "metricTable",
+            headers: ["Funnel Stage", "Typical Conversion", "What Kills Deals Here"],
+            rows: [
+              ["Teasers reviewed", "100", "Wrong size, sector, or geography"],
+              ["CIMs read (NDA signed)", "30-40", "Concentration, declining revenue, broken add-backs"],
+              ["IOIs submitted", "8-12", "Price expectations too far apart"],
+              ["LOIs negotiated", "2-3", "Structure, exclusivity terms, financing confidence"],
+              ["Deals closed", "1", "Diligence surprises, financing, cold feet"]
+            ]
+          },
+          {
+            type: "text",
+            content: "The IOI, indication of interest, is a short non-binding letter: a valuation range, a structure sketch (cash, debt, rollover), and a financing outline. Its job is to stay in the process without overcommitting. Precision on price and terms is the LOI's job, not the IOI's. Submit an IOI too vague and you get dropped from the process; submit one too specific before you have real diligence and you box yourself in when the numbers change."
+          },
+          {
+            type: "exercise",
+            id: "ex-5a-1",
+            q: "You have capacity to pursue one deal. The broker sends you a teaser for an HVAC business (think Summit) and your proprietary outreach surfaces a food distributor (think Coastal) whose owner has never spoken to another buyer. Same size, similar returns on paper. Which do you pursue and why?",
+            inputMode: "qualitative",
+            answer: "Weigh the tradeoffs rather than pick blindly. Proprietary: price advantage, maybe a full turn cheaper, no auction pressure, and better diligence access since you are the only buyer in the room. But it is slower, and an owner who has never spoken to a buyer may not be a committed seller, so early weeks can evaporate. Brokered: a committed seller with an organized data room and a defined timeline, but competition compresses returns and the CIM is polished to hide warts. The honest answer is it depends on conviction and bandwidth, but the discipline is the same funnel math either way, and a proprietary deal at 5x beats an auction win at 6.5x for the identical business. If capacity is truly scarce, that price gap alone should tip the decision toward proprietary, provided you can get a real signal of seller commitment (why are they selling, have they engaged advisors, is there a stated timeline) before committing weeks to it."
+          },
+          {
+            type: "notes",
+            id: "notes-5a"
+          }
+        ]
+      },
+      {
+        id: "s5b",
+        title: "5B. LOI & Exclusivity",
+        objectives: [
+          "Identify which LOI terms are binding versus non-binding",
+          "Understand why exclusivity is the seller's real concession",
+          "Recognize the difference between a legitimate and a predatory re-trade",
+          "Structure a response to a QoE finding discovered during exclusivity",
+        ],
+        skillTags: ["LOI", "Exclusivity", "Re-trade", "Deal Structure"],
+        timeEstimate: 12,
+        suggestedQuestions: [
+          "What actually happens if a buyer breaches exclusivity?",
+          "How do you tell a defensible re-trade from a predatory one?",
+        ],
+        blocks: [
+          {
+            type: "text",
+            content: "The LOI converts a range into a number and buys the thing that actually matters: exclusivity. Almost everything in it is non-binding, except exclusivity, confidentiality, and sometimes a breakup provision. Sixty to ninety days of exclusivity is the seller taking their business off the market on your word, which is why reputation matters more than paper."
+          },
+          {
+            type: "lineItemTable",
+            headers: ["LOI Term", "What To Nail Down", "Common Mistake"],
+            rows: [
+              ["Price AND basis", "Dollar figure tied to a defined EBITDA and multiple", "Naming a price without naming whose EBITDA it is"],
+              ["Structure", "Cash at close, seller note, rollover, earnout split", "Leaving structure 'to be discussed' and re-trading later"],
+              ["Working capital", "Peg methodology agreed in principle", "Silence, then a six-figure fight at close (see 3C)"],
+              ["Exclusivity", "Length, extensions, and what voids it", "Too short to finish QoE and legal"],
+              ["Financing", "How firm is the debt, any financing contingency", "Overstating certainty, then renegotiating when the bank balks"],
+              ["Key diligence items", "The 3-4 findings that would change price", "Hiding them, then surprising the seller in week 6"]
+            ]
+          },
+          {
+            type: "text",
+            content: "Re-trading, cutting price during exclusivity, is sometimes legitimate (QoE finds real problems, see 3E) and sometimes predatory (planned all along). The market remembers. Brokers track which buyers close at their LOI number, and the ones who do not stop seeing good deals."
+          },
+          {
+            type: "exercise",
+            id: "ex-5b-1",
+            q: "Your QoE on a deal under LOI at 5.5x on $4.0M adjusted EBITDA comes back at $3.4M of sustainable EBITDA (the difference is one-time other income and an indefensible add-back, exactly the Coastal pattern from 3E). Walk through your options and what each does to your reputation and the deal.",
+            inputMode: "qualitative",
+            answer: "Three real options. First, re-trade to 5.5x on $3.4M (about $18.7M instead of $22M), which is defensible because the basis changed, not the multiple; show the seller the QoE line by line rather than just naming a new number. Second, hold price but restructure: a seller note or earnout bridges the $3.3M gap and ties payment to the earnings actually being real, which keeps the headline price intact while shifting risk to where it belongs. Third, walk, the right call if the finding suggests deeper credibility problems (the seller knew and hid it) rather than an honest accounting gray area. What you never do is invent a new reason to cut price beyond the documented finding. A QoE-driven re-trade is process; an unexplained one is a reputation tax you pay on every future deal, because brokers and sellers talk."
+          },
+          {
+            type: "notes",
+            id: "notes-5b"
+          }
+        ]
+      },
+      {
+        id: "s5c",
+        title: "5C. Diligence Workstreams",
+        objectives: [
+          "Map who owns each diligence workstream and what they deliver",
+          "Distinguish confirmatory diligence from exploratory diligence",
+          "Understand the databook discipline and why numbers must tie to source",
+          "Treat data delays and evasive answers as diligence findings",
+        ],
+        skillTags: ["Diligence", "QoE", "Databook", "Deal Process"],
+        timeEstimate: 12,
+        suggestedQuestions: [
+          "How do you sequence diligence spend across a 60-90 day exclusivity window?",
+          "What is the difference between confirmatory and exploratory diligence?",
+        ],
+        blocks: [
+          {
+            type: "text",
+            content: "Exclusivity starts a 60-90 day sprint with parallel workstreams, each owned by a specialist, all coordinated by the deal lead. Confirmatory diligence proves what the CIM claimed; exploratory diligence answers what the CIM never addressed. Budget $150-400K all-in for a LMM deal, with dead-deal costs baked into fund economics from the start."
+          },
+          {
+            type: "metricTable",
+            headers: ["Workstream", "Who Does It", "Deliverable"],
+            rows: [
+              ["Quality of earnings", "Accounting firm transaction advisory (see 3E)", "QoE report: sustainable EBITDA, proof of cash, NWC analysis"],
+              ["Legal", "Deal counsel", "Purchase agreement, disclosure schedules, lien and litigation search"],
+              ["Commercial", "Deal team plus customer calls", "Market position, customer references, churn and pipeline reality"],
+              ["Insurance / benefits", "Broker review", "Coverage gaps, benefit liabilities, R&W insurance quote"],
+              ["Environmental / regulatory", "Specialists as needed", "Phase I, licenses, compliance exposure"],
+              ["Background", "Third-party service", "Litigation, liens, and history on the sellers and key managers"]
+            ]
+          },
+          {
+            type: "text",
+            content: "The databook discipline: every number that matters gets tied to source documents (bank statements, tax returns, customer contracts), and the working capital peg gets negotiated on QoE data, not CIM data (cross-reference 3C). The deal lead's job is sequencing: kill-risk items first, expensive confirmatory work last, so you spend real money only once the deal has survived the cheap checks."
+          },
+          {
+            type: "exercise",
+            id: "ex-5c-1",
+            q: "It is day 20 of a 75-day exclusivity on a Precision-like machine shop. Legal is clean so far, but the QoE is stuck waiting on monthly financials and two of your four scheduled customer calls went unreturned. The seller says everyone is just busy. What do you do?",
+            inputMode: "qualitative",
+            answer: "Treat data delays as signal, not friction. Escalate specifically: a written list of what is outstanding, a deadline, and a named consequence (exclusivity tolls or extends day-for-day on late items, so the seller bears the cost of slow-walking). Push the customer calls through the seller with structure: owner-introduced, scheduled, with a backup list if the first names go quiet again. Re-sequence spend so nothing expensive gets committed until the flow resumes; do not pay for the environmental Phase I while the QoE is stalled. If the top customer will not talk at all on a 28%-concentration business, that IS the diligence finding on its own, independent of anything else in the numbers, and price or structure has to absorb it."
+          },
+          {
+            type: "notes",
+            id: "notes-5c"
+          }
+        ]
+      },
+      {
+        id: "s5d",
+        title: "5D. Purchase Agreement & Close",
+        objectives: [
+          "Understand how reps and warranties allocate risk between buyer and seller",
+          "Know the mechanics of indemnification caps, baskets, and survival periods",
+          "Compare escrow and R&W insurance as risk-transfer tools",
+          "Connect closing mechanics to the first-100-days value creation plan",
+        ],
+        skillTags: ["Purchase Agreement", "Indemnification", "Escrow", "Closing", "R&W Insurance"],
+        timeEstimate: 13,
+        suggestedQuestions: [
+          "Why has R&W insurance become common even in LMM deals?",
+          "What does cash-free debt-free actually mean at close?",
+        ],
+        blocks: [
+          {
+            type: "text",
+            content: "The purchase agreement converts diligence into allocated risk. Reps and warranties are the seller's statements of fact about the business; indemnification is what happens when one turns out false. The negotiation is not whether the seller stands behind the business, it is for how much (cap), above what threshold (basket), and for how long (survival)."
+          },
+          {
+            type: "lineItemTable",
+            headers: ["Mechanism", "Typical LMM Range", "What It Does"],
+            rows: [
+              ["Indemnity cap", "10-20% of purchase price (fundamental reps higher)", "Ceiling on what the buyer can recover"],
+              ["Basket", "0.5-1% of price, tipping or deductible", "No claims until losses cross the threshold"],
+              ["Survival", "12-24 months general, longer for tax and fundamental", "How long claims can be brought"],
+              ["Escrow / holdback", "5-15% of price, 12-24 months", "Money actually reachable without suing the seller"],
+              ["R&W insurance", "Premium ~2.5-4% of coverage", "Shifts rep risk to an insurer; increasingly common even in LMM"],
+              ["Working capital true-up", "Peg vs actual at close, collar around it", "Settles the NWC peg from 3C, 60-90 days post-close"]
+            ]
+          },
+          {
+            type: "text",
+            content: "Closing mechanics in the LMM: cash-free debt-free means the seller keeps cash and pays off debt at close, and the flow of funds spreadsheet allocates every dollar (payoff letters, escrow funding, transaction fees, seller proceeds). The first 100 days start the moment the wire clears, which is why the value creation plan (Section 4 and the playbooks) is written before close, not after."
+          },
+          {
+            type: "exercise",
+            id: "ex-5d-1",
+            q: "The seller of a BrightSmile-like dental platform balks at a 15% escrow, arguing their reps are clean and they need the proceeds for their next venture. Your QoE was clean but the roll-up has $3.2M of goodwill from prior acquisitions and integration-cost add-backs you only partially accepted. How do you respond, and what alternatives keep the deal moving?",
+            inputMode: "qualitative",
+            answer: "The escrow exists precisely because acquisition-heavy books carry rep risk that a clean QoE does not eliminate: prior acquisition liabilities, credentialing and compliance exposure across multiple practices, and earnout obligations owed to prior sellers that could surface post-close. Do not just concede the point. Alternatives that keep the deal moving: R&W insurance to replace most of the escrow, with the buyer paying or splitting the roughly 3% premium so the seller walks with more cash at close; a smaller escrow (7-8%) paired with a longer survival period specifically on the acquisition-related reps; or a seller note that doubles as security, so the same dollars serve both purposes. Trade cash-at-close for risk coverage rather than simply reducing the ask. If the seller rejects every risk-sharing structure offered, that reluctance itself is worth asking about directly."
+          },
+          {
+            type: "notes",
+            id: "notes-5d"
           }
         ]
       }
