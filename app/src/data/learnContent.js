@@ -517,7 +517,7 @@ export const LEARN_CONTENT = [
           },
           {
             type: "text",
-            content: "Summit's owner takes $2.0M in compensation plus $400K in perks, with $300K in one-time expenses and $200K in above-market rent. The clean add-backs total $900K, pushing EBITDA from $4.6M to $5.5M adjusted. If you also normalize owner comp to a $250K GM replacement, adjusted EBITDA could reach $6.35M. Owner comp is almost always negotiated separately."
+            content: "Summit's owner takes $2.0M in compensation plus $400K in perks, with $300K in one-time expenses and $200K in above-market rent. The clean add-backs total $900K, pushing EBITDA from $4.6M to $5.5M adjusted. If you also normalize owner comp to a $250K GM replacement, adjusted EBITDA could reach $7.25M ($5.5M plus the $1.75M excess of the $2.0M salary over a $250K GM). Owner comp is almost always negotiated separately."
           },
           {
             type: "companyData",
@@ -713,7 +713,7 @@ export const LEARN_CONTENT = [
           },
           {
             type: "text",
-            content: "Now let's walk the math end-to-end. Scenario: you acquire TrueNorth today at 6x adjusted EBITDA ($3.0M Year 0 EBITDA × 6 = $18M EV) financed 60/40 ... $10.8M of debt and $7.2M of equity. Over a 4-year hold, EBITDA compounds at 20% per year and you pay down $2M of debt every year using free cash flow. At exit, the market is paying 8x for clean recurring-revenue businesses."
+            content: "Now let's walk the math end-to-end. Scenario: you acquire TrueNorth today at 6x adjusted EBITDA ($3.0M Year 0 EBITDA × 6 = $18M EV) financed 60/40 ... $10.8M of debt and $7.2M of equity. Over a 4-year hold, EBITDA compounds at 20% per year and you pay down $2M of debt every year using free cash flow. At exit, the market is paying 8x for clean recurring-revenue businesses. (One simplification to flag: a competitive process would likely price TrueNorth off ARR at a richer value, as covered in the valuation section; we use a stylized 6x EBITDA entry to keep the LBO arithmetic clean.)"
           },
           {
             type: "text",
@@ -894,7 +894,7 @@ export const LEARN_CONTENT = [
           },
           {
             type: "text",
-            content: "How to calculate: Free Cash Flow = Net Income + D&A (Depreciation & Amortization, the non-cash expenses you stripped out for EBITDA) + Working Capital Change - CapEx. Cash conversion = FCF / EBITDA. Strong: above 70%. Acceptable: 50-70%. Weak: below 50%."
+            content: "How to calculate: Free Cash Flow = Net Income + D&A (Depreciation & Amortization, the non-cash expenses you stripped out for EBITDA) + Working Capital Change + CapEx, where the last two enter as negatives when they consume cash (as they usually do). Cash conversion = FCF / EBITDA. Strong: above 70%. Acceptable: 50-70%. Weak: below 50%."
           },
           {
             type: "text",
@@ -916,7 +916,7 @@ export const LEARN_CONTENT = [
           },
           {
             type: "text",
-            content: "TrueNorth: FCF = $1.7M + $0.8M + (-$0.6M) + (-$0.4M) = $1.5M. Cash conversion = $1.5M / $2.6M EBITDA = 58%. SaaS businesses typically have strong cash conversion because of minimal capex and prepaid annual contracts that create negative working capital; TrueNorth is held back by heavy reinvestment in sales and marketing. This is still why SaaS commands premium multiples."
+            content: "TrueNorth: FCF = $1.7M + $0.8M + (-$0.6M) + (-$0.4M) = $1.5M. Cash conversion = $1.5M / $2.6M EBITDA = 58%. SaaS businesses typically convert cash well because capex is minimal and prepaid annual contracts can make working capital a source of cash. TrueNorth is held back by working capital absorption ($0.6M) as receivables grow with new bookings, a sign not all of its contracts are prepaid annually. Still solid, and the asset-light model is part of why SaaS commands premium multiples."
           },
           {
             type: "text",
@@ -932,7 +932,7 @@ export const LEARN_CONTENT = [
             id: "ex-4d-1",
             q: "Apex Logistics has $4.55M adjusted EBITDA but only $0.9M in free cash flow (20% conversion). If you were presenting this deal to an investment committee, how would you explain the gap and what would need to change for the deal to work?",
             inputMode: "qualitative",
-            answer: "Walk through the formula on Apex's numbers: Net Income $0.6M + D&A $2.0M + ΔWC $0.8M - CapEx $2.5M = $0.9M FCF. The gap from $4.55M Adj. EBITDA to $0.9M FCF has two drivers, both inside the formula: (1) the wedge between EBITDA and Net Income, which is mostly interest expense ($1.4M) and cash taxes — Apex is leveraged and thin enough that interest alone eats ~35% of EBITDA. (2) CapEx of $2.5M, which more than absorbs the D&A add-back. Trucks wear out, so most of that capex is maintenance, not growth. Below the FCF line, debt service ($1.2M of principal payments) and distributions ($0.3M) consume what little cash is left, but those are uses of FCF, not part of FCF itself. To make the deal work: (a) separate maintenance capex (~$1.5M to keep the fleet running) from growth capex (~$1.0M) so the IC sees true sustainable FCF; (b) explore truck leasing to convert capex into operating cost and free up the balance sheet; (c) restructure the debt at a lower rate to recover the interest wedge; or (d) accept this is a growth equity play where you reinvest every dollar of FCF into fleet expansion and bet on revenue scaling to fix the economics."
+            answer: "Walk through the formula on Apex's numbers: Net Income $0.6M + D&A $2.0M + ΔWC $0.8M - CapEx $2.5M = $0.9M FCF. The gap from $4.55M Adj. EBITDA to $0.9M FCF has two drivers, both inside the formula: (1) the wedge between EBITDA and Net Income, which is mostly interest expense ($1.4M) and cash taxes; Apex is leveraged and thin enough that interest alone eats ~35% of EBITDA. (2) CapEx of $2.5M, which more than absorbs the D&A add-back. Trucks wear out, so most of that capex is maintenance, not growth. Below the FCF line, debt service ($1.2M of principal payments) and distributions ($0.3M) consume what little cash is left, but those are uses of FCF, not part of FCF itself. To make the deal work: (a) separate maintenance capex (~$1.5M to keep the fleet running) from growth capex (~$1.0M) so the IC sees true sustainable FCF; (b) explore truck leasing to convert capex into operating cost and free up the balance sheet; (c) restructure the debt at a lower rate to recover the interest wedge; or (d) accept this is a growth equity play where you reinvest every dollar of FCF into fleet expansion and bet on revenue scaling to fix the economics."
           },
           {
             type: "notes",
@@ -1200,7 +1200,7 @@ export const LEARN_CONTENT = [
           },
           {
             type: "text",
-            content: "Typical LMM multiples by sector: SaaS/software: 8-12x. Healthcare services (dental, vet): 8-12x at platform scale. Business services (HVAC, staffing): 5-7x. Manufacturing: 4-7x. Distribution/logistics: 5-8x. Construction: 4-6x."
+            content: "Typical LMM multiples by sector: SaaS/software: 8-12x EBITDA for modest growers, and high-growth SaaS is priced off ARR (4-6x), which often implies a far higher EBITDA multiple. Healthcare services (dental, vet): 8-12x at platform scale. Business services (HVAC, staffing): 5-7x. Manufacturing: 4-7x. Distribution/logistics: 5-8x. Construction: 4-6x."
           },
           {
             type: "text",

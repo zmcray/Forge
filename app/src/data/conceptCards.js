@@ -33,7 +33,7 @@ export const CONCEPT_CARDS = [
           { label: "Above-Market Rent", path: "incomeStatement.addBacks.aboveMarketRent" },
         ],
         insight:
-          "Summit's add-backs total $1.65M on $4.85M reported EBITDA (34%). The above-market rent of $0.45M is the most defensible (lease can be renegotiated). The $0.7M in owner perks needs line-item scrutiny.",
+          "Summit's clean add-backs total $0.9M on $4.6M reported EBITDA (20%). The above-market rent of $0.2M is the most defensible (the lease can be renegotiated at close). The $0.4M in owner perks needs line-item scrutiny, and the $2.0M owner salary is negotiated separately against a market-rate GM.",
       },
       {
         companyId: "precision-manufacturing",
@@ -45,15 +45,15 @@ export const CONCEPT_CARDS = [
           { label: "Above-Market Rent", path: "incomeStatement.addBacks.aboveMarketRent" },
         ],
         insight:
-          "Precision's add-backs of $0.5M on $1.6M EBITDA (31%) are dominated by owner compensation. With one owner running the entire operation, the key question is: what would a replacement GM cost?",
+          "Precision's add-backs of $0.55M on $3.6M EBITDA (15%) are modest, which is a good sign. The bigger question sits outside the add-back schedule: the owner takes $0.7M and is the technical heart of the shop, so what would a replacement GM plus technical director actually cost?",
       },
     ],
     practicePrompt: {
       question:
-        "Summit HVAC has $4.85M reported EBITDA and claims $6.5M adjusted EBITDA after add-backs. Walk through how you would evaluate each add-back category and determine which are defensible.",
+        "Summit HVAC reports $4.6M EBITDA and claims $5.5M adjusted after $0.9M of add-backs, and the broker hints at $7.25M if you fully normalize the owner's $2.4M of comp and perks against a $250K GM. Walk through how you would evaluate each add-back category and decide which are defensible.",
       type: "adjustment",
       modelAnswer:
-        "Start with the three categories: (1) Owner perks ($0.7M) -- compare owner comp to market rate for an HVAC GM ($150-200K). The delta is the defensible add-back. Ask for W-2s and personal expense documentation. (2) One-time expenses ($0.5M) -- get a detailed list. Were similar costs incurred in prior years? If yes, they are recurring. (3) Above-market rent ($0.45M) -- compare to market lease rates for comparable industrial space. This is usually the most defensible add-back because the lease can literally be renegotiated at closing. Total defensible add-backs might be $1.0-1.3M vs. the claimed $1.65M, putting true adjusted EBITDA closer to $5.85-6.15M.",
+        "Take the categories one at a time: (1) Owner perks ($0.4M) -- ask for the detail (vehicles, travel, family payroll) and W-2s; defensible where genuinely personal. (2) One-time expenses ($0.3M) -- get the list and check prior years; if similar costs recur annually, they are operating costs, not add-backs. (3) Above-market rent ($0.2M) -- most defensible, compare to market lease comps and reset the lease at close. Those support the $5.5M. (4) The normalization to $7.25M is a negotiation, not a fact: the owner takes $2.4M all-in, a replacement GM costs ~$250K, but whether a buyer credits the full $2.15M delta depends on how much of what the owner does (sales, vendor relationships) a GM can actually replicate. Most buyers underwrite between $5.5M and $7.25M and bridge the gap with structure (earnout or consulting agreement).",
     },
   },
   {
@@ -84,7 +84,7 @@ export const CONCEPT_CARDS = [
           { label: "Existing Debt", path: "balanceSheet.ltDebt" },
         ],
         insight:
-          "TrueNorth's 92% recurring revenue and 24% growth make it attractive for leverage. But SaaS companies often trade at high multiples (8-12x), which requires more equity and limits leveraged returns.",
+          "TrueNorth's 92% recurring revenue and 27.9% growth make it attractive for leverage. But SaaS companies often trade at high multiples (8-12x or priced off ARR), which requires more equity and limits leveraged returns.",
       },
       {
         companyId: "ironclad-construction",
@@ -95,7 +95,7 @@ export const CONCEPT_CARDS = [
           { label: "Cash", path: "balanceSheet.cash" },
         ],
         insight:
-          "Ironclad's $8.7M adjusted EBITDA and construction assets provide strong collateral. But project-based revenue is lumpy, so lenders may require a lower leverage multiple (2-3x vs. 4x for recurring revenue).",
+          "Ironclad's $5.25M adjusted EBITDA and construction assets provide collateral, and leverage is only 0.6x today. But project-based revenue is lumpy, so lenders may require a lower leverage multiple (2-3x vs. 4x for recurring revenue), and bonding capacity punishes leveraged balance sheets.",
       },
     ],
     practicePrompt: {
@@ -103,7 +103,7 @@ export const CONCEPT_CARDS = [
         "You are acquiring TrueNorth Analytics for 8x adjusted EBITDA. Walk through the LBO math: how much equity do you need, what leverage is appropriate, and what equity return could you expect if EBITDA grows 15% annually for 5 years?",
       type: "valuation",
       modelAnswer:
-        "TrueNorth adjusted EBITDA is ~$4.1M. At 8x, enterprise value = $32.8M. SaaS businesses with 92% recurring revenue can support 3-4x leverage. At 3.5x = $14.35M debt, equity check = $18.45M. If EBITDA grows 15%/year for 5 years: Year 5 EBITDA = $8.25M. Exit at 8x (same multiple) = $66M EV. Subtract remaining debt (~$8M after paydown) = $58M equity. Return = $58M / $18.45M = 3.1x MOIC, or ~26% IRR. The deal 'works' because recurring revenue de-risks the leverage, and organic growth drives multiple expansion potential. Key sensitivities: exit multiple and growth rate.",
+        "TrueNorth adjusted EBITDA is $3.0M. At 8x, enterprise value = $24M. SaaS businesses with 92% recurring revenue can support 3-4x leverage. At 3.5x = $10.5M debt, equity check = $13.5M. If EBITDA grows 15%/year for 5 years: Year 5 EBITDA = $6.0M. Exit at 8x (same multiple) = $48.3M EV. Subtract remaining debt (~$5M after paydown) = $43.3M equity. Return = $43.3M / $13.5M = 3.2x MOIC, or ~26% IRR. The deal 'works' because recurring revenue de-risks the leverage and organic growth does the heavy lifting. Key sensitivities: exit multiple and growth rate. (Note: a competitive process would likely price TrueNorth off ARR at a higher headline value; an 8x EBITDA entry assumes a negotiated, non-auction deal.)",
     },
   },
   {
@@ -131,10 +131,10 @@ export const CONCEPT_CARDS = [
           { label: "Gross Margin", path: "keyMetrics.grossMargin" },
           { label: "EBITDA Margin", path: "keyMetrics.ebitdaMargin" },
           { label: "Revenue Growth", path: "keyMetrics.revenueGrowth" },
-          { label: "Revenue", path: "keyMetrics.ebitda" },
+          { label: "Revenue", path: "revenue" },
         ],
         insight:
-          "Coastal's 22% gross margin is typical for food distribution but leaves thin EBITDA margins (~9%). Margin improvement here means either negotiating better supplier pricing or shifting product mix toward higher-margin specialty items.",
+          "Coastal's 19.1% gross margin (down from 20.1% a year ago) is typical for food distribution but leaves thin EBITDA margins (8.1% adjusted). Margin improvement means recovering pass-through pricing, negotiating supplier terms, and shifting mix toward higher-margin specialty items.",
       },
       {
         companyId: "bright-dental",
@@ -150,10 +150,10 @@ export const CONCEPT_CARDS = [
     ],
     practicePrompt: {
       question:
-        "Coastal Fresh Foods has 22% gross margin and ~9% EBITDA margin. A PE buyer believes they can improve EBITDA margin to 14% within 3 years. What specific operational changes would drive this, and how realistic is it?",
+        "Coastal Fresh Foods runs a 19.1% gross margin and an 8.1% adjusted EBITDA margin. A PE buyer believes they can reach a 10-11% EBITDA margin within 3 years. What specific operational changes would drive this, and how realistic is it?",
       type: "thesis",
       modelAnswer:
-        "A 5-point EBITDA margin improvement in food distribution is ambitious but achievable. The path: (1) Gross margin improvement (22% to 25-26%): renegotiate supplier contracts with larger volume commitments, shift mix toward higher-margin specialty/organic items, implement dynamic pricing on perishables nearing expiry. Worth 2-3 points. (2) SGA efficiency (reduce from ~13% to 11% of revenue): consolidate warehouse operations, implement route optimization software for delivery, reduce administrative headcount through automation. Worth 1-2 points. (3) Revenue scale leverage: fixed costs (facility, management) spread over more revenue as the business grows. This is realistic if the company can grow 8-10% annually. The risk: food distribution is competitive, and aggressive pricing moves lose customers. A conservative target would be 12% EBITDA margin.",
+        "A 200-300 bps EBITDA margin improvement in food distribution is ambitious but achievable; anything much beyond that is fantasy in a pass-through industry. The path: (1) Gross margin recovery (19.1% toward 21%): reprice contracts with input-cost escalators, renegotiate supplier terms on volume, shift mix toward higher-margin specialty lines. Note the first ~100 bps just restores the 2024 baseline of 20.1%. Worth 150-200 bps. (2) SGA discipline (hold SGA growth below revenue growth): route optimization, warehouse labor scheduling, admin automation. Worth 50-100 bps. (3) Scale leverage as fixed costs spread over mid-single-digit revenue growth. The risk: distribution is competitive, aggressive repricing loses volume, and the 22% concentrated customer has real negotiating power. A conservative underwrite is 10%; 11% is the stretch case.",
     },
   },
   {
@@ -184,7 +184,7 @@ export const CONCEPT_CARDS = [
           { label: "Net Income", path: "cashFlow.netIncome" },
         ],
         insight:
-          "Meridian's $-3.2M capex on $5.95M adjusted EBITDA consumes 54% of earnings just to maintain operations. Combined with negative working capital change, actual distributable cash is thin despite healthy EBITDA.",
+          "Meridian's $2.2M of capex on $4.65M adjusted EBITDA consumes nearly half of earnings, and working capital absorbs another $0.5M as receivables grow. Actual distributable cash is thin despite healthy EBITDA.",
       },
       {
         companyId: "truenorth-saas",
@@ -200,10 +200,10 @@ export const CONCEPT_CARDS = [
     ],
     practicePrompt: {
       question:
-        "Meridian Fulfillment has $5.95M adjusted EBITDA but $3.2M in capex and negative working capital changes. Calculate the approximate free cash flow and explain what this means for a potential buyer's return expectations.",
+        "Meridian Fulfillment has $4.65M adjusted EBITDA but $2.2M in capex and a $0.5M working capital build. Calculate the approximate free cash flow and explain what this means for a potential buyer's return expectations.",
       type: "diagnostic",
       modelAnswer:
-        "Approximate FCF: $5.95M EBITDA minus $3.2M capex minus ~$1.0M working capital absorption = ~$1.75M FCF. Cash conversion = $1.75M / $5.95M = 29%. This is poor. For a buyer, it means: (1) debt service capacity is much lower than EBITDA suggests -- lenders will underwrite to FCF, not EBITDA, (2) distributions to equity holders will be minimal during the hold period, (3) returns depend almost entirely on EBITDA growth and exit multiple, not on interim cash flow. A buyer should ask: is the $3.2M capex maintenance or growth? If growth capex drives future EBITDA, the picture improves. If it's maintenance (replacing forklifts, racking, systems), this is the real earning power of the business.",
+        "From the cash flow statement: $2.1M net income + $1.3M D&A - $0.5M working capital - $2.2M capex = ~$0.7M FCF. Cash conversion = $0.7M / $4.65M = ~15%. This is poor. For a buyer, it means: (1) debt service capacity is much lower than EBITDA suggests -- lenders will underwrite to FCF, not EBITDA, (2) distributions to equity holders will be minimal during the hold period, (3) returns depend almost entirely on EBITDA growth and exit multiple, not on interim cash flow. The key question: is the $2.2M capex maintenance or growth? The automation spend should be building future margin; if it is really maintenance (forklifts, racking, systems refresh), this is the true earning power of the business.",
     },
   },
   {
@@ -233,7 +233,7 @@ export const CONCEPT_CARDS = [
           { label: "Gross Margin", path: "keyMetrics.grossMargin" },
         ],
         insight:
-          "Coastal's 22% concentration in a single grocery chain means ~$10.6M in revenue depends on one relationship. In food distribution with 22% gross margins, losing that customer would eliminate ~$2.3M gross profit, potentially wiping out most EBITDA.",
+          "Coastal's 22% concentration in a single grocery chain means ~$10.6M in revenue depends on one relationship. In food distribution at a 19.1% gross margin, losing that customer would eliminate ~$2.0M of gross profit, more than half of adjusted EBITDA.",
       },
       {
         companyId: "apex-logistics",
@@ -281,7 +281,7 @@ export const CONCEPT_CARDS = [
           { label: "Recurring Revenue %", path: "keyMetrics.recurringRevenuePct" },
         ],
         insight:
-          "Summit's 45% recurring revenue (maintenance contracts) provides some insulation from key-person risk, as contracts survive a founder transition. But with 85 employees and a founder-led sales culture, the question is: who manages the commercial relationships?",
+          "Summit's 35% recurring revenue (maintenance contracts) provides some insulation from key-person risk, since contracts survive a founder transition. But with 127 employees and a founder-led sales culture, the question is: who manages the commercial relationships?",
       },
       {
         companyId: "precision-manufacturing",
@@ -291,7 +291,7 @@ export const CONCEPT_CARDS = [
           { label: "Customer Concentration", path: "keyMetrics.customerConcentration" },
         ],
         insight:
-          "Precision's 28-person shop with 18% customer concentration and a technical founder is a classic key-person risk profile. The founder likely manages the top customer relationship personally and holds institutional knowledge about the CNC processes.",
+          "Precision's 45-person shop with 28% customer concentration and a technical founder is a classic key-person risk profile. The founder likely manages the top customer relationship personally and holds the institutional knowledge behind the CNC processes and certifications.",
       },
     ],
     practicePrompt: {
@@ -330,7 +330,7 @@ export const CONCEPT_CARDS = [
           { label: "EBITDA Margin", path: "keyMetrics.adjustedEbitdaMargin" },
         ],
         insight:
-          "TrueNorth's 92% recurring revenue and 24% growth justify a premium multiple (8-12x). SaaS businesses with these metrics trade at the top of the LMM range because the revenue is predictable and the growth is real.",
+          "TrueNorth's 92% recurring revenue and 27.9% growth justify a premium multiple (8-12x EBITDA, or priced off ARR in a competitive process). SaaS businesses with these metrics trade at the top of the LMM range because the revenue is predictable and the growth is real.",
       },
       {
         companyId: "summit-hvac",
@@ -341,7 +341,7 @@ export const CONCEPT_CARDS = [
           { label: "EBITDA Margin", path: "keyMetrics.adjustedEbitdaMargin" },
         ],
         insight:
-          "Summit's 7.6% growth and 45% recurring revenue suggest a 5-7x multiple. HVAC services are well-understood by PE buyers, which supports liquidity and a fair valuation.",
+          "Summit's 15.7% growth is strong, but only 35% recurring revenue and real key-person risk keep it in the 5-7x services range. HVAC is well-understood by PE buyers, which supports liquidity and a fair process.",
       },
       {
         companyId: "meridian-fulfillment",
@@ -352,15 +352,15 @@ export const CONCEPT_CARDS = [
           { label: "EBITDA Margin", path: "keyMetrics.adjustedEbitdaMargin" },
         ],
         insight:
-          "Meridian's 18.7% growth and 60% recurring revenue (long-term contracts) put it in the 6-8x range. The fulfillment/3PL space is hot, but capital intensity (high capex) puts a ceiling on multiples.",
+          "Meridian's 12.2% growth is solid, but only 40% contracted revenue and real capital intensity (capex near half of EBITDA) hold it in the middle of the 6-8x 3PL range.",
       },
     ],
     practicePrompt: {
       question:
-        "You are evaluating three companies: TrueNorth Analytics ($4.1M EBITDA, 92% recurring, 24% growth), Summit HVAC ($6.5M EBITDA, 45% recurring, 7.6% growth), and Meridian Fulfillment ($5.95M EBITDA, 60% recurring, 18.7% growth). Rank them by appropriate valuation multiple and explain your reasoning.",
+        "You are evaluating three companies: TrueNorth Analytics ($3.0M adjusted EBITDA, 92% recurring, 27.9% growth), Summit HVAC ($5.5M adjusted EBITDA, 35% recurring, 15.7% growth), and Meridian Fulfillment ($4.65M adjusted EBITDA, 40% contracted, 12.2% growth). Rank them by appropriate valuation multiple and explain your reasoning.",
       type: "valuation",
       modelAnswer:
-        "Ranking highest to lowest multiple: (1) TrueNorth Analytics: 8-12x. 92% recurring SaaS revenue is the gold standard for predictability. 24% growth means the business is scaling rapidly. SaaS multiples in LMM typically range 8-12x for these metrics. (2) Meridian Fulfillment: 6-8x. 60% recurring revenue from long-term contracts, strong 18.7% growth, but capital intensity (3PL requires warehouse capex, equipment) limits the multiple. Cash conversion matters here. (3) Summit HVAC: 5-7x. Solid, stable business with 45% recurring revenue and moderate growth. HVAC is a proven PE sector with many comparable transactions. The lower multiple reflects lower growth and lower recurring revenue percentage. The key takeaway: recurring revenue quality and growth rate are the biggest multiple drivers. A dollar of SaaS EBITDA is worth 2x a dollar of HVAC EBITDA because it's more predictable and scalable.",
+        "Ranking highest to lowest multiple: (1) TrueNorth Analytics: 8-12x EBITDA, and a competitive process would price it off ARR (4-6x). 92% recurring SaaS revenue is the gold standard for predictability and 27.9% growth means it is scaling fast. (2) Meridian Fulfillment: 6-8x. Long-term contracts on 40% of revenue and 12% growth are solid, but capital intensity (warehouse capex near half of EBITDA) caps the multiple; cash conversion matters here. (3) Summit HVAC: 5-7x. Faster-growing than Meridian, but only 35% recurring, founder-dependent, and in a competitive local services market with low barriers to entry. The key takeaway: recurring revenue quality, capital intensity, and transferability drive multiples at least as much as growth. A dollar of SaaS EBITDA is worth roughly twice a dollar of HVAC EBITDA because it is more predictable, more scalable, and cheaper to convert into cash.",
     },
   },
   {
@@ -391,7 +391,7 @@ export const CONCEPT_CARDS = [
           { label: "Recurring Revenue %", path: "keyMetrics.recurringRevenuePct" },
         ],
         insight:
-          "BrightSmile has a classic roll-up thesis: acquire individual dental practices at 3-4x EBITDA, integrate them onto a shared platform, and sell the combined entity at 8-10x as a scaled dental platform. The arbitrage between single-practice and platform multiples IS the thesis.",
+          "BrightSmile has a classic roll-up thesis: acquire individual dental practices at 4-5x EBITDA, integrate them onto a shared platform, and exit the combined entity at 10-12x as a scaled dental platform. The arbitrage between single-practice and platform multiples IS the thesis.",
       },
       {
         companyId: "vitality-vet",
@@ -410,7 +410,7 @@ export const CONCEPT_CARDS = [
         "Write a 3-point investment thesis for acquiring BrightSmile Dental Partners. Include the value creation plan, target hold period, and exit strategy.",
       type: "thesis",
       modelAnswer:
-        "Investment Thesis -- BrightSmile Dental Partners: (1) Multiple arbitrage through continued roll-up: Acquire individual practices at 3-4x EBITDA, integrate onto shared back-office platform (billing, scheduling, procurement). Current adjusted EBITDA of $2.5M can grow to $6-8M in 3-4 years through same-store growth (5-7%) plus tuck-in acquisitions ($10M invested). (2) Margin expansion through operational consolidation: Centralize procurement (dental supplies = 15-20% of COGS), implement shared scheduling and billing systems, and rationalize administrative staff across locations. Target: improve EBITDA margin from 25.5% to 30%+ by year 3. (3) Exit to a national dental platform at premium valuation: DSOs (dental service organizations) like Aspen, Heartland, and Pacific Dental pay 10-12x EBITDA for established multi-location platforms with $5M+ EBITDA and proven integration playbooks. Hold period: 4-5 years. Target return: 3-4x MOIC / 25-30% IRR. Key risks: integration execution, dentist retention post-acquisition, and organic growth in a competitive market.",
+        "Investment Thesis -- BrightSmile Dental Partners: (1) Multiple arbitrage through continued roll-up: Acquire individual practices at 4-5x EBITDA, integrate onto shared back-office platform (billing, scheduling, procurement). Current adjusted EBITDA of $2.5M can grow to $6-8M in 3-4 years through same-store growth (5-7%) plus tuck-in acquisitions ($10M invested). (2) Margin expansion through operational consolidation: Centralize procurement (dental supplies = 15-20% of COGS), implement shared scheduling and billing systems, and rationalize administrative staff across locations. Target: improve EBITDA margin from 25.5% to 30%+ by year 3. (3) Exit to a national dental platform at premium valuation: DSOs (dental service organizations) like Aspen, Heartland, and Pacific Dental pay 10-12x EBITDA for established multi-location platforms with $5M+ EBITDA and proven integration playbooks. Hold period: 4-5 years. Target return: 3-4x MOIC / 25-30% IRR. Key risks: integration execution, dentist retention post-acquisition, and organic growth in a competitive market.",
     },
   },
 ];
