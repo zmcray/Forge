@@ -19,6 +19,10 @@ export const BRIDGE_SCENARIOS = [
     description:
       "The textbook PE playbook. Buy a founder-led services business at 6x, professionalize ops and management, grow organically at GDP+, refinance out the founder debt, exit at a premium multiple once the business can run without the founder.",
     companyId: "summit-hvac",
+    relatedQuestions: [
+      { companyId: "summit-hvac", questionId: "summit-hvac-q1" },
+      { companyId: "summit-hvac", questionId: "summit-hvac-q3" },
+    ],
     keyLesson:
       "The baseline return: a 3x MOIC is achievable with modest 9% growth, ~310 bps of margin expansion, and a turn and a half of multiple expansion. Every driver contributes; nothing heroic.",
     entry: {
@@ -65,6 +69,10 @@ export const BRIDGE_SCENARIOS = [
     description:
       "Buy a small platform with scalable back-office, then stack add-ons at lower multiples than the platform trades at. Multiple arbitrage (buy at 5x, own at 7.5x) is the core economics. Debt grows to fund M&A. Revenue CAGR is inorganic.",
     companyId: "bright-dental",
+    relatedQuestions: [
+      { companyId: "bright-dental", questionId: "bright-dental-q1" },
+      { companyId: "bright-dental", questionId: "bright-dental-q4" },
+    ],
     keyLesson:
       "Roll-ups rewrite the return math. Debt paydown goes negative (new debt for M&A), but EBITDA growth from add-ons and multiple arbitrage dominate. 7.5x MOIC is realistic for top-quartile execution.",
     entry: {
@@ -111,6 +119,10 @@ export const BRIDGE_SCENARIOS = [
     description:
       "Coastal Foods' real EBITDA margin is only 8%, below what a disciplined operator can wring out of specialty distribution. The PE thesis: professional procurement, repricing with cost pass-through, route optimization. Revenue grows slowly but margin expands ~300 bps, a big move in a thin-margin industry. The equity return comes mostly from margin expansion and deleveraging, not top-line growth.",
     companyId: "coastal-foods",
+    relatedQuestions: [
+      { companyId: "coastal-foods", questionId: "coastal-foods-q3" },
+      { companyId: "coastal-foods", questionId: "coastal-foods-q4" },
+    ],
     keyLesson:
       "Low-margin businesses are high-leverage margin expansion plays. Every 100 bps of margin on a $50M revenue base is $0.5M of EBITDA, which at a 6x multiple is $3M of EV. Margin is the cheapest way to create value when growth is hard.",
     entry: {
@@ -157,6 +169,10 @@ export const BRIDGE_SCENARIOS = [
     description:
       "Small founder-run software businesses without institutional process still change hands in the mid-single digits of EBITDA; at $45M ARR with a rule-of-40 profile, buyers pay 10x+ (or price off ARR outright). Grow the business 3x through GTM investment and NRR expansion, and the multiple re-rates with scale, stickiness, and process maturity.",
     companyId: "truenorth-saas",
+    relatedQuestions: [
+      { companyId: "truenorth-saas", questionId: "truenorth-saas-q3" },
+      { companyId: "truenorth-saas", questionId: "truenorth-saas-q6" },
+    ],
     keyLesson:
       "In SaaS, the multiple IS the return. Multiple expansion often contributes more to MOIC than EBITDA growth, a result that stuns first-time PE investors. Model it explicitly or you will underestimate every SaaS deal.",
     entry: {
@@ -203,6 +219,10 @@ export const BRIDGE_SCENARIOS = [
     description:
       "The classic 1980s LBO. Buy at 5x EBITDA with 3.5x of debt and 1.5x of equity. Growth is almost flat. The business throws off cash year after year, which goes to debt service. Equity grows mechanically as debt falls. No heroics, just patience and a sturdy P&L.",
     companyId: "apex-logistics",
+    relatedQuestions: [
+      { companyId: "apex-logistics", questionId: "apex-logistics-q3" },
+      { companyId: "apex-logistics", questionId: "apex-logistics-q4" },
+    ],
     keyLesson:
       "Leverage is a return amplifier. A mature, unexciting business with 70% debt financing can still deliver 4x equity just by paying down the debt. This is why LBOs work on businesses that look 'boring' from a growth perspective.",
     entry: {
@@ -249,6 +269,10 @@ export const BRIDGE_SCENARIOS = [
     description:
       "The construction business is underearning on legacy management. You acquire at a distressed multiple (4x), spend 12-18 months professionalizing ops, fixing bid discipline, and tightening SG&A. As the business stabilizes, it re-rates to a normal multiple. Big returns from multiple expansion at the exit, but only if the operational fix actually takes.",
     companyId: "ironclad-construction",
+    relatedQuestions: [
+      { companyId: "ironclad-construction", questionId: "ironclad-construction-q3" },
+      { companyId: "ironclad-construction", questionId: "ironclad-construction-q6" },
+    ],
     keyLesson:
       "Distressed buys earn their return at exit, not during the hold. You pay a low multiple because the business is broken; you get the multiple expansion only after you fix it. If the fix fails, the multiple stays low and the return is mediocre.",
     entry: {
@@ -295,6 +319,10 @@ export const BRIDGE_SCENARIOS = [
     description:
       "Precision CNC is a top-of-line specialty manufacturer with 32% EBITDA margins and 43% gross margins. Buying at 7x is a premium but justified by quality. Minimal debt, minimal financial engineering. The return comes from riding an excellent operator's organic growth plus a market re-rating as the business scales.",
     companyId: "precision-manufacturing",
+    relatedQuestions: [
+      { companyId: "precision-manufacturing", questionId: "precision-manufacturing-q2" },
+      { companyId: "precision-manufacturing", questionId: "precision-manufacturing-q4" },
+    ],
     keyLesson:
       "Quality businesses trade at premium multiples for a reason. Growth equity sacrifices leverage-driven returns in exchange for lower risk and higher-quality cash flows. The MOIC is lower (2.5-3x is realistic), but the probability of achieving it is much higher.",
     entry: {
