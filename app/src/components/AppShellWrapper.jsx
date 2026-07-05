@@ -15,6 +15,9 @@ const QuickFireScreen = lazy(() => import("./QuickFireScreen"));
 // (~1.6K lines of content data), keeping it out of the eager bundle.
 const ConsultScreen = lazy(() => import("../screens/ConsultScreen"));
 const ConsultSession = lazy(() => import("../screens/ConsultSession"));
+// ReviewScreen resolves atoms against the full learn data surface, so it
+// stays lazy like the Learn tree.
+const ReviewScreen = lazy(() => import("./ReviewScreen"));
 
 function viewFromPath(pathname) {
   if (pathname.startsWith("/practice")) return "practice";
@@ -90,6 +93,7 @@ export default function AppShellWrapper({
           <Route path="quickfire" element={<QuickFireScreen />} />
           <Route path="consult" element={<ConsultScreen />} />
           <Route path="consult/:companyId" element={<ConsultSession />} />
+          <Route path="review" element={<ReviewScreen />} />
         </Routes>
       </Suspense>
     </AppShell>

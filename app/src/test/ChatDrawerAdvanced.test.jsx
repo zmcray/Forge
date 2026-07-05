@@ -108,7 +108,7 @@ describe("ChatDrawer Advanced", () => {
     await waitFor(() => {
       const updater = setMessages.mock.calls.at(-1)[0];
       expect(typeof updater).toBe("function");
-      expect(updater([])).toEqual([{ role: "assistant", content: "Hello world" }]);
+      expect(updater([])).toEqual([{ role: "assistant", content: "Hello world", mode: "socratic" }]);
     });
 
     delete global.fetch;
@@ -137,7 +137,7 @@ describe("ChatDrawer Advanced", () => {
     await waitFor(() => {
       const updater = setMessages.mock.calls.at(-1)[0];
       expect(typeof updater).toBe("function");
-      expect(updater([])).toEqual([{ role: "assistant", content: "Good response" }]);
+      expect(updater([])).toEqual([{ role: "assistant", content: "Good response", mode: "socratic" }]);
     });
 
     delete global.fetch;

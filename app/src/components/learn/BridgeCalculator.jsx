@@ -226,6 +226,7 @@ export default function BridgeCalculator() {
           userMoic={bridge.moic}
           onCheck={handleCheckExercise}
           lastResult={lastResult}
+          relatedQuestions={scenario.relatedQuestions}
         />
       </section>
 

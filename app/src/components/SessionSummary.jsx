@@ -2,6 +2,7 @@ import { useState } from "react";
 import { QUESTION_TYPES } from "../data/questionTypes";
 import { useDialog } from "../hooks/useDialog";
 import { average, averageScore, averageAbsDelta } from "../utils/scoreMath";
+import ReviewPill from "./ReviewPill";
 
 export default function SessionSummary({ company, questions, elapsedMinutes, onClose }) {
   const [copied, setCopied] = useState(false);
@@ -86,6 +87,10 @@ export default function SessionSummary({ company, questions, elapsedMinutes, onC
             </div>
           );
         })}
+
+        <div className="mt-4 text-center">
+          <ReviewPill />
+        </div>
 
         <div className="flex gap-2 mt-5">
           <button

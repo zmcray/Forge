@@ -59,6 +59,9 @@ export const VALUE_LEVERS = [
         ],
         opportunity:
           "5% price increase on $32.5M = $1.6M incremental revenue flowing through at 90%+ (price carries no incremental COGS), roughly $1.4-1.5M of EBITDA after modest churn. First step: install dynamic discount governance so the lift doesn't leak back out through sales overrides.",
+        relatedQuestions: [
+          { companyId: "summit-hvac", questionId: "summit-hvac-q1" },
+        ],
       },
       {
         companyId: "truenorth-saas",
@@ -72,8 +75,20 @@ export const VALUE_LEVERS = [
         ],
         opportunity:
           "10% list increase on new deals + raise module attach to 50% = ~$2.8M incremental ARR over 18 months. Requires CS comp plan redesign tied to NRR.",
+        relatedQuestions: [
+          { companyId: "truenorth-saas", questionId: "truenorth-saas-q5" },
+        ],
       },
     ],
+    quantExercise: {
+      prompt:
+        "Summit runs $32.5M revenue with $5.5M adjusted EBITDA. You push a 300 bps (3%) price increase across the book at flat volume and zero incremental cost. What is the new adjusted EBITDA, in $M?",
+      answer: 6.48,
+      unit: "$M",
+      tolerance: 0.15,
+      solution:
+        "$32.5M x 3% = $0.98M of pure price. Price carries no incremental COGS, so it drops straight through: $5.5M + $0.98M = ~$6.5M adjusted EBITDA.",
+    },
     exercise: {
       type: "thesis",
       prompt:
@@ -132,6 +147,9 @@ export const VALUE_LEVERS = [
         ],
         opportunity:
           "Rebuild sales motion: 60% revenue, 40% profitability weighting. Diversification target: no single customer above 20%. Lift: $1-1.5M EBITDA over 18 months.",
+        relatedQuestions: [
+          { companyId: "apex-logistics", questionId: "apex-logistics-q2" },
+        ],
       },
       {
         companyId: "precision-manufacturing",
@@ -145,6 +163,9 @@ export const VALUE_LEVERS = [
         ],
         opportunity:
           "Add technical sales engineer + structured proposal process to prioritize higher-margin regulated work (aerospace, medical) and diversify away from the anchor OEM. Filling the same machine hours with better-mix jobs lifts gross margin 200-400 bps; incremental volume is gated on the facility expansion, not sales cycle speed.",
+        relatedQuestions: [
+          { companyId: "precision-manufacturing", questionId: "precision-manufacturing-q3" },
+        ],
       },
     ],
     exercise: {
@@ -203,6 +224,9 @@ export const VALUE_LEVERS = [
         ],
         opportunity:
           "License platform to 20 operators over 3 years = $3-5M high-margin recurring revenue, no capex, no clinical risk.",
+        relatedQuestions: [
+          { companyId: "bright-dental", questionId: "bright-dental-q1" },
+        ],
       },
       {
         companyId: "coastal-foods",
@@ -216,6 +240,9 @@ export const VALUE_LEVERS = [
         ],
         opportunity:
           "Expansion to second geography within 3 years = $15-20M incremental revenue. Requires capital and integration capacity.",
+        relatedQuestions: [
+          { companyId: "coastal-foods", questionId: "coastal-foods-q4" },
+        ],
       },
     ],
     exercise: {
@@ -275,6 +302,9 @@ export const VALUE_LEVERS = [
         ],
         opportunity:
           "Target: 115% -> 125% NRR over 24 months. Mechanism: 30% of Starter to Professional + module attach to 50%. Impact: $2M+ ARR, lower blended CAC, premium exit multiple.",
+        relatedQuestions: [
+          { companyId: "truenorth-saas", questionId: "truenorth-saas-q5" },
+        ],
       },
       {
         companyId: "vitality-vet",
@@ -288,8 +318,20 @@ export const VALUE_LEVERS = [
         ],
         opportunity:
           "Expand services per location from 1-2 to 3-4. ARPU lift of 25-40% without net-new patient acquisition.",
+        relatedQuestions: [
+          { companyId: "vitality-vet", questionId: "vitality-vet-q1" },
+        ],
       },
     ],
+    quantExercise: {
+      prompt:
+        "TrueNorth's ARR is 92% of its $14.2M revenue. You move NRR from 115% to 125%. How much incremental ARR do those extra 10 points of expansion add in the first year, in $M?",
+      answer: 1.31,
+      unit: "$M",
+      tolerance: 0.1,
+      solution:
+        "ARR = $14.2M x 92% = ~$13.1M. Ten incremental points of NRR = $13.1M x 10% = ~$1.3M of incremental ARR, at near-zero acquisition cost.",
+    },
     exercise: {
       type: "thesis",
       prompt:
@@ -350,6 +392,9 @@ export const VALUE_LEVERS = [
         ],
         opportunity:
           "Negotiate 3-5% COGS reduction via GPO aggregation = $1.2-1.95M additional EBITDA on $39.0M COGS. 6-month payback.",
+        relatedQuestions: [
+          { companyId: "coastal-foods", questionId: "coastal-foods-q3" },
+        ],
       },
       {
         companyId: "meridian-fulfillment",
@@ -363,8 +408,20 @@ export const VALUE_LEVERS = [
         ],
         opportunity:
           "Consolidate carrier and packaging spend via GPO + extend the existing sort/pack automation = $0.8-1.2M cost savings over 18 months.",
+        relatedQuestions: [
+          { companyId: "meridian-fulfillment", questionId: "meridian-fulfillment-q1" },
+        ],
       },
     ],
+    quantExercise: {
+      prompt:
+        "Coastal's 2025 COGS is $39.0M and adjusted EBITDA is $3.9M. A GPO program cuts COGS 4% at flat revenue. What is the new adjusted EBITDA, in $M?",
+      answer: 5.46,
+      unit: "$M",
+      tolerance: 0.1,
+      solution:
+        "4% x $39.0M = $1.56M of procurement savings. At flat revenue every dollar lands in EBITDA: $3.9M + $1.56M = $5.46M, a 40% EBITDA lift from one lever.",
+    },
     exercise: {
       type: "thesis",
       prompt:
@@ -435,8 +492,20 @@ export const VALUE_LEVERS = [
         ],
         opportunity:
           "Extend the existing automation program (multi-facility WMS + picking) = $0.8-1.2M annual labor savings. Investment: roughly $1.5-2M across 3 facilities. Payback: 18-24 months.",
+        relatedQuestions: [
+          { companyId: "meridian-fulfillment", questionId: "meridian-fulfillment-q1" },
+        ],
       },
     ],
+    quantExercise: {
+      prompt:
+        "Meridian runs $29.5M revenue with 145 employees (~$203K per head). Shared services and automation lift revenue per employee to $250K at flat revenue, removing roles at $55K fully loaded each. Annual savings, in $M?",
+      answer: 1.49,
+      unit: "$M",
+      tolerance: 0.15,
+      solution:
+        "$29.5M / $0.25M = 118 employees needed at the target. 145 - 118 = 27 roles removed x $55K fully loaded = ~$1.5M of annual savings.",
+    },
     exercise: {
       type: "thesis",
       prompt:
@@ -495,6 +564,9 @@ export const VALUE_LEVERS = [
         ],
         opportunity:
           "Pick-path optimization + slotting on the existing automation stack = 8-12% cost-per-order reduction = $0.4-0.6M EBITDA. Cost is mostly configuration and process work, not new capex. Also unlocks the AI analytics lever downstream.",
+        relatedQuestions: [
+          { companyId: "meridian-fulfillment", questionId: "meridian-fulfillment-q2" },
+        ],
       },
       {
         companyId: "precision-manufacturing",
@@ -508,8 +580,20 @@ export const VALUE_LEVERS = [
         ],
         opportunity:
           "ERP modernization + quality tracking = 10-15% efficiency + 5% quality improvement = $300-500K EBITDA + reduced scrap. Enables exit-ready financial data.",
+        relatedQuestions: [
+          { companyId: "precision-manufacturing", questionId: "precision-manufacturing-q2" },
+        ],
       },
     ],
+    quantExercise: {
+      prompt:
+        "Precision's 2025 COGS is $7.3M. ERP modernization plus digital quality tracking cuts COGS 5% at flat revenue (scrap, rework, and job-tracking waste). Incremental EBITDA, in $M?",
+      answer: 0.37,
+      unit: "$M",
+      tolerance: 0.05,
+      solution:
+        "5% x $7.3M = ~$0.37M. At flat revenue the efficiency gain flows straight to EBITDA, roughly a 9% lift on the $4.15M adjusted base.",
+    },
     exercise: {
       type: "thesis",
       prompt:
@@ -567,6 +651,9 @@ export const VALUE_LEVERS = [
         ],
         opportunity:
           "Throughput optimization first = $400-600K savings without consolidation risk. Consolidation to 2 hubs as phase 2 if throughput gap remains.",
+        relatedQuestions: [
+          { companyId: "meridian-fulfillment", questionId: "meridian-fulfillment-q5" },
+        ],
       },
       {
         companyId: "precision-manufacturing",
@@ -580,8 +667,20 @@ export const VALUE_LEVERS = [
         ],
         opportunity:
           "10-15% throughput improvement = 10-15% revenue capacity unlock at current cost base = 300-500 bps margin expansion.",
+        relatedQuestions: [
+          { companyId: "precision-manufacturing", questionId: "precision-manufacturing-q1" },
+        ],
       },
     ],
+    quantExercise: {
+      prompt:
+        "Precision runs $12.8M revenue at 43% gross margin and is capacity constrained. Throughput work (setup reduction, bottleneck management) unlocks 12% more volume at the current cost base. Incremental gross profit, in $M?",
+      answer: 0.66,
+      unit: "$M",
+      tolerance: 0.08,
+      solution:
+        "$12.8M x 12% = ~$1.54M of incremental revenue x 43% gross margin = ~$0.66M. With fixed costs already covered, nearly all of it reaches EBITDA.",
+    },
     exercise: {
       type: "thesis",
       prompt:
@@ -639,6 +738,9 @@ export const VALUE_LEVERS = [
         ],
         opportunity:
           "15% inventory reduction ($0.5M on $3.2M) + 10-day DSO improvement ($1.3M on $48.2M revenue) = roughly $1.8M cash release. Self-funds growth initiatives without new capital.",
+        relatedQuestions: [
+          { companyId: "coastal-foods", questionId: "coastal-foods-q2" },
+        ],
       },
       {
         companyId: "ironclad-construction",
@@ -654,6 +756,15 @@ export const VALUE_LEVERS = [
           "Accelerate retainage collection, tighten billing cadence, and chase change-order approvals = $0.8-1.2M working capital release. Modest by design: 58 DSO is already good for a GC, and retainage puts a floor under how far it can fall. Use proceeds to deleverage.",
       },
     ],
+    quantExercise: {
+      prompt:
+        "Coastal books $48.2M revenue and its DSO runs above benchmark. You cut DSO by 10 days through collections discipline and dunning automation. One-time cash release, in $M?",
+      answer: 1.32,
+      unit: "$M",
+      tolerance: 0.1,
+      solution:
+        "$48.2M / 365 = ~$132K of revenue per day. A 10-day DSO improvement releases 10 x $132K = ~$1.3M of cash from AR, self-funding growth without new capital.",
+    },
     exercise: {
       type: "thesis",
       prompt:
@@ -714,6 +825,10 @@ export const VALUE_LEVERS = [
         ],
         opportunity:
           "Operator CFO hire (~$200-250K fully loaded) unlocks 5-10% EBITDA improvement through cost control, working capital discipline, and VCP ownership.",
+        relatedQuestions: [
+          { companyId: "summit-hvac", questionId: "summit-hvac-q2" },
+          { companyId: "summit-hvac", questionId: "summit-hvac-q4" },
+        ],
       },
       {
         companyId: "bright-dental",
@@ -786,6 +901,9 @@ export const VALUE_LEVERS = [
         ],
         opportunity:
           "Comp redesign: 60% revenue, 40% operational KPIs (margin tier, on-time rate, customer NPS) = 200-300 bps EBITDA margin improvement over 12 months.",
+        relatedQuestions: [
+          { companyId: "apex-logistics", questionId: "apex-logistics-q2" },
+        ],
       },
       {
         companyId: "truenorth-saas",
@@ -858,6 +976,9 @@ export const VALUE_LEVERS = [
         ],
         opportunity:
           "Monthly close + job-level costing = visibility into profitable vs. loss-leader work = 200-300 bps margin via mix shift. Also the first step toward clean QoE.",
+        relatedQuestions: [
+          { companyId: "summit-hvac", questionId: "summit-hvac-q2" },
+        ],
       },
       {
         companyId: "meridian-fulfillment",
@@ -871,6 +992,9 @@ export const VALUE_LEVERS = [
         ],
         opportunity:
           "Per-client P&L reporting + billing controls + rolling cash forecast = clean QoE data and $0.3-0.5M recovered from mispriced or under-billed accounts. Valuation impact at exit: avoids a 0.5-1.0x multiple haircut.",
+        relatedQuestions: [
+          { companyId: "meridian-fulfillment", questionId: "meridian-fulfillment-q2" },
+        ],
       },
     ],
     exercise: {
@@ -946,6 +1070,9 @@ export const VALUE_LEVERS = [
         ],
         opportunity:
           "AI billing audit + client analytics: $100K build, recover 1-2% of revenue leaking through under-billed accessorial charges = $0.3-0.6M, most of it flowing straight to EBITDA. Rides on the data the existing automation stack already produces.",
+        relatedQuestions: [
+          { companyId: "meridian-fulfillment", questionId: "meridian-fulfillment-q1" },
+        ],
       },
     ],
     exercise: {
@@ -1008,6 +1135,10 @@ export const VALUE_LEVERS = [
         ],
         opportunity:
           "Add 10-15 solo practices over 3 years at 5-6x EBITDA, integrate into 8-9x platform valuation = multiple arbitrage spread of 3x on roughly $150-400K of EBITDA per add-on. Every 4-6 add-ons contribute $1.0-1.5M of combined EBITDA before synergies.",
+        relatedQuestions: [
+          { companyId: "bright-dental", questionId: "bright-dental-q1" },
+          { companyId: "bright-dental", questionId: "bright-dental-q3" },
+        ],
       },
       {
         companyId: "vitality-vet",
@@ -1021,8 +1152,21 @@ export const VALUE_LEVERS = [
         ],
         opportunity:
           "Grow from 3 to 12 locations over 4 years. Multiple arbitrage + cost synergies (shared clinical back-office, procurement) = 2-3x MOIC acceleration.",
+        relatedQuestions: [
+          { companyId: "vitality-vet", questionId: "vitality-vet-q3" },
+          { companyId: "vitality-vet", questionId: "vitality-vet-q6" },
+        ],
       },
     ],
+    quantExercise: {
+      prompt:
+        "Your platform trades at 9x EBITDA. You buy a $2M EBITDA add-on at 5.5x. Ignoring synergies and integration cost, how much instant multiple-arbitrage value is created, in $M?",
+      answer: 7.0,
+      unit: "$M",
+      tolerance: 0.3,
+      solution:
+        "$2M x (9x - 5.5x) = $7M. The same $2M of EBITDA is worth $18M inside the platform vs the $11M you paid standalone. Integration cost and add-on debt eat into it from there.",
+    },
     exercise: {
       type: "thesis",
       prompt:
@@ -1093,6 +1237,9 @@ export const VALUE_LEVERS = [
         ],
         opportunity:
           "Build LEED/WELL certification capability = win 10-15% more government RFPs = $5-8M annual revenue uplift. Exit multiple impact: 0.5-1.0x expansion at sale.",
+        relatedQuestions: [
+          { companyId: "ironclad-construction", questionId: "ironclad-construction-q6" },
+        ],
       },
     ],
     exercise: {

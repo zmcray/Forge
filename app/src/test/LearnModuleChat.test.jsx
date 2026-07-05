@@ -2,6 +2,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+import { ScoringProvider } from "../contexts/ScoringContext";
 import LearnModule from "../components/learn/LearnModule";
 
 // Mock ChatDrawer to avoid needing full streaming infrastructure
@@ -26,7 +27,10 @@ vi.mock("../components/learn/ComparisonView", () => ({
 function renderLearnModule(initialRoute = "/learn") {
   return render(
     <MemoryRouter initialEntries={[initialRoute]}>
-      <LearnModule />
+      {/* ScoringProvider: LearnHub hosts ReviewPill (MCR-102) */}
+      <ScoringProvider>
+        <LearnModule />
+      </ScoringProvider>
     </MemoryRouter>
   );
 }

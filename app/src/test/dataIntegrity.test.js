@@ -304,6 +304,111 @@ describe("Data Integrity", () => {
         expect(LEVER_CATEGORIES[cat]).toBeDefined();
       }
     });
+
+    const QUANT_LEVER_IDS = [
+      "pricing-optimization",
+      "cross-sell-upsell",
+      "procurement",
+      "labor-optimization",
+      "automation",
+      "facility-optimization",
+      "working-capital",
+      "buy-and-build",
+    ];
+
+    it("the 8 designated levers carry a well-formed quantExercise", () => {
+      for (const id of QUANT_LEVER_IDS) {
+        const lever = VALUE_LEVERS.find((l) => l.id === id);
+        expect(lever, `Lever "${id}" not found`).toBeDefined();
+        const qe = lever.quantExercise;
+        expect(qe, `Lever "${id}" missing quantExercise`).toBeDefined();
+        expect(typeof qe.prompt === "string" && qe.prompt.length > 0).toBe(true);
+        expect(typeof qe.answer, `Lever "${id}" answer must be a number`).toBe("number");
+        expect(Number.isFinite(qe.answer)).toBe(true);
+        expect(qe.tolerance > 0, `Lever "${id}" tolerance must be positive`).toBe(true);
+        expect(["$M", "%", "x", "days"], `Lever "${id}" invalid unit`).toContain(qe.unit);
+        expect(typeof qe.solution === "string" && qe.solution.length > 0).toBe(true);
+      }
+    });
+
+    it("levers without a quantExercise do not carry a partial one", () => {
+      for (const lever of VALUE_LEVERS) {
+        if (QUANT_LEVER_IDS.includes(lever.id)) continue;
+        expect(
+          lever.quantExercise,
+          `Lever "${lever.id}" unexpectedly has a quantExercise`
+        ).toBeUndefined();
+      }
+    });
+
+    it("quantExercise answers recompute from companies.js actuals within tolerance", () => {
+      const byId = (id) => COMPANIES.find((c) => c.id === id);
+      const lever = (id) => VALUE_LEVERS.find((l) => l.id === id);
+      const summit = byId("summit-hvac");
+      const coastal = byId("coastal-foods");
+      const truenorth = byId("truenorth-saas");
+      const meridian = byId("meridian-fulfillment");
+      const precision = byId("precision-manufacturing");
+
+      const cases = [
+        // 3% price increase on Summit revenue, 100% flow-through onto adjusted EBITDA
+        ["pricing-optimization", summit.keyMetrics.adjustedEbitda + summit.revenue * 0.03],
+        // NRR 115% -> 125%: one incremental year of 10% expansion on TrueNorth ARR (92% of revenue)
+        ["cross-sell-upsell", truenorth.revenue * (truenorth.keyMetrics.recurringRevenuePct / 100) * 0.10],
+        // 4% GPO reduction on Coastal 2025 COGS added to adjusted EBITDA
+        ["procurement", coastal.keyMetrics.adjustedEbitda + coastal.incomeStatement.cogs[1] * 0.04],
+        // Meridian to $250K revenue/employee at flat revenue; $55K fully loaded cost per role removed
+        ["labor-optimization", (meridian.keyMetrics.employeeCount - meridian.revenue / 0.25) * 0.055],
+        // ERP modernization cuts Precision 2025 COGS by 5% at flat revenue
+        ["automation", precision.incomeStatement.cogs[1] * 0.05],
+        // 12% throughput unlock on Precision revenue flowing through at gross margin
+        ["facility-optimization", precision.revenue * 0.12 * (precision.keyMetrics.grossMargin / 100)],
+        // 10-day DSO improvement on Coastal revenue
+        ["working-capital", (coastal.revenue / 365) * 10],
+        // $2M add-on EBITDA re-rated from 5.5x to the 9x platform multiple
+        ["buy-and-build", 2 * (9 - 5.5)],
+      ];
+
+      for (const [id, recomputed] of cases) {
+        const qe = lever(id).quantExercise;
+        expect(
+          Math.abs(qe.answer - recomputed) <= qe.tolerance,
+          `Lever "${id}": stored answer ${qe.answer} vs recomputed ${recomputed.toFixed(3)} exceeds tolerance ${qe.tolerance}`
+        ).toBe(true);
+      }
+    });
+
+    it("every companyExamples relatedQuestions entry resolves to a real question id", () => {
+      for (const lever of VALUE_LEVERS) {
+        for (const example of lever.companyExamples) {
+          if (!example.relatedQuestions) continue;
+          expect(Array.isArray(example.relatedQuestions)).toBe(true);
+          expect(example.relatedQuestions.length).toBeGreaterThan(0);
+          for (const rq of example.relatedQuestions) {
+            const company = COMPANIES.find((c) => c.id === rq.companyId);
+            expect(
+              company,
+              `Lever "${lever.id}" relatedQuestions references unknown companyId "${rq.companyId}"`
+            ).toBeDefined();
+            const question = company.questions.find((q) => q.id === rq.questionId);
+            expect(
+              question,
+              `Lever "${lever.id}" relatedQuestions references unknown questionId "${rq.questionId}"`
+            ).toBeDefined();
+          }
+        }
+      }
+    });
+
+    it("every lever links at least one practice question across its examples", () => {
+      for (const lever of VALUE_LEVERS) {
+        const total = lever.companyExamples.reduce(
+          (n, ex) => n + (ex.relatedQuestions?.length ?? 0),
+          0
+        );
+        expect(total, `Lever "${lever.id}" has no relatedQuestions on any example`).toBeGreaterThan(0);
+      }
+    });
   });
 
   describe("Value Creation Bridge scenarios", () => {
@@ -372,6 +477,27 @@ describe("Data Integrity", () => {
             range.step > 0,
             `Scenario "${s.id}" slider "${key}": step must be positive`
           ).toBe(true);
+        }
+      }
+    });
+
+    it("every scenario has relatedQuestions resolving to real question ids", () => {
+      for (const s of BRIDGE_SCENARIOS) {
+        expect(
+          Array.isArray(s.relatedQuestions) && s.relatedQuestions.length > 0,
+          `Scenario "${s.id}" must have a non-empty relatedQuestions array`
+        ).toBe(true);
+        for (const rq of s.relatedQuestions) {
+          const company = COMPANIES.find((c) => c.id === rq.companyId);
+          expect(
+            company,
+            `Scenario "${s.id}" relatedQuestions references unknown companyId "${rq.companyId}"`
+          ).toBeDefined();
+          const question = company.questions.find((q) => q.id === rq.questionId);
+          expect(
+            question,
+            `Scenario "${s.id}" relatedQuestions references unknown questionId "${rq.questionId}"`
+          ).toBeDefined();
         }
       }
     });

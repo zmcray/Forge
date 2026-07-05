@@ -88,9 +88,9 @@ describe("ChatDrawer", () => {
     expect(screen.queryByText("What is EBITDA?")).not.toBeInTheDocument();
   });
 
-  it("renders empty state placeholder when no messages", () => {
+  it("renders empty state placeholder when no messages (learn defaults Socratic)", () => {
     render(<ChatDrawer {...defaultProps} />);
-    expect(screen.getByText(/Ask a question about/)).toBeInTheDocument();
+    expect(screen.getByText(/I'll guide you with questions/)).toBeInTheDocument();
   });
 
   it("renders existing messages", () => {
