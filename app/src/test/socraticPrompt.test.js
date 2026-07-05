@@ -5,7 +5,12 @@ import useChatContext from "../hooks/useChatContext";
 import { CHAT_MODES } from "../hooks/useChatMode";
 import { LEARN_CONTENT } from "../data/learnContent";
 
-const PROMPT_BUDGET = 4500;
+// Budget raised from 4500 to 5200 in WS2 (MCR-528). The 4A LBO Economics
+// subsection (s4b) gained a sources-and-uses reality check plus a bear-case
+// exercise; its pinned-number prose is the new longest-subsection driver and
+// legitimately exceeds the old ceiling. 5200 preserves headroom above the
+// socratic + grading-gaps case (~5100) without inviting unbounded growth.
+const PROMPT_BUDGET = 5200;
 
 function getLongestSubsection() {
   let max = { subsection: null, len: 0 };

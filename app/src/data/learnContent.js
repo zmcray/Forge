@@ -858,6 +858,32 @@ export const LEARN_CONTENT = [
           },
           {
             type: "text",
+            content: "Reality check: the equity check is bigger than the slide says. The 60/40 split prices only the purchase; real deals also fund transaction fees, financing fees, and minimum operating cash, and none of those finance themselves. The table rebuilds TrueNorth as a proper sources and uses."
+          },
+          {
+            type: "metricTable",
+            headers: ["Uses", "$M", "Sources", "$M"],
+            rows: [
+              ["Purchase enterprise value", "18.0", "Senior debt (60%)", "10.8"],
+              ["Transaction fees (legal, QoE, advisory, ~2.75%)", "0.5", "Sponsor equity", "8.2"],
+              ["Financing fees (~2% of debt)", "0.2", "", ""],
+              ["Minimum cash at close", "0.3", "", ""],
+              ["Total uses", "19.0", "Total sources", "19.0"]
+            ]
+          },
+          {
+            type: "text",
+            content: "The same $47.0M exit equity now sits on an $8.2M check, not $7.2M, so MOIC is $47.0M / $8.2M = 5.7x, not 6.5x. Fees cost most of a turn before the deal starts, which is why disciplined buyers model sources and uses on day one and push every fee line. Two other lines often appear: rollover equity (the seller reinvesting alongside, cutting the sponsor check but diluting the upside) and working capital true-ups at close."
+          },
+          {
+            type: "exercise",
+            id: "ex-4b-bear",
+            q: "Rerun the TrueNorth deal as the bear case: growth stalls at zero and the exit market pays only 5x. Same $10.8M of debt, same $2M per year of paydown. What is the MOIC, and what does the comparison to the 6.5x bull case teach you about where the risk actually lives?",
+            inputMode: "qualitative",
+            answer: "Year 4 EBITDA stays $3.0M (no growth). Exit EV = 5 x $3.0M = $15.0M. Remaining debt = $10.8M - ($2M x 4) = $2.8M. Exit equity = $15.0M - $2.8M = $12.2M. MOIC = $12.2M / $7.2M = 1.7x on the stylized check (1.5x on the real $8.2M check from the sources and uses). Still positive, because debt paydown alone creates equity even when growth and multiple do nothing. But a 4-year 1.7x is roughly a 14% IRR, below most funds' hurdle. The spread between 6.5x and 1.7x is almost entirely growth and multiple, which is why underwriting focuses on how durable the growth is and who the exit buyer is, not on the paydown math that works in every scenario."
+          },
+          {
+            type: "text",
             content: "The three levers, summarized: EBITDA growth (operator value), multiple expansion (story + market), debt paydown (cash flow doing the work). All three compound together. A deal where you only get one lever working is a single ... not a home run."
           },
           {
@@ -1392,6 +1418,17 @@ export const LEARN_CONTENT = [
             q: "You acquire a business at $30M EV with $15M of debt and $15M of equity. Hold for 5 years. EBITDA grows from $5M to $7.5M (50% total, ~8.5% per year). You pay down $7M of debt during the hold. You exit at the same 6x multiple as entry (no multiple expansion). Calculate: (a) exit equity value, (b) MOIC, (c) approximate IRR, (d) decomposition: how much of the return came from EBITDA growth vs. multiple expansion vs. debt paydown, and what does that tell you about the deal?",
             inputMode: "qualitative",
             answer: "(a) Exit EV = $7.5M x 6 = $45M. Remaining debt = $15M - $7M = $8M. Exit equity = $45M - $8M = $37M. (b) MOIC = $37M / $15M = ~2.5x. Right at the bottom of the typical PE target band. (c) IRR: 2.5x over 5 years = (2.5)^(1/5) - 1 = ~20% annualized. Right at the lower bound of the 20-25% target. (d) Decomposing the $22M of equity gain: EBITDA growth contribution = $2.5M of growth x 6x multiple = $15M (~68% of the gain). Debt paydown contribution = $7M directly to equity (~32%). Multiple expansion contribution = $0 (held flat at 6x). What this tells you: the deal is a base case. Returns sit right at the target band, driven by operating improvement and debt paydown, with no help from the market. The thesis is honest because it does not depend on multiple expansion. If the buyer needed a 3x+ MOIC to clear their fund's hurdle, they would need either faster EBITDA growth, an exit at a higher multiple, or a shorter hold. The broader lesson: the same purchase price can produce a 2.5x or a 4x MOIC depending on which levers actually move during the hold. A thesis that requires multiple expansion to clear the hurdle is a thesis that depends on the market staying favorable at exit."
+          },
+          {
+            type: "text",
+            content: "The downside drill. Every model has a bear-case tab; the discipline is deciding in advance what breaks the deal, and what you would write in the post-mortem if it did. A broken-deal post-mortem asks three questions: which assumption failed, was it knowable in diligence, and did the structure (leverage, covenants, reserves) turn a bad year into a permanent loss."
+          },
+          {
+            type: "exercise",
+            id: "ex-4-rtn-bear",
+            q: "Take the base-case deal you just modeled ($30M EV, $15M debt, $15M equity, $5M EBITDA at entry, 6x). Now run the bear case: EBITDA falls 20% to $4M by exit and the market pays 5x. You still managed to pay down $7M of debt. Compute exit equity and MOIC, then answer: what broke the deal, was it knowable, and what structural choice at entry would have changed the outcome?",
+            inputMode: "qualitative",
+            answer: "Exit EV = $4M x 5 = $20M. Remaining debt = $15M - $7M = $8M. Exit equity = $20M - $8M = $12M. MOIC = $12M / $15M = 0.8x. The equity LOSES 20% even though the business only declined 20% and debt was serviced throughout. Leverage is symmetric: the same 50/50 structure that amplified the base case to 2.5x amplifies a modest downturn into an impaired position, and one turn of multiple compression does as much damage as the EBITDA decline. Post-mortem answers: the failed assumptions are EBITDA durability and the exit multiple; both are knowable in diligence (customer concentration, cyclicality, and what the NEXT buyer will pay are day-one questions). Structurally, less leverage does not rescue this deal the way intuition suggests. At 40% leverage the check is bigger ($18M equity vs $12M debt), paydown of $7M leaves $5M of debt, exit equity = $20M - $5M = $15M, and MOIC = $15M / $18M = 0.8x, essentially unchanged, because a bigger check offsets the smaller debt claim. The real protection is not a lower multiple, it is entry price (pay less than 6x so multiple compression starts from a lower base) and covenant headroom plus a longer-hold option that preserves the ability to wait out the multiple rather than being forced to sell into the trough. The lesson: leverage cuts both ways, and in a bear case the durable defenses are what you paid and whether the structure lets you avoid selling at the bottom."
           },
           {
             type: "notes",
