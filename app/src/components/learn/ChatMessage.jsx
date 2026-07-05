@@ -2,6 +2,7 @@ import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeSanitize from "rehype-sanitize";
+import { MODE_LABEL } from "../../hooks/useChatMode";
 
 export default function ChatMessage({
   message,
@@ -24,6 +25,9 @@ export default function ChatMessage({
   }
 
   const isUser = message.role === "user";
+  // Per-message mode pill: assistant replies are stamped with the mode they
+  // were generated under; legacy messages without a stamp render no pill.
+  const modeLabel = !isUser ? MODE_LABEL[message.mode] || null : null;
 
   const handleSave = () => {
     if (!noteId || !setNoteText) return;
@@ -64,9 +68,15 @@ export default function ChatMessage({
           </div>
         )}
 
-        {!isUser && !isStreaming && noteId && (
-          <div className="mt-1 flex justify-end">
-            {saved ? (
+        {!isUser && !isStreaming && (modeLabel || noteId) && (
+          <div className="mt-1 flex items-center gap-2">
+            {modeLabel && (
+              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-surface-container-low text-on-surface-variant">
+                {modeLabel}
+              </span>
+            )}
+            <span className="flex-1" />
+            {noteId && (saved ? (
               <span className="text-xs text-primary">Saved!</span>
             ) : (
               <button
@@ -75,7 +85,7 @@ export default function ChatMessage({
               >
                 Save to Notes
               </button>
-            )}
+            ))}
           </div>
         )}
       </div>
