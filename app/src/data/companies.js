@@ -45,7 +45,7 @@ export const COMPANIES = [
       {
         id: "summit-hvac-q1",
         q: "What is Summit's adjusted EBITDA margin, and how does it compare to typical HVAC service companies (12-18%)?",
-        hint: "Add back owner comp above market (~$800K excess), one-time expenses, and above-market rent to EBITDA",
+        hint: "Add back owner perks ($0.4M), one-time expenses ($0.3M), and above-market rent ($0.2M) to the $4.6M reported EBITDA",
         answer: "Adjusted EBITDA margin is ~16.9% ($5.5M on $32.5M revenue), which is solidly in the upper range for HVAC services. This suggests good operational efficiency.",
         type: "metric"
       },
@@ -53,14 +53,14 @@ export const COMPANIES = [
         id: "summit-hvac-q2",
         q: "The owner takes $2M in compensation plus $400K in perks. If you replaced them with a GM at $250K, what would adjusted EBITDA look like?",
         hint: "Current owner cost: $2.4M. Replacement cost: $250K. Delta: $2.15M. Add to reported EBITDA.",
-        answer: "Adjusted EBITDA with normalized management would be ~$6.35M ($4.6M + $2.15M owner adjustment + $0.3M one-time + $0.2M rent), yielding a 19.5% margin. This is the number a PE buyer would use for valuation.",
+        answer: "Adjusted EBITDA with fully normalized management would be ~$7.25M ($4.6M EBITDA + $2.15M excess owner cost ($2.4M comp and perks less a $250K GM) + $0.3M one-time + $0.2M rent), a ~22.3% margin. In practice, buyers underwrite somewhere between the clean $5.5M and the fully normalized $7.25M, because the owner comp add-back is negotiated, not automatic.",
         type: "adjustment"
       },
       {
         id: "summit-hvac-q3",
         q: "At a 6x adjusted EBITDA multiple (typical for HVAC services), what's the enterprise value? What does the equity value look like?",
         hint: "EV = EBITDA x multiple. Equity = EV - net debt. Net debt = total debt - cash. Show your work for both.",
-        answer: "EV = $5.5M adjusted EBITDA x 6 = $33M. Net debt = total debt - cash = ($0.5M current debt + $2.8M long-term debt) - $1.8M cash = $1.5M. Equity value = EV - net debt = $33M - $1.5M = $31.5M. If you used the more aggressive $6.35M adjusted EBITDA (with full owner-comp normalization to a $250K GM replacement), EV = $38.1M and equity = ~$36.6M. The takeaway: the choice of EBITDA matters as much as the multiple, so always state which EBITDA you are using.",
+        answer: "EV = $5.5M adjusted EBITDA x 6 = $33M. Net debt = total debt - cash = ($0.5M current debt + $2.8M long-term debt) - $1.8M cash = $1.5M. Equity value = EV - net debt = $33M - $1.5M = $31.5M. If you used the more aggressive $7.25M adjusted EBITDA (with full owner-cost normalization to a $250K GM replacement), EV = $43.5M and equity = ~$42.0M. The takeaway: the choice of EBITDA matters as much as the multiple, so always state which EBITDA you are using.",
         type: "diagnostic",
         keywords: ["EV", "enterprise value", "equity value", "adjusted EBITDA", "net debt", "multiple", "$33M", "$31.5M"]
       },
@@ -290,9 +290,9 @@ export const COMPANIES = [
         id: "bright-dental-q4",
         q: "A PE firm offers to invest $10M for 60% of the company at an implied 8x adjusted EBITDA valuation ($20M EV). Is the founder getting a good deal?",
         hint: "Work backwards: What's the founder's pre-money equity? What does post-money look like? What's the founder giving up vs getting?",
-        answer: "At $20M EV with $5M net debt, equity value = $15M. The PE firm puts in $10M for 60%, implying post-money equity of $16.67M. Founder keeps 40% = $6.67M in equity value. But pre-money, the founder's equity was $15M - $5M debt = $10M. So the founder is going from 100% of $10M to 40% of potentially much more. The bet is: if they use the $10M to grow to $6-8M EBITDA in 3-4 years and exit at 10-12x (platform premium), the company is worth $60-96M. Founder's 40% = $24-38M. Classic 'smaller slice of a much bigger pie' play. It is a good deal IF the growth thesis works.",
+        answer: "Work it on a post-money basis, because that is where the numbers tie. Net debt = $5.0M total debt - $0.6M cash = $4.4M. A $10M primary investment for 60% implies post-money equity of $16.7M ($10M / 0.60), so post-money EV = $16.7M + $4.4M = $21.1M, about 8.4x the $2.5M adjusted EBITDA (consistent with the quoted ~8x). Pre-money equity = $16.7M - $10M = $6.7M, which is what the founder's 100% was worth before the money came in; the $10M goes into the company to fund acquisitions, not into the founder's pocket. Is it a good deal? The founder trades majority control of a capital-starved $2.5M EBITDA platform for 40% of a funded one. If the $10M drives EBITDA to $6-8M in 3-4 years and the platform exits at 10-12x, the company is worth $60-96M and the founder's 40% is $24-38M before any preference. Classic 'smaller slice of a much bigger pie' play. It is a good deal IF the growth thesis works, and the founder should negotiate the liquidation preference and anti-dilution terms as hard as the headline valuation.",
         type: "diagnostic",
-        keywords: ["pre-money", "post-money", "equity value", "60%", "40%", "platform premium", "multiple expansion", "$15M", "$24-38M"]
+        keywords: ["pre-money", "post-money", "net debt", "equity value", "60%", "40%", "platform premium", "multiple expansion", "$16.7M", "$24-38M"]
       }
     ]
   },
@@ -377,7 +377,7 @@ export const COMPANIES = [
     industry: "B2B SaaS / Cybersecurity Compliance",
     description: "Cloud-based cybersecurity compliance platform helping mid-market companies automate SOC 2, ISO 27001, and HIPAA audit readiness. Founded 2019 by two ex-Palo Alto Networks engineers. 68 employees, fully remote.",
     revenue: 14.2,
-    context: "High-growth SaaS with strong retention metrics but burning cash to acquire customers. Founders seeking PE growth equity to fund sales expansion without giving up majority control.",
+    context: "High-growth SaaS with strong retention metrics, reinvesting nearly all of its operating cash into customer acquisition. Founders seeking PE growth equity to fund sales expansion without giving up majority control.",
     incomeStatement: {
       years: [2024, 2025],
       revenue: [11.1, 14.2],
@@ -408,7 +408,7 @@ export const COMPANIES = [
       recurringRevenuePct: 92, customerConcentration: 8,
       employeeCount: 68, avgRevenuePerEmployee: 0.209
     },
-    redFlags: ["S&M spend is 38% of revenue ($5.4M embedded in SGA) and growing faster than revenue", "CAC payback period is ~20 months, above the 12-month SaaS benchmark", "Capitalized software costs ($3.2M in other LT assets) could mask true R&D spend", "Negative FCF after reinvestment. Cash position ($2.8M) gives ~6 months runway at current burn", "Two co-founders splitting CEO/CTO roles. Decision-making bottleneck?"],
+    redFlags: ["S&M spend is 38% of revenue ($5.4M embedded in SGA) and growing faster than revenue", "CAC payback period is ~20 months, above the 12-month SaaS benchmark", "Capitalized software costs ($3.2M in other LT assets) could mask true R&D spend", "FCF (~$1.5M) is thin for the growth ambition: S&M at 38% of revenue is growing faster than revenue, and the planned sales expansion would consume the $2.8M cash balance without outside capital", "Two co-founders splitting CEO/CTO roles. Decision-making bottleneck?"],
     greenFlags: ["92% recurring revenue on annual contracts. Very high revenue visibility", "Net revenue retention of ~115%. Existing customers are expanding", "78% gross margins typical of best-in-class SaaS", "Low customer concentration at 8%. No single customer dependency", "Large and growing TAM. Compliance spending is non-discretionary"],
     questions: [
       {
@@ -600,7 +600,7 @@ export const COMPANIES = [
         id: "vitality-vet-q2",
         q: "The company has $300K in one-time expenses (likely acquisition costs) and the owner takes $500K + $150K in perks. Normalize EBITDA for a PE buyer and flag what you'd challenge.",
         hint: "In a roll-up, are acquisition costs really one-time? And is $500K owner comp above or below market for a vet practice CEO?",
-        answer: "Starting EBITDA: $1.7M. Add-backs: $150K owner perks + $300K one-time expenses + $0 above-market rent = $450K. Adjusted EBITDA = $2.15M. But I'd challenge two things: (1) The $300K 'one-time' acquisition costs will recur if the strategy is to acquire 3-4 more clinics. This is recurring cost of doing business, not truly one-time. Removing this add-back drops adjusted EBITDA to $1.85M. (2) Owner comp of $500K is arguably below market for a multi-location practice CEO. A PE-installed operator might cost $350-400K, so there's actually a $100-150K add-back available from normalizing the owner comp DOWN. Net adjusted EBITDA with these corrections: ~$1.95-2.0M. The difference between $2.15M and $1.95M is ~10%, which matters at 8-10x multiples.",
+        answer: "Starting EBITDA: $1.7M. Add-backs: $150K owner perks + $300K one-time expenses + $0 above-market rent = $450K. Adjusted EBITDA = $2.15M. But I'd challenge two things: (1) The $300K 'one-time' acquisition costs will recur if the strategy is to acquire 3-4 more clinics. This is recurring cost of doing business, not truly one-time. Removing this add-back drops adjusted EBITDA to $1.85M. (2) Owner comp of $500K is modestly above what a replacement would cost. A PE-installed multi-site operator might run $350-400K, so there is a $100-150K add-back available from normalizing owner comp down to market. Net adjusted EBITDA with these corrections: ~$1.95-2.0M. The difference between $2.15M and $1.95M is ~10%, which matters at 8-10x multiples.",
         type: "adjustment"
       },
       {
