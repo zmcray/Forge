@@ -12,6 +12,9 @@
  *   months-1-6   -- Foundation & Quick Wins (the "Golden Year" front-load)
  *   months-7-18  -- Optimize & Scale
  *   months-19-36 -- Scale & Exit Prep
+ *
+ * goldenYearAnalysis.year1VsPlan: percent of the Year 1 plan-case EBITDA
+ * uplift actually achieved.
  */
 
 export const PLAYBOOKS = [
@@ -68,7 +71,7 @@ export const PLAYBOOKS = [
             leverId: "pricing-optimization",
             description:
               "Benchmark HVAC pricing vs competitors by customer segment and service type. Identify price increase opportunities. Install dynamic discount governance so sales cannot override list price without review.",
-            owner: "VP Sales",
+            owner: "Founder/GM (transitions to VP Sales once hired via init-004)",
             timeline: "Months 2-4",
             startCondition: "Weeks 1-2 of ownership",
             resources: "$15K consulting",
@@ -285,7 +288,7 @@ export const PLAYBOOKS = [
     },
     exitTargets: {
       revenue: "65-75",
-      adjustedEbitdaMargin: "12-14%",
+      adjustedEbitdaMargin: "10-11%",
       moicTarget: "2.5-3.0x",
     },
     primaryLevers: [
@@ -438,11 +441,12 @@ export const PLAYBOOKS = [
             owner: "CEO + VP Operations",
             timeline: "Months 20-30",
             startCondition: "Core market profitable at target margins",
-            resources: "$300K lease + buildout + inventory",
+            resources:
+              "$1.5-2.5M (cold-chain buildout, racking, refrigerated fleet positioning) plus working capital for inventory",
             successMetrics: [
               "3rd facility operational",
-              "Break-even within 9 months",
-              "Route density matching core market within 18 months",
+              "Break-even within 18 months",
+              "Route density matching core market within 24 months",
             ],
             dependencies: ["coastal-init-004"],
           },
@@ -468,7 +472,7 @@ export const PLAYBOOKS = [
         expectedValueCreation: {
           revenue: "+35-55% total reaching $65-75M",
           ebitdaMargin: "+100-200 bps from scale leverage",
-          ebitdaDollars: "$4.5-5.5M",
+          ebitdaDollars: "$3.0-4.0M",
         },
       },
     },
@@ -505,7 +509,7 @@ export const PLAYBOOKS = [
     exitTargets: {
       revenue: "22-28",
       adjustedEbitdaMargin: "28-32%",
-      moicTarget: "3.5-4.0x",
+      moicTarget: "2.5-3.5x",
     },
     primaryLevers: [
       "management-upgrades",
@@ -557,7 +561,7 @@ export const PLAYBOOKS = [
           {
             id: "precision-init-003",
             name: "Facility Expansion Study",
-            leverId: "automation",
+            leverId: "facility-optimization",
             description:
               "Current single facility is at 85%+ utilization. Commission study: expand in place vs. lease second facility. Include automation equipment ROI analysis.",
             owner: "GM + PE partner",
@@ -593,7 +597,8 @@ export const PLAYBOOKS = [
             owner: "GM + VP Operations",
             timeline: "Months 7-14",
             startCondition: "Expansion plan approved",
-            resources: "$1.2M capex (machines + buildout)",
+            resources:
+              "$2-3M capex (five-axis machines run $400-800K each, plus buildout)",
             successMetrics: [
               "Expansion complete",
               "Capacity increased 50%",
@@ -651,7 +656,7 @@ export const PLAYBOOKS = [
           {
             id: "precision-init-007",
             name: "Lights-Out Automation for High-Volume Parts",
-            leverId: "ai-software",
+            leverId: "automation",
             description:
               "Implement robotic loading and automated inspection on top 10 high-volume part families. Enables 24/7 production on repeat jobs, freeing skilled machinists for complex work.",
             owner: "VP Operations",
@@ -698,7 +703,7 @@ export const PLAYBOOKS = [
     },
     exercise: {
       prompt:
-        "Precision has 32% EBITDA margins but is capacity-constrained at one facility. A $1.2M expansion would add 50% capacity. Would you fund this from operating cash flow or leverage? What's the risk if demand doesn't materialize?",
+        "Precision has 32% EBITDA margins but is capacity-constrained at one facility. A $2-3M expansion would add 50% capacity. Would you fund this from operating cash flow or leverage? What's the risk if demand doesn't materialize?",
       acceptanceCriteria: [
         "Analyzes the capex payback period against incremental revenue and margin contribution",
         "Considers leverage vs cash flow tradeoff given already strong margins",
@@ -824,7 +829,7 @@ export const PLAYBOOKS = [
             name: "Acquisition Execution (3-5 Practices)",
             leverId: "buy-and-build",
             description:
-              "Close 3-5 dental practice acquisitions at 4-5x EBITDA. Integrate each onto central billing, scheduling, and procurement platform within 90 days. Multiple arbitrage: buy at 4-5x, platform trades at 7-8x.",
+              "Close 3-5 dental practice acquisitions at 4-5x EBITDA. Integrate each onto central billing, scheduling, and procurement platform within 90 days. Multiple arbitrage: buy add-ons at 4-5x; the platform is worth 6-8x today at sub-scale and exits at 10-12x once scaled.",
             owner: "Founder + M&A partner",
             timeline: "Months 7-18",
             startCondition: "Pipeline mature",
@@ -889,14 +894,14 @@ export const PLAYBOOKS = [
             name: "De Novo Location Launch",
             leverId: "channel-expansion",
             description:
-              "Open 2-3 de novo locations in underserved suburban markets. Lower cost than acquisition ($200-300K per location vs $500K-1M). Longer ramp but higher long-term margin.",
+              "Open 2-3 de novo locations in underserved suburban markets. Capital requirement is comparable to acquisition ($350-600K per operatory buildout, all-in, vs $500K-1M to acquire), but de novo avoids the goodwill premium and inherits no legacy staff or systems. Longer ramp but higher long-term margin.",
             owner: "VP Operations + Real Estate",
             timeline: "Months 20-34",
             startCondition: "Integration playbook proven",
-            resources: "$250K per de novo",
+            resources: "$350-600K per operatory buildout, all-in",
             successMetrics: [
               "2-3 de novos opened",
-              "Break-even within 12 months each",
+              "Break-even within 15-18 months each",
               "Patient acquisition cost <$150",
             ],
             dependencies: ["bright-init-005"],
@@ -1154,7 +1159,7 @@ export const PLAYBOOKS = [
       prompt:
         "Apex has 80 independent contractors and 210 employees. If the IRS reclassifies the ICs as employees, what's the financial impact? How does this change your investment thesis?",
       acceptanceCriteria: [
-        "Quantifies the cost increase from IC-to-employee conversion (benefits, payroll tax, workers comp -- typically 25-35% cost increase on IC spend)",
+        "Quantifies the cost increase from IC-to-employee conversion (benefits, payroll tax, workers comp -- typically 35-40% cost increase on IC spend)",
         "Assesses impact on EBITDA margin and whether the deal still works at adjusted margins",
         "Considers whether IC risk should be priced into the acquisition (lower entry multiple or escrow)",
         "Notes that IC reclassification risk is a sector-wide trend, not unique to Apex",
@@ -1168,7 +1173,7 @@ export const PLAYBOOKS = [
     companyId: "truenorth-saas",
     title: "TrueNorth Analytics: 36-Month Value Creation Playbook",
     description:
-      "High-growth SaaS with strong retention but burning cash on customer acquisition. Playbook prioritizes: (1) unit economics improvement (CAC payback, LTV/CAC), (2) expansion revenue, (3) product-led growth, (4) path to profitability.",
+      "High-growth SaaS with strong retention and modest positive free cash flow (roughly $1.5M), but S&M at 38% of revenue is growing faster than revenue, and the growth plan would consume the $2.8M cash balance without outside capital. Playbook prioritizes: (1) unit economics improvement (CAC payback, LTV/CAC), (2) expansion revenue, (3) product-led growth, (4) capital-efficient scaling.",
     entryMetrics: {
       revenue: 14.2,
       adjustedEbitda: 3.0,
@@ -1282,7 +1287,7 @@ export const PLAYBOOKS = [
             owner: "VP Sales",
             timeline: "Months 8-16",
             startCondition: "Month 7",
-            resources: "$500K fully loaded (team + tools)",
+            resources: "$1.2-1.5M fully loaded annually (team + tools)",
             successMetrics: [
               "Enterprise pipeline >$3M",
               "3+ enterprise deals closed",
@@ -1389,12 +1394,12 @@ export const PLAYBOOKS = [
       "Regional GC with strong government backlog and aging founder. Playbook prioritizes: (1) succession and management upgrade, (2) bonding capacity expansion, (3) project selection discipline, (4) technology for estimating and project management.",
     entryMetrics: {
       revenue: 52.8,
-      adjustedEbitda: 4.85,
-      adjustedEbitdaMargin: 9.2,
+      adjustedEbitda: 5.25,
+      adjustedEbitdaMargin: 9.9,
     },
     exitTargets: {
       revenue: "70-85",
-      adjustedEbitdaMargin: "11-13%",
+      adjustedEbitdaMargin: "10-11%",
       moicTarget: "2.5-3.0x",
     },
     primaryLevers: [
@@ -1449,7 +1454,7 @@ export const PLAYBOOKS = [
             name: "Bonding Capacity Expansion",
             leverId: "financial-controls",
             description:
-              "Current bonding limit: $25M per project. PE backing + improved financials should unlock $40-50M bonding. Larger projects have better margins (less competition, longer duration, higher barriers).",
+              "Current bonding limit: $25M per project. Target $40-50M per project. Sureties underwrite tangible net worth, working capital, and track record, and acquisition leverage shrinks capacity, so the path is balance-sheet strength: keep leverage minimal, retain equity and earnings in the business to grow tangible net worth, add parent-company guarantees or surety-backstop letters from the sponsor, and deepen the surety relationship with audited WIP schedules and CPA-prepared statements. Larger projects have better margins (less competition, longer duration, higher barriers).",
             owner: "CFO + Surety broker",
             timeline: "Months 3-6",
             startCondition: "Month 2 financials upgraded",
@@ -1496,7 +1501,7 @@ export const PLAYBOOKS = [
             name: "Project Selection Discipline",
             leverId: "pricing-optimization",
             description:
-              "Formalize go/no-go framework for bidding. Score projects on margin potential, owner relationship, complexity, and bonding impact. Stop bidding on margin-dilutive work just to maintain revenue.",
+              "Formalize go/no-go framework and bid pricing discipline. Score projects on margin potential, owner relationship, complexity, and bonding impact. Price bids to target margin and stop bidding on margin-dilutive work just to maintain revenue.",
             owner: "COO + VP Preconstruction",
             timeline: "Months 8-14",
             startCondition: "Month 7",
@@ -1576,7 +1581,7 @@ export const PLAYBOOKS = [
         expectedValueCreation: {
           revenue: "+33-60% total reaching $70-85M",
           ebitdaMargin: "+100-200 bps from specialization premium",
-          ebitdaDollars: "$4.5-6.0M",
+          ebitdaDollars: "$2.5-3.5M",
         },
       },
     },
@@ -1613,7 +1618,7 @@ export const PLAYBOOKS = [
     exitTargets: {
       revenue: "22-30",
       adjustedEbitdaMargin: "22-25%",
-      moicTarget: "4.0-5.0x",
+      moicTarget: "3-4x",
     },
     primaryLevers: [
       "buy-and-build",
@@ -1714,7 +1719,7 @@ export const PLAYBOOKS = [
             name: "Clinic Acquisitions (3-5 Practices)",
             leverId: "buy-and-build",
             description:
-              "Close 3-5 clinic acquisitions at 5-7x EBITDA. Integrate onto central PIMS, billing, and procurement within 60 days each. Roll out wellness plan model to acquired clinics. Multiple arbitrage: buy at 5-7x, platform valued at 10-12x.",
+              "Close 3-5 clinic acquisitions at 4-6x EBITDA. Integrate onto central PIMS, billing, and procurement within 60 days each. Roll out wellness plan model to acquired clinics. Multiple arbitrage: buy individual clinics at 4-6x, scaled platform valued at 10-14x.",
             owner: "Founder + M&A partner",
             timeline: "Months 7-18",
             startCondition: "Pipeline mature + playbook proven",
@@ -1779,11 +1784,11 @@ export const PLAYBOOKS = [
             name: "Additional Acquisitions + De Novo",
             leverId: "buy-and-build",
             description:
-              "Close 2-3 more acquisitions plus 1-2 de novo clinics in underserved suburban markets. De novo clinics cost less ($150-200K) but take 12-18 months to ramp.",
+              "Close 2-3 more acquisitions plus 1-2 de novo clinics in underserved suburban markets. De novo clinics run $500K-1M all-in (imaging, surgical suite, buildout), so the economics vs acquisition are close to a wash on capital; the de novo case rests on site selection and avoiding integration risk, not cost savings, and clinics take 12-18 months to ramp.",
             owner: "Founder + M&A partner",
             timeline: "Months 20-34",
             startCondition: "Integration playbook repeatable",
-            resources: "$100K per acquisition + $175K per de novo",
+            resources: "$100K advisory per acquisition + $500K-1M per de novo (imaging, surgical suite, buildout)",
             successMetrics: [
               "8-10 total clinics",
               "Revenue $22-30M",
@@ -1937,11 +1942,12 @@ export const PLAYBOOKS = [
             owner: "VP Operations + Real Estate",
             timeline: "Months 7-14",
             startCondition: "Location selected, lease signed",
-            resources: "$500K buildout + $200K automation + $150K inventory",
+            resources:
+              "$2.5-4M (automated fulfillment facility buildout; no inventory capital, customers own the inventory)",
             successMetrics: [
               "Facility operational",
               "2-day coverage expanded to 90%+",
-              "Break-even within 9 months",
+              "Break-even within 12-18 months",
             ],
             dependencies: ["meridian-init-003"],
           },

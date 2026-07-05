@@ -58,7 +58,7 @@ export const VALUE_LEVERS = [
           { label: "Customer Concentration", path: "keyMetrics.customerConcentration" },
         ],
         opportunity:
-          "5% price increase on $32.5M = $1.6M incremental revenue at ~40% flow-through = $640K EBITDA. First step: install dynamic discount governance so the lift doesn't leak back out through sales overrides.",
+          "5% price increase on $32.5M = $1.6M incremental revenue flowing through at 90%+ (price carries no incremental COGS), roughly $1.4-1.5M of EBITDA after modest churn. First step: install dynamic discount governance so the lift doesn't leak back out through sales overrides.",
       },
       {
         companyId: "truenorth-saas",
@@ -102,7 +102,8 @@ export const VALUE_LEVERS = [
     ],
     typicalImpact: {
       revenue: "15-30% growth without proportional headcount increase",
-      ebitdaMargin: "400-1000 bps (Blue Ridge Partners 6-10% typical)",
+      ebitdaMargin:
+        "100-300 bps of margin expansion (Blue Ridge Partners cites 6-10% total EBITDA uplift, roughly 100-300 bps of margin on a mid-teens-margin business)",
       timeline: "9-18 months for comp redesign, CRM, and SDR pipeline rollout",
     },
     businessTypeFit: {
@@ -135,7 +136,7 @@ export const VALUE_LEVERS = [
       {
         companyId: "precision-manufacturing",
         narrative:
-          "Contract CNC with 28% concentration on one aerospace OEM. Technical expertise sits with the owner; no sales playbook exists. SDR+technical-sales-engineer combo shortens cycle and diversifies the book.",
+          "Contract CNC with 28% concentration on one aerospace OEM. Technical expertise sits with the owner; no sales playbook exists. At 85%+ utilization the shop is capacity-constrained, so the sales lever is pipeline quality and mix, not volume.",
         dataPoints: [
           { label: "Revenue", path: "revenue" },
           { label: "Revenue Growth", path: "keyMetrics.revenueGrowth" },
@@ -143,7 +144,7 @@ export const VALUE_LEVERS = [
           { label: "Gross Margin", path: "keyMetrics.grossMargin" },
         ],
         opportunity:
-          "Add technical sales engineer + structured proposal process. Shorten cycle from 6 to 4 months = 15% revenue throughput lift without adding quota-carrying reps.",
+          "Add technical sales engineer + structured proposal process to prioritize higher-margin regulated work (aerospace, medical) and diversify away from the anchor OEM. Filling the same machine hours with better-mix jobs lifts gross margin 200-400 bps; incremental volume is gated on the facility expansion, not sales cycle speed.",
       },
     ],
     exercise: {
@@ -292,7 +293,7 @@ export const VALUE_LEVERS = [
     exercise: {
       type: "thesis",
       prompt:
-        "A B2B SaaS company has $20M ARR with 40% gross margin. NRR is 105% (3% churn, 8% expansion). You want to move NRR from 105% to 120% (crossing from 'Needs Improvement' into 'Good'). What levers would you pull? What's the cost, and what's the valuation impact?",
+        "A B2B SaaS company has $20M ARR with 80% gross margin. NRR is 105% (3% churn, 8% expansion). You want to move NRR from 105% to 120% (crossing from 'Needs Improvement' into 'Good'). What levers would you pull? What's the cost, and what's the valuation impact?",
       acceptanceCriteria: [
         "Identifies CSM hiring, product packaging, and usage-based expansion as primary levers",
         "Notes that expansion requires product adoption and customer health as prerequisites",
@@ -319,7 +320,8 @@ export const VALUE_LEVERS = [
     ],
     typicalImpact: {
       revenue: "None (cost lever, not revenue)",
-      ebitdaMargin: "300-800 bps (3-8% total EBITDA uplift typical)",
+      ebitdaMargin:
+        "100-300 bps of margin expansion (a 3-8% total EBITDA uplift on a typical margin base)",
       timeline: "6-18 months; 3-6 months for quick-win spend categories",
     },
     businessTypeFit: {
@@ -347,7 +349,7 @@ export const VALUE_LEVERS = [
           { label: "Recurring Revenue", path: "keyMetrics.recurringRevenuePct" },
         ],
         opportunity:
-          "Negotiate 3-5% COGS reduction via GPO aggregation = $1.3-2.1M additional EBITDA. 6-month payback.",
+          "Negotiate 3-5% COGS reduction via GPO aggregation = $1.2-1.95M additional EBITDA on $39.0M COGS. 6-month payback.",
       },
       {
         companyId: "meridian-fulfillment",
@@ -360,17 +362,17 @@ export const VALUE_LEVERS = [
           { label: "Employee Count", path: "keyMetrics.employeeCount" },
         ],
         opportunity:
-          "Consolidate carrier network via GPO + automate 20% of sort/pack = $1.5-2M cost savings over 18 months.",
+          "Consolidate carrier and packaging spend via GPO + extend the existing sort/pack automation = $0.8-1.2M cost savings over 18 months.",
       },
     ],
     exercise: {
       type: "thesis",
       prompt:
-        "You acquire a $50M manufacturing company with 35% COGS, 20% operating expenses, and 45% EBITDA margin. Benchmarking shows competitors at 30% COGS. Lay out a 6-month procurement plan. What are your quick wins? What role does cross-portfolio aggregation play?",
+        "You acquire a $50M manufacturing company with $30M COGS (60% of revenue) and a 27% EBITDA margin. Benchmarking suggests peers pay roughly 5% less for comparable inputs (a 5% reduction in COGS spend, not 5 points of revenue). Lay out a 6-month procurement plan. What are your quick wins? What role does cross-portfolio aggregation play?",
       acceptanceCriteria: [
         "Identifies spend analysis and vendor audit as the first step",
         "Calls out cross-portfolio aggregation (GPO) as the primary quick-win lever",
-        "Calculates 5% COGS reduction = ~$2.5M incremental EBITDA",
+        "Calculates 5% of $30M COGS = $1.5M incremental EBITDA (roughly 300 bps of margin)",
         "Mentions realistic 6-18 month payback and risks from switching costs",
       ],
     },
@@ -411,7 +413,7 @@ export const VALUE_LEVERS = [
       {
         companyId: "bright-dental",
         narrative:
-          "Dental roll-up at 5 locations. Revenue per employee of $158K is below the professional services benchmark ($200K+). Shared services (billing, insurance, HR) across locations is a clean consolidation play.",
+          "Dental roll-up at 5 locations. Dental practices normally run $140-180K of revenue per employee, so $158K is mid-range, not a red flag. The lever here is hygienist utilization and schedule density, plus shared services (billing, insurance, HR) across locations, not headcount cuts.",
         dataPoints: [
           { label: "Revenue", path: "revenue" },
           { label: "Revenue per Employee", path: "keyMetrics.avgRevenuePerEmployee" },
@@ -419,12 +421,12 @@ export const VALUE_LEVERS = [
           { label: "Gross Margin", path: "keyMetrics.grossMargin" },
         ],
         opportunity:
-          "Consolidate admin and back-office = $400-600K labor savings. Target: lift rev-per-employee from $158K toward $200K.",
+          "Lift hygienist utilization and schedule density (more production per chair-hour) + consolidate billing and insurance admin across 5 locations = $300-500K EBITDA impact without touching clinical headcount.",
       },
       {
         companyId: "meridian-fulfillment",
         narrative:
-          "3PL with 145 employees across 3 warehouses. Revenue per employee of $203K is decent but trails best-in-class 3PLs ($250K+). Manual sorting and spreadsheet inventory are the productivity drag.",
+          "3PL with 145 employees across 3 warehouses. Revenue per employee of $203K is decent but trails best-in-class 3PLs ($250K+). The company has already invested $1.1M in warehouse automation; the lever is extending that program to the remaining manual sort and pack stations across all 3 facilities.",
         dataPoints: [
           { label: "Revenue", path: "revenue" },
           { label: "Employee Count", path: "keyMetrics.employeeCount" },
@@ -432,7 +434,7 @@ export const VALUE_LEVERS = [
           { label: "Adjusted EBITDA Margin", path: "keyMetrics.adjustedEbitdaMargin" },
         ],
         opportunity:
-          "WMS + picking automation = 15-20% labor cost reduction = $1.1-1.5M EBITDA. Investment: $150-250K. Payback: 12 months.",
+          "Extend the existing automation program (multi-facility WMS + picking) = $0.8-1.2M annual labor savings. Investment: roughly $1.5-2M across 3 facilities. Payback: 18-24 months.",
       },
     ],
     exercise: {
@@ -463,7 +465,8 @@ export const VALUE_LEVERS = [
     ],
     typicalImpact: {
       revenue: "1-3% uplift from improved service and working capital release",
-      ebitdaMargin: "400-1200 bps (4-12% EBITDA uplift typical)",
+      ebitdaMargin:
+        "100-400 bps of margin expansion (consulting studies cite 4-12% total EBITDA uplift, which lands at 100-400 bps of margin for most mid-market cost structures)",
       timeline: "12-24 months for ERP implementations",
     },
     businessTypeFit: {
@@ -483,7 +486,7 @@ export const VALUE_LEVERS = [
       {
         companyId: "meridian-fulfillment",
         narrative:
-          "3PL with 3 facilities and no centralized WMS. Orders arrive via email; warehouse uses spreadsheets; no real-time inventory. Textbook WMS implementation candidate, and a prerequisite for any AI demand forecasting later.",
+          "3PL that has already put $1.1M into warehouse automation across 3 facilities. The play is not a greenfield systems build; it is sweating the installed base: pick-path optimization, slotting, and batch-release logic to push cost per order down from $8.04.",
         dataPoints: [
           { label: "Revenue", path: "revenue" },
           { label: "Employee Count", path: "keyMetrics.employeeCount" },
@@ -491,7 +494,7 @@ export const VALUE_LEVERS = [
           { label: "Revenue Growth", path: "keyMetrics.revenueGrowth" },
         ],
         opportunity:
-          "WMS implementation = 15% efficiency + 20% inventory reduction = $1.5M EBITDA. Cost: $200-300K. Unlocks the AI forecasting lever downstream.",
+          "Pick-path optimization + slotting on the existing automation stack = 8-12% cost-per-order reduction = $0.4-0.6M EBITDA. Cost is mostly configuration and process work, not new capex. Also unlocks the AI analytics lever downstream.",
       },
       {
         companyId: "precision-manufacturing",
@@ -597,7 +600,7 @@ export const VALUE_LEVERS = [
     title: "Working Capital Optimization",
     category: "margin",
     oneLiner:
-      "Unlock 5-10% of sales as free cash in the first 100 days through DSO, DPO, and DIO discipline.",
+      "Unlock 1-3% of sales as free cash in the first 100 days, and 5-10% over the full program, through DSO, DPO, and DIO discipline.",
     whenToDeploy: [
       "Days Sales Outstanding exceeds vertical benchmark (30-45 days SaaS, 45-60 manufacturing, 60-90 construction)",
       "Inventory growing faster than revenue",
@@ -635,12 +638,12 @@ export const VALUE_LEVERS = [
           { label: "Cash", path: "balanceSheet.cash" },
         ],
         opportunity:
-          "15% inventory reduction + 10-day DSO improvement = $2-3M cash release. Self-funds growth initiatives without new capital.",
+          "15% inventory reduction ($0.5M on $3.2M) + 10-day DSO improvement ($1.3M on $48.2M revenue) = roughly $1.8M cash release. Self-funds growth initiatives without new capital.",
       },
       {
         companyId: "ironclad-construction",
         narrative:
-          "Commercial GC with $8.4M AR on $52.8M revenue = ~58 days DSO, at the bottom of the construction benchmark (60-90). Retainage management and approval layer optimization are the unlocks.",
+          "Commercial GC with $8.4M AR on $52.8M revenue = ~58 days DSO, already decent against the construction benchmark (60-90). The residual opportunity is not headline DSO; it sits in retainage management, billing cadence, and change-order collection.",
         dataPoints: [
           { label: "Revenue", path: "revenue" },
           { label: "Accounts Receivable", path: "balanceSheet.ar" },
@@ -648,7 +651,7 @@ export const VALUE_LEVERS = [
           { label: "Long-term Debt", path: "balanceSheet.ltDebt" },
         ],
         opportunity:
-          "Accelerate retainage collection + tighten approval layers = $2-3M working capital release. Use proceeds to deleverage.",
+          "Accelerate retainage collection, tighten billing cadence, and chase change-order approvals = $0.8-1.2M working capital release. Modest by design: 58 DSO is already good for a GC, and retainage puts a floor under how far it can fall. Use proceeds to deleverage.",
       },
     ],
     exercise: {
@@ -859,15 +862,15 @@ export const VALUE_LEVERS = [
       {
         companyId: "meridian-fulfillment",
         narrative:
-          "3PL with inventory estimation gaps. Cash position is not forecast. Pre-exit, this is a multi-million dollar valuation risk: buyers discount heavily for data integrity issues.",
+          "3PL billing dozens of clients for storage, handling, and accessorial services with no per-client profitability reporting. Cash position is not forecast. Pre-exit, opaque client-level margins are a multi-million dollar valuation risk: buyers discount heavily for data integrity issues.",
         dataPoints: [
           { label: "Revenue", path: "revenue" },
           { label: "Adjusted EBITDA Margin", path: "keyMetrics.adjustedEbitdaMargin" },
-          { label: "Inventory", path: "balanceSheet.inventory" },
+          { label: "Accounts Receivable", path: "balanceSheet.ar" },
           { label: "Cash", path: "balanceSheet.cash" },
         ],
         opportunity:
-          "Monthly inventory close + working capital KPIs = clean QoE data + $500K working capital release. Valuation impact at exit: avoids a 0.5-1.0x multiple haircut.",
+          "Per-client P&L reporting + billing controls + rolling cash forecast = clean QoE data and $0.3-0.5M recovered from mispriced or under-billed accounts. Valuation impact at exit: avoids a 0.5-1.0x multiple haircut.",
       },
     ],
     exercise: {
@@ -934,7 +937,7 @@ export const VALUE_LEVERS = [
       {
         companyId: "meridian-fulfillment",
         narrative:
-          "3PL with demand forecasting gaps. Reshape play: AI demand model predicts order patterns and rebalances inventory across 3 facilities. Depends on WMS implementation first (data governance prerequisite).",
+          "3PL that has already automated the warehouse floor. Reshape play: client-facing analytics and billing accuracy. Accessorial charges (special handling, storage overages, rush orders) leak revenue when billing is manual; an AI billing audit plus per-client dashboards closes the gap. Note: Meridian holds no inventory of its own (clients own it), so the opportunity is service and billing, not stock.",
         dataPoints: [
           { label: "Revenue", path: "revenue" },
           { label: "Employee Count", path: "keyMetrics.employeeCount" },
@@ -942,7 +945,7 @@ export const VALUE_LEVERS = [
           { label: "Revenue Growth", path: "keyMetrics.revenueGrowth" },
         ],
         opportunity:
-          "AI forecasting: $100K build, 15% inventory reduction + 5% service improvement = $400K EBITDA. Only works if WMS is in place first.",
+          "AI billing audit + client analytics: $100K build, recover 1-2% of revenue leaking through under-billed accessorial charges = $0.3-0.6M, most of it flowing straight to EBITDA. Rides on the data the existing automation stack already produces.",
       },
     ],
     exercise: {
@@ -1004,7 +1007,7 @@ export const VALUE_LEVERS = [
           { label: "Revenue Growth", path: "keyMetrics.revenueGrowth" },
         ],
         opportunity:
-          "Add 10-15 clinics over 3 years at 5-6x EBITDA, integrate into 8-9x platform valuation = multiple arbitrage spread of 3x on $1.5M incremental EBITDA per add-on.",
+          "Add 10-15 solo practices over 3 years at 5-6x EBITDA, integrate into 8-9x platform valuation = multiple arbitrage spread of 3x on roughly $150-400K of EBITDA per add-on. Every 4-6 add-ons contribute $1.0-1.5M of combined EBITDA before synergies.",
       },
       {
         companyId: "vitality-vet",
@@ -1038,13 +1041,13 @@ export const VALUE_LEVERS = [
     title: "ESG and Sustainability",
     category: "strategic",
     oneLiner:
-      "Mature ESG practices earn a verified 6-7% exit multiple uplift. Energy efficiency and supply chain transparency are the operational unlocks.",
+      "Some studies suggest mature ESG practices earn a modest exit-multiple premium; the evidence is mixed. Energy efficiency and supply chain transparency are the operational unlocks either way.",
     whenToDeploy: [
       "Energy-intensive operations (fleet, warehouses, manufacturing)",
       "Supply chain with material ESG exposure (labor, sourcing, emissions)",
       "Institutional or strategic acquirers likely at exit (they pay premiums for ESG data)",
       "Sustainability-linked finance available (lower cost of debt tied to targets)",
-      "Regulatory pressure imminent (EU CSRD, SEC climate disclosure)",
+      "Customer and enterprise supply-chain ESG requirements, or EU CSRD exposure for companies selling into Europe",
     ],
     typicalImpact: {
       revenue: "Flat to 2% uplift from customer preference and contract wins",
@@ -1076,7 +1079,7 @@ export const VALUE_LEVERS = [
           { label: "Capex", path: "cashFlow.capex" },
         ],
         opportunity:
-          "Phased EV fleet + AI route optimization = 15-20% fuel cost reduction + emissions story for exit. Sustainability-linked debt lowers cost of capital by 25-50 bps.",
+          "Phased EV fleet + AI route optimization = 15-20% fuel cost reduction + emissions story for exit. Sustainability-linked debt can shave 5-25 bps off cost of capital via margin ratchets.",
       },
       {
         companyId: "ironclad-construction",
@@ -1095,7 +1098,7 @@ export const VALUE_LEVERS = [
     exercise: {
       type: "thesis",
       prompt:
-        "A $40M regional trucking company has 50 diesel trucks and wants to explore ESG as a value creation lever. The CFO thinks it's a cost without return. How do you frame the business case? What's the specific path to a 6-7% exit multiple uplift?",
+        "A $40M regional trucking company has 50 diesel trucks and wants to explore ESG as a value creation lever. The CFO thinks it's a cost without return. How do you frame the business case? What's the credible path to operational savings and a possible exit-multiple premium (evidence on the premium is mixed)?",
       acceptanceCriteria: [
         "Connects ESG to operational metrics: fuel cost, maintenance, insurance rates",
         "Identifies sustainability-linked finance as cost-of-capital lever",
