@@ -1565,5 +1565,212 @@ export const LEARN_CONTENT = [
         ]
       }
     ]
+  },
+
+  // ===== SECTION 5: DEAL PROCESS & EXECUTION =====
+  {
+    id: "s5",
+    title: "5. Deal Process & Execution",
+    subsections: [
+      {
+        id: "s5a",
+        title: "5A. Sourcing & Screening",
+        objectives: [
+          "Distinguish brokered flow from proprietary flow and know the tradeoffs of each",
+          "Read a teaser and CIM for what they are, and are not, telling you",
+          "Understand what an IOI commits you to and what it does not",
+          "Apply funnel discipline to a real sourcing decision",
+        ],
+        skillTags: ["Sourcing", "Screening", "CIM", "IOI", "Deal Funnel"],
+        timeEstimate: 12,
+        suggestedQuestions: [
+          "Why would a fund pay a higher multiple for a brokered deal instead of finding it themselves?",
+          "What should you assume a CIM is hiding?",
+        ],
+        blocks: [
+          {
+            type: "text",
+            content: "Where LMM deals come from: brokered processes (business brokers, regional investment banks running limited auctions), proprietary outreach (direct mail, buy-side searchers, industry relationships), and intermediary networks. Proprietary flow means less competition and a better price, but longer cycles and more dead ends. Most funds run both channels at once because neither alone fills a pipeline."
+          },
+          {
+            type: "text",
+            content: "Teaser and CIM anatomy. The teaser is one or two anonymous pages: industry, size, and a few headline numbers, nothing that identifies the company. Sign an NDA and you get the CIM, the confidential information memorandum. Read a CIM as a sales document, not a data room. The add-backs are aggressive until proven otherwise (see 3E), the projections are the seller's best case, and what is NOT shown (customer names, monthly P&L, cohort detail) is your diligence list before you ever sign an LOI."
+          },
+          {
+            type: "metricTable",
+            headers: ["Funnel Stage", "Typical Conversion", "What Kills Deals Here"],
+            rows: [
+              ["Teasers reviewed", "100", "Wrong size, sector, or geography"],
+              ["CIMs read (NDA signed)", "30-40", "Concentration, declining revenue, broken add-backs"],
+              ["IOIs submitted", "8-12", "Price expectations too far apart"],
+              ["LOIs negotiated", "2-3", "Structure, exclusivity terms, financing confidence"],
+              ["Deals closed", "1", "Diligence surprises, financing, cold feet"]
+            ]
+          },
+          {
+            type: "text",
+            content: "The IOI, indication of interest, is a short non-binding letter: a valuation range, a structure sketch (cash, debt, rollover), and a financing outline. Its job is to stay in the process without overcommitting. Precision on price and terms is the LOI's job, not the IOI's. Submit an IOI too vague and you get dropped from the process; submit one too specific before you have real diligence and you box yourself in when the numbers change."
+          },
+          {
+            type: "exercise",
+            id: "ex-5a-1",
+            q: "You have capacity to pursue one deal. The broker sends you a teaser for an HVAC business (think Summit) and your proprietary outreach surfaces a food distributor (think Coastal) whose owner has never spoken to another buyer. Same size, similar returns on paper. Which do you pursue and why?",
+            inputMode: "qualitative",
+            answer: "Weigh the tradeoffs rather than pick blindly. Proprietary: price advantage, maybe a full turn cheaper, no auction pressure, and better diligence access since you are the only buyer in the room. But it is slower, and an owner who has never spoken to a buyer may not be a committed seller, so early weeks can evaporate. Brokered: a committed seller with an organized data room and a defined timeline, but competition compresses returns and the CIM is polished to hide warts. The honest answer is it depends on conviction and bandwidth, but the discipline is the same funnel math either way, and a proprietary deal at 5x beats an auction win at 6.5x for the identical business. If capacity is truly scarce, that price gap alone should tip the decision toward proprietary, provided you can get a real signal of seller commitment (why are they selling, have they engaged advisors, is there a stated timeline) before committing weeks to it."
+          },
+          {
+            type: "notes",
+            id: "notes-5a"
+          }
+        ]
+      },
+      {
+        id: "s5b",
+        title: "5B. LOI & Exclusivity",
+        objectives: [
+          "Identify which LOI terms are binding versus non-binding",
+          "Understand why exclusivity is the seller's real concession",
+          "Recognize the difference between a legitimate and a predatory re-trade",
+          "Structure a response to a QoE finding discovered during exclusivity",
+        ],
+        skillTags: ["LOI", "Exclusivity", "Re-trade", "Deal Structure"],
+        timeEstimate: 12,
+        suggestedQuestions: [
+          "What actually happens if a buyer breaches exclusivity?",
+          "How do you tell a defensible re-trade from a predatory one?",
+        ],
+        blocks: [
+          {
+            type: "text",
+            content: "The LOI converts a range into a number and buys the thing that actually matters: exclusivity. Almost everything in it is non-binding, except exclusivity, confidentiality, and sometimes a breakup provision. Sixty to ninety days of exclusivity is the seller taking their business off the market on your word, which is why reputation matters more than paper."
+          },
+          {
+            type: "lineItemTable",
+            headers: ["LOI Term", "What To Nail Down", "Common Mistake"],
+            rows: [
+              ["Price AND basis", "Dollar figure tied to a defined EBITDA and multiple", "Naming a price without naming whose EBITDA it is"],
+              ["Structure", "Cash at close, seller note, rollover, earnout split", "Leaving structure 'to be discussed' and re-trading later"],
+              ["Working capital", "Peg methodology agreed in principle", "Silence, then a six-figure fight at close (see 3C)"],
+              ["Exclusivity", "Length, extensions, and what voids it", "Too short to finish QoE and legal"],
+              ["Financing", "How firm is the debt, any financing contingency", "Overstating certainty, then renegotiating when the bank balks"],
+              ["Key diligence items", "The 3-4 findings that would change price", "Hiding them, then surprising the seller in week 6"]
+            ]
+          },
+          {
+            type: "text",
+            content: "Re-trading, cutting price during exclusivity, is sometimes legitimate (QoE finds real problems, see 3E) and sometimes predatory (planned all along). The market remembers. Brokers track which buyers close at their LOI number, and the ones who do not stop seeing good deals."
+          },
+          {
+            type: "exercise",
+            id: "ex-5b-1",
+            q: "Your QoE on a deal under LOI at 5.5x on $4.0M adjusted EBITDA comes back at $3.4M of sustainable EBITDA (the difference is one-time other income and an indefensible add-back, exactly the Coastal pattern from 3E). Walk through your options and what each does to your reputation and the deal.",
+            inputMode: "qualitative",
+            answer: "Three real options. First, re-trade to 5.5x on $3.4M (about $18.7M instead of $22M), which is defensible because the basis changed, not the multiple; show the seller the QoE line by line rather than just naming a new number. Second, hold price but restructure: a seller note or earnout bridges the $3.3M gap and ties payment to the earnings actually being real, which keeps the headline price intact while shifting risk to where it belongs. Third, walk, the right call if the finding suggests deeper credibility problems (the seller knew and hid it) rather than an honest accounting gray area. What you never do is invent a new reason to cut price beyond the documented finding. A QoE-driven re-trade is process; an unexplained one is a reputation tax you pay on every future deal, because brokers and sellers talk."
+          },
+          {
+            type: "notes",
+            id: "notes-5b"
+          }
+        ]
+      },
+      {
+        id: "s5c",
+        title: "5C. Diligence Workstreams",
+        objectives: [
+          "Map who owns each diligence workstream and what they deliver",
+          "Distinguish confirmatory diligence from exploratory diligence",
+          "Understand the databook discipline and why numbers must tie to source",
+          "Treat data delays and evasive answers as diligence findings",
+        ],
+        skillTags: ["Diligence", "QoE", "Databook", "Deal Process"],
+        timeEstimate: 12,
+        suggestedQuestions: [
+          "How do you sequence diligence spend across a 60-90 day exclusivity window?",
+          "What is the difference between confirmatory and exploratory diligence?",
+        ],
+        blocks: [
+          {
+            type: "text",
+            content: "Exclusivity starts a 60-90 day sprint with parallel workstreams, each owned by a specialist, all coordinated by the deal lead. Confirmatory diligence proves what the CIM claimed; exploratory diligence answers what the CIM never addressed. Budget $150-400K all-in for a LMM deal, with dead-deal costs baked into fund economics from the start."
+          },
+          {
+            type: "metricTable",
+            headers: ["Workstream", "Who Does It", "Deliverable"],
+            rows: [
+              ["Quality of earnings", "Accounting firm transaction advisory (see 3E)", "QoE report: sustainable EBITDA, proof of cash, NWC analysis"],
+              ["Legal", "Deal counsel", "Purchase agreement, disclosure schedules, lien and litigation search"],
+              ["Commercial", "Deal team plus customer calls", "Market position, customer references, churn and pipeline reality"],
+              ["Insurance / benefits", "Broker review", "Coverage gaps, benefit liabilities, R&W insurance quote"],
+              ["Environmental / regulatory", "Specialists as needed", "Phase I, licenses, compliance exposure"],
+              ["Background", "Third-party service", "Litigation, liens, and history on the sellers and key managers"]
+            ]
+          },
+          {
+            type: "text",
+            content: "The databook discipline: every number that matters gets tied to source documents (bank statements, tax returns, customer contracts), and the working capital peg gets negotiated on QoE data, not CIM data (cross-reference 3C). The deal lead's job is sequencing: kill-risk items first, expensive confirmatory work last, so you spend real money only once the deal has survived the cheap checks."
+          },
+          {
+            type: "exercise",
+            id: "ex-5c-1",
+            q: "It is day 20 of a 75-day exclusivity on a Precision-like machine shop. Legal is clean so far, but the QoE is stuck waiting on monthly financials and two of your four scheduled customer calls went unreturned. The seller says everyone is just busy. What do you do?",
+            inputMode: "qualitative",
+            answer: "Treat data delays as signal, not friction. Escalate specifically: a written list of what is outstanding, a deadline, and a named consequence (exclusivity tolls or extends day-for-day on late items, so the seller bears the cost of slow-walking). Push the customer calls through the seller with structure: owner-introduced, scheduled, with a backup list if the first names go quiet again. Re-sequence spend so nothing expensive gets committed until the flow resumes; do not pay for the environmental Phase I while the QoE is stalled. If the top customer will not talk at all on a 28%-concentration business, that IS the diligence finding on its own, independent of anything else in the numbers, and price or structure has to absorb it."
+          },
+          {
+            type: "notes",
+            id: "notes-5c"
+          }
+        ]
+      },
+      {
+        id: "s5d",
+        title: "5D. Purchase Agreement & Close",
+        objectives: [
+          "Understand how reps and warranties allocate risk between buyer and seller",
+          "Know the mechanics of indemnification caps, baskets, and survival periods",
+          "Compare escrow and R&W insurance as risk-transfer tools",
+          "Connect closing mechanics to the first-100-days value creation plan",
+        ],
+        skillTags: ["Purchase Agreement", "Indemnification", "Escrow", "Closing", "R&W Insurance"],
+        timeEstimate: 13,
+        suggestedQuestions: [
+          "Why has R&W insurance become common even in LMM deals?",
+          "What does cash-free debt-free actually mean at close?",
+        ],
+        blocks: [
+          {
+            type: "text",
+            content: "The purchase agreement converts diligence into allocated risk. Reps and warranties are the seller's statements of fact about the business; indemnification is what happens when one turns out false. The negotiation is not whether the seller stands behind the business, it is for how much (cap), above what threshold (basket), and for how long (survival)."
+          },
+          {
+            type: "lineItemTable",
+            headers: ["Mechanism", "Typical LMM Range", "What It Does"],
+            rows: [
+              ["Indemnity cap", "10-20% of purchase price (fundamental reps higher)", "Ceiling on what the buyer can recover"],
+              ["Basket", "0.5-1% of price, tipping or deductible", "No claims until losses cross the threshold"],
+              ["Survival", "12-24 months general, longer for tax and fundamental", "How long claims can be brought"],
+              ["Escrow / holdback", "5-15% of price, 12-24 months", "Money actually reachable without suing the seller"],
+              ["R&W insurance", "Premium ~2.5-4% of coverage", "Shifts rep risk to an insurer; increasingly common even in LMM"],
+              ["Working capital true-up", "Peg vs actual at close, collar around it", "Settles the NWC peg from 3C, 60-90 days post-close"]
+            ]
+          },
+          {
+            type: "text",
+            content: "Closing mechanics in the LMM: cash-free debt-free means the seller keeps cash and pays off debt at close, and the flow of funds spreadsheet allocates every dollar (payoff letters, escrow funding, transaction fees, seller proceeds). The first 100 days start the moment the wire clears, which is why the value creation plan (Section 4 and the playbooks) is written before close, not after."
+          },
+          {
+            type: "exercise",
+            id: "ex-5d-1",
+            q: "The seller of a BrightSmile-like dental platform balks at a 15% escrow, arguing their reps are clean and they need the proceeds for their next venture. Your QoE was clean but the roll-up has $3.2M of goodwill from prior acquisitions and integration-cost add-backs you only partially accepted. How do you respond, and what alternatives keep the deal moving?",
+            inputMode: "qualitative",
+            answer: "The escrow exists precisely because acquisition-heavy books carry rep risk that a clean QoE does not eliminate: prior acquisition liabilities, credentialing and compliance exposure across multiple practices, and earnout obligations owed to prior sellers that could surface post-close. Do not just concede the point. Alternatives that keep the deal moving: R&W insurance to replace most of the escrow, with the buyer paying or splitting the roughly 3% premium so the seller walks with more cash at close; a smaller escrow (7-8%) paired with a longer survival period specifically on the acquisition-related reps; or a seller note that doubles as security, so the same dollars serve both purposes. Trade cash-at-close for risk coverage rather than simply reducing the ask. If the seller rejects every risk-sharing structure offered, that reluctance itself is worth asking about directly."
+          },
+          {
+            type: "notes",
+            id: "notes-5d"
+          }
+        ]
+      }
+    ]
   }
 ];
