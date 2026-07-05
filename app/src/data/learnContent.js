@@ -1497,6 +1497,72 @@ export const LEARN_CONTENT = [
             id: "notes-4h"
           }
         ]
+      },
+      {
+        id: "s4-debt",
+        title: "4J. Financing the Deal",
+        objectives: [
+          "Map the LMM capital stack and know where each instrument sits",
+          "Read the covenants that govern a deal after close",
+          "Compute a DSCR and see why amortization, not leverage, binds",
+          "Structure a Summit stack that clears a fixed-charge covenant",
+        ],
+        skillTags: ["Debt Structuring", "DSCR", "Capital Stack", "Summit HVAC"],
+        timeEstimate: 15,
+        suggestedQuestions: [
+          "Why is the amortization schedule usually a tighter constraint than the leverage multiple?",
+          "What does a seller note signal to a senior lender, and why do they like seeing it?",
+        ],
+        blocks: [
+          {
+            type: "text",
+            content: "The leverage multiple gets the headlines, but deals live or die on the structure of the debt: who sits where in the stack, what it costs, how fast it amortizes, and what covenants it carries. In the LMM the menu is different from large-cap PE: banks are more conservative, mezzanine is expensive, and seller paper does real work."
+          },
+          {
+            type: "metricTable",
+            headers: ["Instrument", "Typical LMM Terms", "Position / Notes"],
+            rows: [
+              ["Senior bank debt", "SOFR + 300-450 bps, 5-7 yr, amortizing", "First lien on all assets. Cheapest money, tightest covenants, slowest to say yes."],
+              ["Unitranche (private credit)", "SOFR + 550-700 bps, bullet or light am", "One lender replaces senior + mezz. Faster, more leverage, more expensive."],
+              ["Mezzanine", "12-14% (often 10% cash + PIK), warrants sometimes", "Subordinated. Fills the gap when senior maxes out. Priced like it."],
+              ["Seller note", "6-9%, subordinated, 3-5 yr", "Signals seller confidence, bridges valuation gaps, and lenders love seeing it behind them."],
+              ["SBA 7(a)", "Prime + spread, 10 yr, $5M cap", "Personal guarantee required. The workhorse for sub-$5M deals and searchers, irrelevant above it."],
+              ["Rollover equity", "10-30% of seller proceeds", "Not debt, but part of every sources conversation. Aligns the seller with the new owner's outcome."]
+            ]
+          },
+          {
+            type: "text",
+            content: "Covenants are the tripwires: a maximum leverage covenant (debt/EBITDA below a ceiling that steps down over time) and a fixed charge coverage covenant (cash generated must cover debt service, capex, and taxes by a margin, typically 1.2-1.25x minimum). Breach does not usually mean default and seizure; it means the lender is now inside your tent, with fees, rate bumps, and veto power over cash."
+          },
+          {
+            type: "text",
+            content: "Work Summit. Use adjusted EBITDA $5.5M, maintenance capex ~$1.5M, and treat it as a pass-through so entity taxes are ignored. At 3.0x leverage ($16.5M senior debt, 9% rate, 7-year straight-line amortization), year-one debt service is $2.36M principal + $1.49M interest = $3.85M. Cash available is $5.5M less $1.5M capex = $4.0M. DSCR = $4.0M / $3.85M = 1.04x. The deal FAILS a 1.25x covenant even though '3x leverage on an HVAC business' sounds conservative. At 2.5x ($13.75M debt), service is $1.96M + $1.24M = $3.20M and DSCR = exactly 1.25x, right at the line. The lesson: the amortization schedule, not the leverage multiple, is usually the binding constraint in the LMM, where banks want their money back in 5-7 years."
+          },
+          {
+            type: "companyData",
+            companyId: "summit-hvac",
+            view: "metrics"
+          },
+          {
+            type: "exercise",
+            id: "ex-4j-dscr",
+            q: "Summit at 2.5x leverage: $13.75M of senior debt at 9% with 7-year straight-line amortization. Adjusted EBITDA $5.5M, maintenance capex $1.5M, no entity-level taxes. What is the year-one DSCR?",
+            inputMode: "quantitative",
+            unit: "x",
+            answer: "Debt service = $13.75M / 7 = $1.96M principal + $13.75M x 9% = $1.24M interest = $3.20M. Cash available = $5.5M - $1.5M = $4.0M. DSCR = $4.0M / $3.20M = 1.25x, exactly at the standard covenant minimum. No cushion: one soft quarter and Summit trips the covenant. A buyer who wants margin for error either borrows less, negotiates a longer amortization, or layers in a seller note whose payments can flex."
+          },
+          {
+            type: "exercise",
+            id: "ex-4j-stack",
+            q: "Design a capital stack for the $33M Summit acquisition (6x on $5.5M) that gets to at least 50% total debt without failing a 1.25x fixed charge covenant. Which instruments do you use and why?",
+            inputMode: "qualitative",
+            answer: "Senior sized to what the DSCR supports (about $13.75M, roughly 2.5x, per the worked example), then a $3-4M seller note at 7-8% interest-only for 3 years (its deferred principal barely touches year-one fixed charges and it keeps the seller invested in the transition), optionally with the note's cash interest toggled to PIK if a covenant gets tight. That reaches roughly $17M of debt, above 50% of the price, while year-one fixed charges stay near the senior-only case. Rounding out sources: sponsor equity plus 10-20% seller rollover. What NOT to do: stack mezzanine at 13% on a 16.9% margin services business; the coverage math dies. The general principle: in the LMM you buy leverage capacity with structure (seller paper, amortization holidays, rollover) rather than with junior debt pricing."
+          },
+          {
+            type: "notes",
+            id: "notes-4j"
+          }
+        ]
       }
     ]
   }
