@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import ReviewPill from "../ReviewPill";
 import FocusView from "./FocusView";
 import JourneyView from "./JourneyView";
 
@@ -51,9 +52,12 @@ export default function LearnHub({ learnProgress, onStartLesson }) {
     <div>
       {/* Page header */}
       <div className="mb-6">
-        <h2 className="text-4xl font-extrabold font-headline text-on-surface tracking-tight">
-          Learn the Fundamentals
-        </h2>
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="text-4xl font-extrabold font-headline text-on-surface tracking-tight">
+            Learn the Fundamentals
+          </h2>
+          <ReviewPill />
+        </div>
         <p className="text-sm text-on-surface-variant mt-2">
           PE financial statement analysis, step by step
         </p>

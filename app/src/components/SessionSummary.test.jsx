@@ -1,6 +1,8 @@
 // @vitest-environment jsdom
 import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { screen, fireEvent } from "@testing-library/react";
+// SessionSummary hosts ReviewPill (MCR-102), which needs ScoringProvider + router.
+import { renderWithProviders as render } from "../test/renderWithProviders";
 import SessionSummary from "./SessionSummary";
 
 const company = { name: "Summit Mechanical Services", industry: "HVAC" };
