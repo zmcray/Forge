@@ -112,7 +112,7 @@ export const COMPANIES = [
       recurringRevenuePct: 60, customerConcentration: 22,
       employeeCount: 85, avgRevenuePerEmployee: 0.567
     },
-    redFlags: ["Gross margin compressed 100bps YoY (20.1% to 19.1%) despite 5% revenue growth -- cost pass-through issues", "Net income dropped 78% ($0.9M to $0.2M)", "Working capital consuming cash (AR + inventory growing faster than revenue)", "Customer concentration at 22% -- who is this?", "Low cash position ($0.4M) for a $48M revenue business"],
+    redFlags: ["Gross margin compressed 100bps YoY (20.1% to 19.1%) despite 5% revenue growth -- cost pass-through issues", "Net income dropped 78% ($0.9M to $0.2M)", "Working capital consuming cash (AR + inventory growing faster than revenue)", "Customer concentration at 22% -- who is this?", "Low cash position ($0.4M) for a $48M revenue business", "Other income of $0.9M in 2025 (vs $0 in 2024) sits inside reported EBITDA. What is it and does it recur?", "Depreciation doubled YoY ($1.1M to $2.1M) against only $0.8M of capex. Useful-life change, catch-up, or error?"],
     greenFlags: ["60% recurring revenue from contracted accounts", "Revenue per employee of $567K is decent for distribution", "Steady top-line growth", "Asset-light potential if warehouses are leased"],
     questions: [
       {
@@ -145,6 +145,14 @@ export const COMPANIES = [
         answer: "It's a qualified yes with a clear thesis: recurring revenue base + fixable margin problem = classic PE value creation opportunity. The thesis is: (1) reprice contracts to pass through input cost increases, (2) optimize procurement/logistics to recover 200-400 bps of gross margin, (3) reduce customer concentration, (4) potentially bolt-on smaller regional distributors. The risk is that the margin compression may be structural (competitive dynamics) rather than fixable. DD focus: contract terms, competitive landscape, and whether that top customer has alternatives.",
         type: "thesis",
         keywords: ["recurring revenue", "margin improvement", "repricing", "procurement", "bolt-on", "customer concentration", "competitive dynamics"]
+      },
+      {
+        id: "coastal-foods-q5",
+        q: "The seller's CIM claims $3.9M in adjusted EBITDA ($2.9M reported + $1.0M add-backs). Something inside that reported EBITDA does not belong there. Find it, quantify the impact, and state what else in the financials you would demand support for.",
+        hint: "EBITDA is built up from net income, so everything in net income rides along, including things that are not operating earnings. Also compare D&A to capex.",
+        answer: "The $2.9M reported EBITDA contains $0.9M of other income that appeared in 2025 (zero in 2024). Because EBITDA is built from net income, that non-operating gain rode in without ever being added back. Strip it: operating EBITDA is $2.0M. Add the $1.0M of legitimate add-backs and QoE-adjusted EBITDA is roughly $3.0M, not the $3.9M claimed. At 5x that is $15.0M of enterprise value against $19.5M implied, a $4.5M price gap from one line. Separately, depreciation doubled ($1.1M to $2.1M) against only $0.8M of capex, which is unexplained and demands the fixed asset register even though it does not move EBITDA. Demand support for: the composition of the $0.9M other income and whether it recurs, the fixed asset register behind the D&A jump, monthly P&L and proof of cash, and the prior-year history of the 'one-time' add-backs. Price off $3.0M, not $3.9M.",
+        type: "diagnostic",
+        keywords: ["other income", "one-time gain", "quality of earnings", "QoE", "$3.0M", "fixed asset register", "proof of cash", "depreciation"]
       }
     ]
   },

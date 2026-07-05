@@ -652,6 +652,81 @@ export const LEARN_CONTENT = [
             answer: "Precision CNC: Total debt $2.1M ($0.3M current + $1.8M LT) / $4.15M Adj. EBITDA = 0.5x leverage. Extremely conservative. You could add $10-12M of additional debt to reach 3.0x, giving significant acquisition firepower. Precision's 32.4% EBITDA margins and 43% gross margins mean strong debt service coverage. Risk: customer concentration at 28% means a customer loss could impair the ability to service debt. Apex: Total debt $8.6M ($2.1M + $6.5M) / $4.55M Adj. EBITDA = 1.9x leverage. Already moderate. Theoretical capacity to 3.5x = $15.9M total, so ~$7.3M more. But you should NOT lever up Apex further. Revenue is declining 8.6%, and FCF conversion is weak: Cash from Operations of $3.4M (NI $0.6M + D&A $2.0M + ΔWC $0.8M) less CapEx of $2.5M leaves only $0.9M of FCF, or roughly 20% of $4.55M Adj. EBITDA. Combine that with 35% customer concentration and EBITDA could collapse. Adding more debt to a declining-revenue, capital-intensive business with a concentrated customer base is a recipe for distress."
           }
         ]
+      },
+      {
+        id: "s3e",
+        title: "3E. Quality of Earnings",
+        objectives: [
+          "Understand what a QoE is and is not, and who commissions it",
+          "Use proof of cash as the spine of every earnings analysis",
+          "Spot the other-income trap hiding inside reported EBITDA",
+          "Run a QoE-style haircut on Coastal's claimed adjusted EBITDA",
+        ],
+        skillTags: ["Quality of Earnings", "QoE", "Proof of Cash", "EBITDA Quality", "Coastal Foods"],
+        timeEstimate: 14,
+        suggestedQuestions: [
+          "What is the difference between a sell-side and a buy-side QoE?",
+          "Why does other income distort EBITDA even though nobody added it back?",
+        ],
+        blocks: [
+          {
+            type: "text",
+            content: "A quality-of-earnings analysis is not an audit. An audit checks whether the financials comply with accounting standards. A QoE asks a narrower, sharper question: do the reported earnings reflect sustainable, recurring economics, or are they propped up by items that will not repeat under new ownership? It is the single most important piece of financial diligence in an LMM deal, and it is where most price renegotiations start."
+          },
+          {
+            type: "text",
+            content: "Two flavors, and knowing which one you are reading matters. A sell-side QoE is commissioned by the seller before market. It controls the narrative, frames the add-backs favorably, and gives the banker a number to anchor on. A buy-side QoE is commissioned by the buyer during exclusivity; it feeds directly into the final price and the reps the seller signs. Both are run by the transaction advisory groups inside accounting firms, not the deal team. In the LMM, budget roughly $40-100K and 3-5 weeks, usually inside the exclusivity window."
+          },
+          {
+            type: "text",
+            content: "Proof of cash is the spine of every QoE. You tie reported revenue and EBITDA back to actual bank deposits and disbursements, month by month, and reconcile the difference. It catches channel stuffing, undisclosed side agreements, revenue-recognition games, and outright fabrication. This matters most in the LMM, where financials are usually reviewed or compiled rather than audited. When the books have never had a hard external check, proof of cash is where the surprises surface."
+          },
+          {
+            type: "lineItemTable",
+            headers: ["QoE Focus Area", "What It Tests", "Classic Finding"],
+            rows: [
+              ["Proof of cash", "Reported revenue and EBITDA tie to bank deposits and disbursements month by month", "Revenue on the P&L that never shows up in the bank"],
+              ["Revenue recognition", "Timing, bill-and-hold arrangements, percentage-of-completion assumptions", "Revenue pulled forward or booked before it is earned"],
+              ["Non-operating and one-time items", "Whether gains and windfalls have crept into operating earnings", "A litigation recovery sitting inside EBITDA"],
+              ["Add-back validation", "Whether each claimed add-back is truly non-recurring and supportable", "'One-time' costs that appear every year"],
+              ["Related-party transactions", "Rent, wages, or fees paid to owners, family, or affiliated entities", "Below-market rent that will reset to market post-close"],
+              ["D&A and capitalization policy", "Whether costs are capitalized to keep them off the P&L", "Repairs capitalized as assets to inflate earnings"],
+              ["Cutoff testing", "Whether transactions land in the correct period around period ends", "December sales dated into a strong Q4, returns dated into Q1"]
+            ]
+          },
+          {
+            type: "text",
+            content: "The other-income trap is the one that catches trained analysts. EBITDA is built up from net income (NI plus interest, taxes, depreciation, and amortization). It is not built up from operating income. That means anything sitting in other income rides along inside EBITDA unless someone deliberately strips it out. Asset-sale gains, insurance recoveries, legal settlements, and pandemic-era windfalls all inflate EBITDA silently. A CIM will rarely volunteer that one of these is in the number, because doing so would lower the headline. You have to go looking."
+          },
+          {
+            type: "companyData",
+            companyId: "coastal-foods",
+            view: "income"
+          },
+          {
+            type: "text",
+            content: "Work Coastal. Net income fell from $0.9M to $0.2M, a $0.7M drop, while revenue grew 5.2%. Walk the bridge: SGA rose $0.5M, depreciation rose $1.0M, interest rose $0.1M, and other income rose $0.9M. Net the four and you get the $0.7M decline exactly ($0.9M of new income minus $1.6M of new costs). A falling bottom line against rising revenue is the flag that pulls a QoE toward two specific line items."
+          },
+          {
+            type: "text",
+            content: "Anomaly one, the other-income trap. Coastal booked $0.9M of other income in 2025 against zero in 2024, and it sits inside the reported $2.9M EBITDA. Strip it and operating EBITDA is $2.0M. Add the $1.0M of legitimate add-backs and QoE-adjusted EBITDA is roughly $3.0M, against the $3.9M the CIM claims, a 23% haircut. At 5x, the claim implies $19.5M of enterprise value; the QoE number implies $15.0M. One unexamined line item is a $4.5M price gap."
+          },
+          {
+            type: "text",
+            content: "Anomaly two, the depreciation jump. Depreciation doubled from $1.1M to $2.1M against only $0.8M of capex and $5.5M of gross PP&E. That is unexplained: a useful-life change, a catch-up on prior-year capex expensed late, or book-versus-tax conflation. A QoE demands the fixed asset register either way. Note the irony: the D&A jump does not touch EBITDA (it gets added back), so it does not move the valuation. But it is exactly the kind of unexplained movement that tells you the books need scrutiny before you trust any number on them."
+          },
+          {
+            type: "exercise",
+            id: "ex-3e-1",
+            q: "The Coastal CIM presents $3.9M of adjusted EBITDA ($2.9M reported plus $1.0M of add-backs). Run your own quality-of-earnings check on that number. What do you find, and what does it do to the price at 5x?",
+            inputMode: "qualitative",
+            answer: "The reported $2.9M EBITDA contains $0.9M of other income that first appeared in 2025 (zero in 2024). Because EBITDA is built from net income, that non-operating gain rode in without ever being added back. Strip it: operating EBITDA is $2.0M. Add the $1.0M of legitimate add-backs and QoE-adjusted EBITDA is roughly $3.0M, not $3.9M, a 23% haircut. At 5x, that is $15.0M of enterprise value against the $19.5M the CIM implies, a $4.5M price gap from one line. Separately, depreciation doubled ($1.1M to $2.1M) against only $0.8M of capex, which is unexplained and demands the fixed asset register even though it does not move EBITDA. What to demand in diligence: a full breakout of the $0.9M other income (what it is and whether it recurs), the fixed asset register, monthly P&L and proof of cash, and the prior-year add-back history to test whether the 'one-time' costs are actually recurring. Negotiating posture: price off the $3.0M number, or if the seller insists the gain is being misunderstood, structure the disputed turn as an earnout so they carry the burden of proving it recurs."
+          },
+          {
+            type: "notes",
+            id: "notes-3e"
+          }
+        ]
       }
     ]
   },
