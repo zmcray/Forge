@@ -1,6 +1,7 @@
 import { formatMultiple, STATUS_CHIP_COLORS } from "../../utils/format";
+import PracticeLinks from "./PracticeLinks";
 
-export default function BridgeExercise({ exerciseTarget, userMoic, onCheck, lastResult }) {
+export default function BridgeExercise({ exerciseTarget, userMoic, onCheck, lastResult, relatedQuestions }) {
   const handleSubmit = () => {
     onCheck();
   };
@@ -67,6 +68,15 @@ export default function BridgeExercise({ exerciseTarget, userMoic, onCheck, last
             <p className="mt-2 text-xs opacity-90">
               <span className="font-semibold uppercase tracking-wide">Hint:</span> {exerciseTarget.hint}
             </p>
+          </div>
+        )}
+
+        {relatedQuestions?.length > 0 && (
+          <div className="mt-4 pt-3 border-t border-outline-variant/30">
+            <div className="text-[10px] uppercase tracking-widest text-on-surface-variant mb-1.5">
+              Keep Going
+            </div>
+            <PracticeLinks links={relatedQuestions} />
           </div>
         )}
       </div>

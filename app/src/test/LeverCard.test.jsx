@@ -145,7 +145,8 @@ describe("LeverCard", () => {
     expect(revealBtn).not.toBeDisabled();
     fireEvent.click(revealBtn);
     expect(await screen.findByText(/A Strong Answer Covers/i)).toBeInTheDocument();
-    expect(screen.getByText(/Your Answer/i)).toBeInTheDocument();
+    // Exact case match: the quant exercise input label is "Your answer" (lowercase a)
+    expect(screen.getByText("Your Answer")).toBeInTheDocument();
   });
 
   it("renders prev/next buttons with correct disabled state on first lever", () => {
@@ -161,6 +162,41 @@ describe("LeverCard", () => {
     renderDetail(lastLever.id);
     const next = screen.getByRole("button", { name: /Next/i });
     expect(next).toBeDisabled();
+  });
+
+  it("renders the quant exercise commit-first flow with pass state within tolerance", async () => {
+    renderDetail("pricing-optimization");
+    expect(screen.getByText(/Quick Math/i)).toBeInTheDocument();
+    const reveal = screen.getByRole("button", { name: /Check Answer/i });
+    expect(reveal).toBeDisabled();
+    const input = screen.getByPlaceholderText(/Enter your numeric answer/i);
+    fireEvent.change(input, { target: { value: "6.5" } });
+    expect(reveal).not.toBeDisabled();
+    fireEvent.click(reveal);
+    expect(await screen.findByText("PASSED")).toBeInTheDocument();
+    expect(screen.getByText(/drops straight through/i)).toBeInTheDocument();
+  });
+
+  it("shows a miss when the quant answer is outside tolerance", async () => {
+    renderDetail("pricing-optimization");
+    fireEvent.change(screen.getByPlaceholderText(/Enter your numeric answer/i), {
+      target: { value: "12" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /Check Answer/i }));
+    expect(await screen.findByText("MISS")).toBeInTheDocument();
+  });
+
+  it("does not render a quant exercise for levers without one", () => {
+    renderDetail("sales-effectiveness");
+    expect(screen.queryByText(/Quick Math/i)).not.toBeInTheDocument();
+  });
+
+  it("renders practice links on examples and navigates to the practice page", () => {
+    renderDetail("pricing-optimization");
+    const links = screen.getAllByRole("button", { name: /Practice this/i });
+    expect(links.length).toBeGreaterThan(0);
+    fireEvent.click(links[0]);
+    expect(screen.getByText("Practice page")).toBeInTheDocument();
   });
 
   it("persists notes to localStorage on change", () => {
