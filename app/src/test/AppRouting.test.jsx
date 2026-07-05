@@ -56,6 +56,27 @@ describe("App routing", () => {
     expect(await screen.findByText("Learn the Fundamentals")).toBeInTheDocument();
   });
 
+  it("renders the consult company list lazily at /consult", async () => {
+    renderWithProviders(<App />, { route: "/consult" });
+    expect(await screen.findByText("Consulting Wedge")).toBeInTheDocument();
+    expect(
+      await screen.findByRole("heading", { name: "Summit Mechanical Services" })
+    ).toBeInTheDocument();
+  });
+
+  it("renders the consult session at /consult/:companyId", async () => {
+    renderWithProviders(<App />, { route: "/consult/summit-hvac" });
+    expect(
+      await screen.findByRole("heading", { name: "Summit Mechanical Services" })
+    ).toBeInTheDocument();
+    expect(await screen.findByText("Stage 2A: Decompose")).toBeInTheDocument();
+  });
+
+  it("bounces an unknown consult company id back to the consult list", async () => {
+    renderWithProviders(<App />, { route: "/consult/not-a-company" });
+    expect(await screen.findByText("Consulting Wedge")).toBeInTheDocument();
+  });
+
   it("renders quick screen mode at /quickfire", async () => {
     renderWithProviders(<App />, { route: "/quickfire" });
     // "Quick Screen" also appears as a sidebar nav label; target the heading.
