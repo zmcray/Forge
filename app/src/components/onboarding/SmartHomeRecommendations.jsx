@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { COMPANIES } from "../../data/companies";
-import { LEARN_CONTENT } from "../../data/learnContent";
+import { LEARN_INDEX } from "../../data/learnIndex";
 import { useScoringState } from "../../contexts/ScoringContext";
 import useLearnProgress from "../../hooks/useLearnProgress";
 import { attemptedCompanyIds as deriveAttemptedCompanyIds, averageScore } from "../../utils/scoreMath";
@@ -14,7 +14,7 @@ function getRecommendations(sessions, streak, weakSpots, learnProgress) {
   const hasLearnProgress = progress.completedExercises.length > 0 || progress.visitedSubsections.length > 0;
   let incompleteSection = null;
 
-  for (const section of LEARN_CONTENT) {
+  for (const section of LEARN_INDEX) {
     for (const sub of section.subsections) {
       const prog = getSubsectionProgress(sub);
       if (prog && prog.completed > 0 && prog.completed < prog.total) {

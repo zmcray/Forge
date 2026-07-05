@@ -1,16 +1,16 @@
 import { useMemo } from "react";
-import { LEARN_CONTENT } from "../data/learnContent";
+import { LEARN_INDEX } from "../data/learnIndex";
 import { createStore, useStore } from "./progressStore";
 import { loadJSON, saveJSON } from "../utils/storage";
 
 const STORAGE_KEY = "forge-learn-progress";
 const DEFAULT_STATE = { completedExercises: [], visitedSubsections: [] };
 
-/** Flat list of all subsections across all sections, with parent section index. */
+/** Flat list of all index subsections across all sections, with parent section index. */
 function flattenSubsections() {
   const flat = [];
-  for (let si = 0; si < LEARN_CONTENT.length; si++) {
-    const section = LEARN_CONTENT[si];
+  for (let si = 0; si < LEARN_INDEX.length; si++) {
+    const section = LEARN_INDEX[si];
     for (let ssi = 0; ssi < section.subsections.length; ssi++) {
       flat.push({ ...section.subsections[ssi], _sectionIndex: si, _subsectionIndex: ssi, _sectionTitle: section.title });
     }
@@ -19,6 +19,7 @@ function flattenSubsections() {
 }
 
 const ALL_STEPS = flattenSubsections();
+const STEPS_BY_ID = new Map(ALL_STEPS.map((s) => [s.id, s]));
 
 function loadProgress() {
   return loadJSON(STORAGE_KEY, {
@@ -32,10 +33,13 @@ function saveProgress(progress) {
   saveJSON(STORAGE_KEY, progress);
 }
 
-function exercisesOf(subsection) {
-  return (subsection.blocks || []).filter(
-    (b) => b.type === "exercise" || b.type === "calculationExercise",
-  );
+/**
+ * Exercise ids for a subsection. Accepts either a full learnContent subsection
+ * or a lightweight index entry; resolution goes through the index by id so the
+ * eager bundle never needs learnContent's block bodies.
+ */
+function exerciseIdsOf(subsection) {
+  return STEPS_BY_ID.get(subsection.id)?.exerciseIds ?? [];
 }
 
 // Shared module-level store: App.jsx's copy and the Learn module's copy see the
@@ -57,7 +61,7 @@ const markVisited = (subsectionId) =>
   });
 
 const resetSubsection = (subsection) => {
-  const exerciseIds = exercisesOf(subsection).map((b) => b.id);
+  const exerciseIds = exerciseIdsOf(subsection);
   if (exerciseIds.length === 0) return;
   store.setState((prev) => ({
     ...prev,
@@ -80,34 +84,33 @@ export default function useLearnProgress() {
     const isVisited = (subsectionId) => visitedSubsections.includes(subsectionId);
 
     const getSubsectionProgress = (subsection) => {
-      const exercises = exercisesOf(subsection);
-      if (exercises.length === 0) return null;
-      const completed = exercises.filter((e) => completedExercises.includes(e.id)).length;
-      return { completed, total: exercises.length };
+      const exerciseIds = exerciseIdsOf(subsection);
+      if (exerciseIds.length === 0) return null;
+      const completed = exerciseIds.filter((id) => completedExercises.includes(id)).length;
+      return { completed, total: exerciseIds.length };
     };
 
     /** Returns the first subsection with incomplete exercises, or last if all done. */
     const getCurrentStep = () => {
       for (const step of ALL_STEPS) {
-        const exercises = exercisesOf(step);
-        if (exercises.length === 0) {
+        if (step.exerciseIds.length === 0) {
           if (!visitedSubsections.includes(step.id)) return step;
           continue;
         }
-        const done = exercises.filter((e) => completedExercises.includes(e.id)).length;
-        if (done < exercises.length) return step;
+        const done = step.exerciseIds.filter((id) => completedExercises.includes(id)).length;
+        if (done < step.exerciseIds.length) return step;
       }
       return ALL_STEPS[ALL_STEPS.length - 1];
     };
 
     /** Returns whether a subsection is completed, in-progress, or locked. */
     const getStepStatus = (subsection) => {
-      const exercises = exercisesOf(subsection);
-      if (exercises.length === 0) {
+      const exerciseIds = exerciseIdsOf(subsection);
+      if (exerciseIds.length === 0) {
         return visitedSubsections.includes(subsection.id) ? "completed" : "locked";
       }
-      const done = exercises.filter((e) => completedExercises.includes(e.id)).length;
-      if (done === exercises.length) return "completed";
+      const done = exerciseIds.filter((id) => completedExercises.includes(id)).length;
+      if (done === exerciseIds.length) return "completed";
       if (done > 0 || visitedSubsections.includes(subsection.id)) return "active";
       return "locked";
     };
@@ -119,15 +122,14 @@ export default function useLearnProgress() {
     let totalTimeEstimate = 0;
     let completedTimeEstimate = 0;
     for (const step of ALL_STEPS) {
-      const exercises = exercisesOf(step);
-      totalExercises += exercises.length;
+      totalExercises += step.exerciseIds.length;
       totalTimeEstimate += step.timeEstimate || 8;
-      const done = exercises.filter((e) => completedExercises.includes(e.id)).length;
+      const done = step.exerciseIds.filter((id) => completedExercises.includes(id)).length;
       completedExercisesCount += done;
-      if (exercises.length > 0 && done === exercises.length) {
+      if (step.exerciseIds.length > 0 && done === step.exerciseIds.length) {
         completedSteps++;
         completedTimeEstimate += step.timeEstimate || 8;
-      } else if (exercises.length === 0 && visitedSubsections.includes(step.id)) {
+      } else if (step.exerciseIds.length === 0 && visitedSubsections.includes(step.id)) {
         completedSteps++;
         completedTimeEstimate += step.timeEstimate || 8;
       }

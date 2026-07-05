@@ -147,16 +147,11 @@ describe("markVisited / isVisited (hook)", () => {
 
 describe("subsection progress calculation", () => {
   it("returns correct completed/total for a subsection with exercises", () => {
-    const subsection = {
-      id: "s1a",
-      blocks: [
-        { type: "text", content: "Some text" },
-        { type: "calculationExercise", id: "ex-1a-calc" },
-        { type: "exercise", id: "ex-1a-2" },
-      ],
-    };
+    // Exercise ids resolve through the learn index by subsection id, so the
+    // eager bundle never reads learnContent blocks. s2a has 2 real exercises.
+    const subsection = { id: "s2a" };
 
-    saveProgress({ completedExercises: ["ex-1a-calc"], visitedSubsections: [] });
+    saveProgress({ completedExercises: ["ex-2a-1"], visitedSubsections: [] });
     const { result } = renderHook(() => useLearnProgress());
 
     expect(result.current.getSubsectionProgress(subsection)).toEqual({
@@ -166,10 +161,8 @@ describe("subsection progress calculation", () => {
   });
 
   it("returns null for subsections with no exercises", () => {
-    const subsection = {
-      id: "s1-intro",
-      blocks: [{ type: "text", content: "Introduction" }],
-    };
+    // Unknown ids resolve to zero exercises in the index.
+    const subsection = { id: "s1-intro" };
 
     const { result } = renderHook(() => useLearnProgress());
     expect(result.current.getSubsectionProgress(subsection)).toBeNull();
@@ -184,10 +177,7 @@ describe("resetSubsection (hook)", () => {
     });
     const { result } = renderHook(() => useLearnProgress());
 
-    const subsection = {
-      id: "s1a",
-      blocks: [{ type: "calculationExercise", id: "ex-1a-calc" }],
-    };
+    const subsection = { id: "s1a" }; // s1a's only exercise is ex-1a-calc
 
     act(() => {
       result.current.resetSubsection(subsection);
@@ -213,10 +203,7 @@ describe("resetSubsection (hook)", () => {
     const { result } = renderHook(() => useLearnProgress());
     const before = result.current.progress;
 
-    const subsection = {
-      id: "intro",
-      blocks: [{ type: "text", content: "No exercises here" }],
-    };
+    const subsection = { id: "intro" }; // not in the index: zero exercises
 
     act(() => {
       result.current.resetSubsection(subsection);
